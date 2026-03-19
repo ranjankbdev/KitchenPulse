@@ -1,12 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { FaPlus } from 'react-icons/fa6';
 import { FiShoppingCart } from 'react-icons/fi';
 import { IoIosSearch } from 'react-icons/io';
 import { FaLocationDot } from 'react-icons/fa6';
 import { TbReceipt2 } from 'react-icons/tb';
 import { useSelector } from 'react-redux';
-import { useDispatch } from 'react-redux';
 import { IoClose } from 'react-icons/io5';
 
 function Tooltip({ text }) {
@@ -24,7 +22,7 @@ function Tooltip({ text }) {
 }
 
 function Navbar() {
-  const { userData, cartItems } = useSelector((state) => state.user);
+  const { userData, currentCity } = useSelector((state) => state.user);
 
   const [showDropdown, setShowDropdown] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
@@ -75,7 +73,7 @@ function Navbar() {
               {/* Location */}
               <div className="flex items-center gap-1.5 w-[32%] min-w-0">
                 <FaLocationDot size={15} className="text-[#ff4d2d] shrink-0" />
-                <span className="truncate text-sm font-medium text-gray-700">currentCity</span>
+                <span className="truncate text-sm font-medium text-gray-700">{currentCity}</span>
               </div>
 
               {/* Divider */}
@@ -155,7 +153,7 @@ function Navbar() {
                   <FiShoppingCart size={22} className="text-[#ff4d2d]" />
                 </button>
                 <span className="absolute top-0 right-0 w-4 h-4 bg-[#ff4d2d] text-white text-[10px] font-bold rounded-full flex items-center justify-center leading-none pointer-events-none">
-                  {cartItems.length}
+                  1
                 </span>
                 <Tooltip text="Cart" />
               </div>
@@ -206,7 +204,6 @@ function Navbar() {
                 )}
                 <button
                   type="button"
-                  onClick={handleLogout}
                   className="px-2 py-1.5 w-40 text-center rounded-lg cursor-pointer bg-[#ff4d2d]/10 text-[#ff4d2d] text-sm font-medium hover:bg-[#ff4d2d]/20 transition-colors"
                 >
                   Logout
@@ -223,7 +220,7 @@ function Navbar() {
           <div className="lg:hidden fixed top-14 md:top-16 left-0 right-0 mx-3 bg-white border border-gray-200 rounded-xl shadow-lg p-2.5 flex items-center gap-2 z-[9998] mt-3">
             <div className="flex items-center gap-1.5 w-[47%] min-w-0">
               <FaLocationDot size={15} className="text-[#ff4d2d] shrink-0" />
-              <span className="text-sm font-medium text-gray-700">currentCity</span>
+              <span className="text-sm font-medium text-gray-700">{currentCity}</span>
             </div>
             <div className="h-6 w-px bg-gray-400 mx-2" />
             <IoIosSearch size={18} className="text-[#ff4d2d] shrink-0 ml-1" />
