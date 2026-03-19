@@ -1,7 +1,7 @@
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
-import ProjectRoutes from './ProjectRoutes.jsx';
+import App from './App.jsx';
 import GlobalToaster from './components/common/GlobalToaster.jsx';
 import store from './redux/store.js';
 import './index.css';
@@ -10,7 +10,7 @@ createRoot(document.getElementById('root')).render(
   <Provider store={store}>
     <BrowserRouter>
       <GlobalToaster />
-      <ProjectRoutes />
+      <App />
     </BrowserRouter>
   </Provider>
 );

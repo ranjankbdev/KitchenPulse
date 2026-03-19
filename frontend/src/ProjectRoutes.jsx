@@ -1,15 +1,11 @@
-import { useRoutes } from 'react-router-dom';
+import { useRoutes, Navigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { Navigate } from 'react-router-dom';
 import SignUp from './pages/auth/SignUp.jsx';
 import SignIn from './pages/auth/SingIn.jsx';
 import ForgotPassword from './pages/auth/ForgotPassword.jsx';
 import HomePage from './pages/HomePage.jsx';
-import useGetCurrentUser from './hooks/useGetCurrentUser.jsx';
 
 function ProjectRoutes() {
-  useGetCurrentUser();
-
   const { userData } = useSelector((state) => state.user);
 
   const routes = useRoutes([
