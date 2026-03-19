@@ -6,6 +6,9 @@ import { FaLocationDot } from 'react-icons/fa6';
 import { TbReceipt2 } from 'react-icons/tb';
 import { useSelector } from 'react-redux';
 import { IoClose } from 'react-icons/io5';
+import { logoutUserAPI } from '../services/authService';
+import { setUserData } from '../redux/userSlice';
+import { useDispatch } from 'react-redux';
 
 function Tooltip({ text }) {
   return (
@@ -28,6 +31,19 @@ function Navbar() {
   const [showSearch, setShowSearch] = useState(false);
 
   const dropdownRef = useRef(null);
+  
+  const dispatch = useDispatch();
+
+  const handleLogout = async () => {
+    try {
+      await logoutUserAPI();
+      setShowDropdown(false);
+      dispatch(setUserData(null));
+      showToast('User logout successfully!', 'success');
+    } catch (error) {
+      showToast(error, 'error');
+    }
+  };
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -203,6 +219,7 @@ function Navbar() {
                   </button>
                 )}
                 <button
+                  onClick={handleLogout}
                   type="button"
                   className="px-2 py-1.5 w-40 text-center rounded-lg cursor-pointer bg-[#ff4d2d]/10 text-[#ff4d2d] text-sm font-medium hover:bg-[#ff4d2d]/20 transition-colors"
                 >

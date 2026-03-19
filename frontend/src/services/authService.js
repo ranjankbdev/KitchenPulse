@@ -43,6 +43,10 @@ const googleAuthAPI = async (user) => {
   return data;
 };
 
+const logoutUserAPI = async () => {
+  await axiosInstance.post('/auth/logout', { withCredentials: true });
+};
+
 export {
   registerUserAPI,
   loginUserAPI,
@@ -50,4 +54,5 @@ export {
   verifyPasswordResetOtpAPI,
   resetUserPasswordAPI,
   googleAuthAPI,
+  logoutUserAPI,
 };
