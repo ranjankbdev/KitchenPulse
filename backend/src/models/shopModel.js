@@ -38,6 +38,15 @@ const shopSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+shopSchema.virtual('items', {
+  ref: 'Item',
+  localField: '_id',
+  foreignField: 'shop',
+});
+
+shopSchema.set('toObject', { virtuals: true });
+shopSchema.set('toJSON', { virtuals: true });
+
 shopSchema.index({ owner: 1 });
 shopSchema.index({ owner: 1, name: 1 });
 

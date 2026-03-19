@@ -47,4 +47,52 @@ const otpField = Joi.string()
     'string.pattern.base': 'OTP must be exactly 6 digits',
   });
 
-export { fullNameField, emailField, passwordField, mobileField, roleField, otpField };
+const shopNameField = Joi.string().trim().min(2).max(100).messages({
+  'string.empty': 'Shop name is required',
+  'string.min': 'Shop name must be at least 2 characters',
+  'string.max': 'Shop name cannot exceed 100 characters',
+  'any.required': 'Shop name is required',
+});
+
+const cityField = Joi.string().trim().min(2).max(60).messages({
+  'string.empty': 'City is required',
+  'string.min': 'City must be at least 2 characters',
+  'string.max': 'City cannot exceed 60 characters',
+  'any.required': 'City is required',
+});
+
+const stateField = Joi.string().trim().min(2).max(60).messages({
+  'string.empty': 'State is required',
+  'string.min': 'State must be at least 2 characters',
+  'string.max': 'State cannot exceed 60 characters',
+  'any.required': 'State is required',
+});
+
+const addressField = Joi.string().trim().min(5).max(300).messages({
+  'string.empty': 'Address is required',
+  'string.min': 'Address must be at least 5 characters',
+  'string.max': 'Address cannot exceed 300 characters',
+  'any.required': 'Address is required',
+});
+
+const imageUrlField = Joi.string()
+  .uri()
+  .pattern(/^https?:\/\/.+/)
+  .trim()
+  .messages({
+    'string.uri': 'Image must be a valid URL',
+  });
+
+export {
+  fullNameField,
+  emailField,
+  passwordField,
+  mobileField,
+  roleField,
+  otpField,
+  shopNameField,
+  cityField,
+  stateField,
+  addressField,
+  imageUrlField,
+};
