@@ -26,12 +26,13 @@ function Tooltip({ text }) {
 
 function Navbar() {
   const { userData, currentCity } = useSelector((state) => state.user);
+  const { myShopData } = useSelector((state) => state.vendor);
 
   const [showDropdown, setShowDropdown] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
 
   const dropdownRef = useRef(null);
-  
+
   const dispatch = useDispatch();
 
   const handleLogout = async () => {
@@ -113,18 +114,22 @@ function Navbar() {
           {/* Vendor actions */}
           {isVendor && (
             <>
-              <button
-                type="button"
-                className="hidden md:flex items-center gap-1.5 cursor-pointer bg-[#ff4d2d]/10 text-[#ff4d2d] px-3 py-1.5 rounded-lg hover:bg-[#ff4d2d]/20 text-sm font-medium transition-colors"
-              >
-                <FaPlus size={14} /> Add Food Item
-              </button>
-              <div className="relative group md:hidden">
-                <button className="flex items-center justify-center bg-[#ff4d2d]/10 text-[#ff4d2d] p-2 rounded-lg hover:bg-[#ff4d2d]/20 cursor-pointer transition-colors">
-                  <FaPlus size={18} />
-                </button>
-                <Tooltip text="Add Food" />
-              </div>
+              {myShopData && (
+                <>
+                  <button
+                    type="button"
+                    className="hidden md:flex items-center gap-1.5 cursor-pointer bg-[#ff4d2d]/10 text-[#ff4d2d] px-3 py-1.5 rounded-lg hover:bg-[#ff4d2d]/20 text-sm font-medium transition-colors"
+                  >
+                    <FaPlus size={14} /> Add Food Item
+                  </button>
+                  <div className="relative group md:hidden">
+                    <button className="flex items-center justify-center bg-[#ff4d2d]/10 text-[#ff4d2d] p-2 rounded-lg hover:bg-[#ff4d2d]/20 cursor-pointer transition-colors">
+                      <FaPlus size={18} />
+                    </button>
+                    <Tooltip text="Add Food" />
+                  </div>{' '}
+                </>
+              )}
 
               <button
                 type="button"
