@@ -75,12 +75,42 @@ const addressField = Joi.string().trim().min(5).max(300).messages({
   'any.required': 'Address is required',
 });
 
-const imageUrlField = Joi.string()
-  .uri()
-  .pattern(/^https?:\/\/.+/)
-  .trim()
+const imageUrlField = Joi.string().uri().trim().messages({
+  'string.uri': 'Image must be a valid URL',
+});
+
+const itemNameField = Joi.string().trim().min(2).max(120).messages({
+  'string.empty': 'Item name is required',
+  'string.min': 'Item name must be at least 2 characters',
+  'string.max': 'Item name cannot exceed 120 characters',
+  'any.required': 'Item name is required',
+});
+
+const categoryField = Joi.string()
+  .valid('snacks', 'main_course', 'desserts', 'beverages', 'fast_food', 'others')
   .messages({
-    'string.uri': 'Image must be a valid URL',
+    'any.only': 'Please select a valid category',
+    'string.empty': 'Category is required',
+    'any.required': 'Category is required',
+  });
+
+const priceField = Joi.number().min(0).messages({
+  'number.base': 'Price must be a number',
+  'number.min': 'Price cannot be negative',
+  'any.required': 'Price is required',
+});
+
+const foodTypeField = Joi.string().valid('veg', 'non-veg').messages({
+  'any.only': 'Food type must be veg or non-veg',
+  'string.empty': 'Food type is required',
+  'any.required': 'Food type is required',
+});
+
+const mongoIdField = Joi.string()
+  .pattern(/^[a-fA-F0-9]{24}$/)
+  .messages({
+    'string.pattern.base': 'Invalid ID format',
+    'any.required': 'ID is required',
   });
 
 export {
@@ -95,4 +125,9 @@ export {
   stateField,
   addressField,
   imageUrlField,
+  itemNameField,
+  categoryField,
+  priceField,
+  foodTypeField,
+  mongoIdField,
 };
