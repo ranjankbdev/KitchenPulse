@@ -11,7 +11,7 @@ function HomePage() {
   const isDeliveryPartner = userData?.role === 'deliveryPartner';
   
   return (
-    <div className="bg-[#f4f4f2] w-full min-h-screen pt-[60px] overflow-x-hidden">
+    <div className="bg-[#f4f4f2] w-full min-h-screen pt-15 overflow-x-hidden">
       {isUser && <UserDashboard />}
       {isVendor && <VendorDashboard />}
       {isDeliveryPartner && <DeliveryPartnerDashboard />}

@@ -1,6 +1,7 @@
 import { StatusCodes } from 'http-status-codes';
 import { ExpressError } from '../utils/ExpressError.js';
 import Shop from '../models/shopModel.js';
+import Item from '../models/itemModel.js';
 
 const createShop = async (req, res) => {
   const { name, imageUrl, address, city, state } = req.body;
@@ -44,7 +45,7 @@ const getMyShop = async (req, res) => {
     { path: 'owner' },
     { path: 'items', options: { sort: { updatedAt: -1 } } },
   ]);
-  
+
   return res.status(StatusCodes.OK).json(existingShop || null);
 };
 
