@@ -5,6 +5,7 @@ import SignIn from './pages/auth/SingIn.jsx';
 import ForgotPassword from './pages/auth/ForgotPassword.jsx';
 import HomePage from './pages/HomePage.jsx';
 import ManageShop from './pages/ManageShop.jsx';
+import ManageItem from './pages/ManageItem.jsx';
 
 function ProjectRoutes() {
   const { userData } = useSelector((state) => state.user);
@@ -31,11 +32,19 @@ function ProjectRoutes() {
     },
     {
       path: '/vendor/shop/new',
-      element: userData ? <ManageShop /> : <Navigate to="/sign-in" replace />,
+      element: userData ? <ManageShop /> : <Navigate to="/signin" replace />,
     },
     {
       path: '/vendor/shop/edit',
-      element: userData ? <ManageShop mode="edit" /> : <Navigate to="/sign-in" replace />,
+      element: userData ? <ManageShop mode="edit" /> : <Navigate to="/signin" replace />,
+    },
+    {
+      path: '/vendor/shop/items/new',
+      element: userData ? <ManageItem /> : <Navigate to="/signin" replace />,
+    },
+    {
+      path: '/vendor/shop/items/:itemId/edit',
+      element: userData ? <ManageItem mode="edit" /> : <Navigate to="/signin" replace />,
     },
 
     // Optional

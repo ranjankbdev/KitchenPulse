@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react';
-import { FaPlus } from 'react-icons/fa6';
 import { FiShoppingCart } from 'react-icons/fi';
 import { IoIosSearch } from 'react-icons/io';
 import { FaLocationDot } from 'react-icons/fa6';
@@ -61,14 +60,14 @@ function Navbar() {
   const isUser = userData?.role === 'user';
   const isVendor = userData?.role === 'vendor';
   const isDeliveryPartner = userData?.role === 'deliveryPartner';
-
+  // justify-between px-2 md:px-15 xl:px-52 2xl:px-62
   return (
     <>
       <div
         className={`w-full bg-white flex h-16 items-center
-          ${isVendor ? 'justify-between md:justify-evenly' : ''}
+          ${isVendor ? 'lg:justify-around justify-between' : ''}
           ${isUser ? 'justify-between xl:justify-evenly xl:px-60' : ''}
-          gap-2 fixed top-0 z-[9999] px-3 md:px-6 shadow-sm border-b border-gray-100`}
+          gap-2 fixed top-0 z-[9999] px-3 shadow-sm border-b border-gray-100`}
       >
         {/* Left — Logo */}
         <div className="flex gap-1.5 items-center shrink-0">
@@ -114,26 +113,9 @@ function Navbar() {
           {/* Vendor actions */}
           {isVendor && (
             <>
-              {myShopData && (
-                <>
-                  <button
-                    type="button"
-                    className="hidden md:flex items-center gap-1.5 cursor-pointer bg-[#ff4d2d]/10 text-[#ff4d2d] px-3 py-1.5 rounded-lg hover:bg-[#ff4d2d]/20 text-sm font-medium transition-colors"
-                  >
-                    <FaPlus size={14} /> Add Food Item
-                  </button>
-                  <div className="relative group md:hidden">
-                    <button className="flex items-center justify-center bg-[#ff4d2d]/10 text-[#ff4d2d] p-2 rounded-lg hover:bg-[#ff4d2d]/20 cursor-pointer transition-colors">
-                      <FaPlus size={18} />
-                    </button>
-                    <Tooltip text="Add Food" />
-                  </div>{' '}
-                </>
-              )}
-
               <button
                 type="button"
-                className="hidden md:flex items-center gap-1.5 cursor-pointer bg-[#ff4d2d]/10 text-[#ff4d2d] px-3 py-1.5 rounded-lg hover:bg-[#ff4d2d]/20 text-sm font-medium transition-colors"
+                className="hidden sm:flex items-center gap-1.5 cursor-pointer bg-[#ff4d2d]/10 text-[#ff4d2d] px-3 py-1.5 rounded-lg hover:bg-[#ff4d2d]/20 text-sm font-medium transition-colors"
               >
                 <TbReceipt2 size={16} />
                 Shop Orders
@@ -141,7 +123,7 @@ function Navbar() {
                   1
                 </span>
               </button>
-              <div className="relative group md:hidden">
+              <div className="relative group sm:hidden">
                 <button className="flex items-center justify-center bg-[#ff4d2d]/10 text-[#ff4d2d] p-2 rounded-lg hover:bg-[#ff4d2d]/20 cursor-pointer transition-colors">
                   <TbReceipt2 size={18} />
                 </button>
