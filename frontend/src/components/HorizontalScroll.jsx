@@ -52,20 +52,24 @@ function HorizontalScroll({ children }) {
       {showLeft && (
         <button
           onClick={scrollLeft}
-          className="absolute left-0 top-1/2 -translate-y-1/2 bg-[#ff4d2d] text-white p-2 rounded-full shadow-lg hover:bg-[#e64528] z-10"
+          className="absolute left-0 top-1/2 -translate-y-1/2 bg-[#ff4d2d] text-white p-2 rounded-full shadow-lg hover:bg-[#e64528] z-10 cursor-pointer"
         >
           <FaCircleChevronLeft />
         </button>
       )}
 
-      <div ref={scrollRef} onScroll={checkScroll} className="w-full flex overflow-x-auto gap-4 scrollbar-hide">
+      <div
+        ref={scrollRef}
+        onScroll={checkScroll}
+        className="w-full flex overflow-x-auto gap-4 scrollbar-hide"
+      >
         {children}
       </div>
 
       {showRight && (
         <button
           onClick={scrollRight}
-          className="absolute right-0 top-1/2 -translate-y-1/2 bg-[#ff4d2d] text-white p-2 rounded-full shadow-lg hover:bg-[#e64528] z-10"
+          className="absolute right-0 top-1/2 -translate-y-1/2 bg-[#ff4d2d] text-white p-2 rounded-full shadow-lg hover:bg-[#e64528] z-10 cursor-pointer"
         >
           <FaCircleChevronRight />
         </button>
