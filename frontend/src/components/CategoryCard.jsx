@@ -1,7 +1,7 @@
 function CategoryCard({ name, image, onClick, className = '' }) {
   return (
     <button
-      className={`w-[160px] h-[180px] rounded-2xl border-2 border-[#ff4d2d] shrink-0 overflow-hidden bg-white shadow-xl shadow-gray-200 hover:shadow-lg transition-shadow relative ${className}`}
+      className={`rounded-2xl border-2 border-[#ff4d2d] shrink-0 overflow-hidden bg-white shadow-xl shadow-gray-200 hover:shadow-lg transition-shadow relative ${className}`}
       onClick={onClick}
     >
       <img

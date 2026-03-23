@@ -18,4 +18,10 @@ const updateShopAPI = async (shopData) => {
   return data;
 };
 
-export { getMyShopAPI, createShopAPI, updateShopAPI };
+// get shop by city
+const getShopsByCityAPI = async (city) => {
+  const { data } = await axiosInstance.get(`/shop/city/${city}`, { withCredentials: true });
+  return data;
+};
+
+export { getMyShopAPI, createShopAPI, updateShopAPI, getShopsByCityAPI };
