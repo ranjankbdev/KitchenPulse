@@ -110,7 +110,7 @@ function VendorDashboard() {
             </div>
 
             {/* EMPTY MENU */}
-            {myShopData.items.length === 0 && (
+            {myShopData?.items?.length === 0 && (
               <div className="flex justify-center items-center p-4 sm:p-6">
                 <div className="w-full bg-white shadow-lg rounded-2xl p-6 border border-gray-100 hover:shadow-xl transition-shadow duration-300 max-w-xl 2xl:max-w-3xl">
                   <div className="flex flex-col items-center text-center">
@@ -131,9 +131,9 @@ function VendorDashboard() {
                 </div>
               </div>
             )}
-            {myShopData.items.length > 0 && (
+            {myShopData?.items?.length > 0 && (
               <div className="flex flex-col mx-auto justify-center items-center gap-4 w-full max-w-xl 2xl:max-w-3xl mb-10">
-                {myShopData.items.map((item) => (
+                {myShopData?.items?.map((item) => (
                   <VendorItemCard data={item} key={item._id} />
                 ))}
               </div>

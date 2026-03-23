@@ -52,11 +52,8 @@ const getMyShop = async (req, res) => {
 const getShopsByCity = async (req, res) => {
   const { city } = req.params;
 
-  const shops = await Shop.find({ city: city.toLowerCase().trim() }).populate('items');
-
-  if (shops.length === 0) {
-    throw new ExpressError(StatusCodes.NOT_FOUND, 'Shop not found!');
-  }
+  const formattedCity = city.toLowerCase().trim();
+  const shops = await Shop.find({ city: formattedCity }).populate('items');
 
   return res.status(StatusCodes.OK).json(shops);
 };

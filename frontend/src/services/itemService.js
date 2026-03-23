@@ -22,4 +22,9 @@ const updateItemAPI = async (itemId, itemData) => {
   return data;
 };
 
-export { deleteItemByIdAPI, createItemAPI, getItemByIdAPI, updateItemAPI };
+const getItemsByCityAPI = async (city) => {
+  const { data } = await axiosInstance.get(`/item/city/${city}`, { withCredentials: true });
+  return data;
+};
+
+export { deleteItemByIdAPI, createItemAPI, getItemByIdAPI, updateItemAPI, getItemsByCityAPI };

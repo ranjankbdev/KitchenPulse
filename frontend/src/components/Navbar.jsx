@@ -8,6 +8,7 @@ import { IoClose } from 'react-icons/io5';
 import { logoutUserAPI } from '../services/authService';
 import { setUserData } from '../redux/userSlice';
 import { useDispatch } from 'react-redux';
+import showToast from '../utils/toastHelper';
 
 function Tooltip({ text }) {
   return (
@@ -25,7 +26,6 @@ function Tooltip({ text }) {
 
 function Navbar() {
   const { userData, currentCity } = useSelector((state) => state.user);
-  const { myShopData } = useSelector((state) => state.vendor);
 
   const [showDropdown, setShowDropdown] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
@@ -60,7 +60,7 @@ function Navbar() {
   const isUser = userData?.role === 'user';
   const isVendor = userData?.role === 'vendor';
   const isDeliveryPartner = userData?.role === 'deliveryPartner';
-  // justify-between px-2 md:px-15 xl:px-52 2xl:px-62
+
   return (
     <>
       <div
