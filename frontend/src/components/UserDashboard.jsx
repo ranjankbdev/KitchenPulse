@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
-import { FaUtensils } from 'react-icons/fa';
+import { useEffect, useState } from 'react';
+import { FaUtensils, FaStar } from 'react-icons/fa';
 import { categories } from '../data/category.js';
 import { BsShop } from 'react-icons/bs';
 import { useSelector, useDispatch } from 'react-redux';
@@ -10,34 +10,37 @@ import CategoryCard from './CategoryCard.jsx';
 import Navbar from './Navbar';
 import HorizontalScroll from './HorizontalScroll';
 import showToast from '../utils/toastHelper.js';
+import ItemCard from './ItemCard.jsx';
 
 function UserDashboard() {
   const dispatch = useDispatch();
-  const { currentCity, shopsInMyCity } = useSelector((state) => state.user);
+  const { currentCity, shopsInMyCity, itemsInMyCity } = useSelector((state) => state.user);
+
+  const [updatedItemsList, setUpdatedItemsList] = useState([]);
 
   useEffect(() => {
-    const fetchShops = async () => {
+    if (!currentCity) return;
+
+    const fetchData = async () => {
       try {
-        const result = await getShopsByCityAPI(currentCity);
-        dispatch(setShopsInMyCity(result));
+        const [shops, items] = await Promise.all([
+          getShopsByCityAPI(currentCity),
+          getItemsByCityAPI(currentCity),
+        ]);
+
+        dispatch(setShopsInMyCity(shops));
+        dispatch(setItemsInMyCity(items));
       } catch (error) {
         showToast(error, 'error');
       }
     };
-    if (currentCity) fetchShops();
+
+    fetchData();
   }, [currentCity]);
 
   useEffect(() => {
-    const fetchItems = async () => {
-      try {
-        const result = await getItemsByCityAPI(currentCity);
-        dispatch(setItemsInMyCity(result));
-      } catch (error) {
-        showToast(error, 'error');
-      }
-    };
-    if (currentCity) fetchItems();
-  }, [currentCity]);
+    setUpdatedItemsList(itemsInMyCity);
+  }, [itemsInMyCity]);
 
   return (
     <div>
@@ -82,6 +85,21 @@ function UserDashboard() {
             </div>
           )}
         </HorizontalScroll>
+
+        {/* items */}
+        <h1 className="flex items-start gap-2 text-gray-800 text-2xl sm:text-3xl  mt-11">
+          <FaStar className="text-[#ff4d2d]" />
+          Recommended for You
+        </h1>
+        <div className="w-full h-auto flex flex-wrap gap-[20px] my-4">
+          {updatedItemsList?.length > 0 ? (
+            updatedItemsList.map((item) => <ItemCard key={item._id} data={item} />)
+          ) : (
+            <div className="w-full text-center text-gray-500 mt-6">
+              No food items available right now
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
