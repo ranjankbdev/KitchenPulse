@@ -25,14 +25,17 @@ function Tooltip({ text }) {
 }
 
 function Navbar() {
+  const dispatch = useDispatch();
+
   const { userData, currentCity } = useSelector((state) => state.user);
+  const { cartItems } = useSelector((state) => state.cart);
 
   const [showDropdown, setShowDropdown] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
 
   const dropdownRef = useRef(null);
 
-  const dispatch = useDispatch();
+  const totalQuantity = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
   const handleLogout = async () => {
     try {
@@ -156,7 +159,7 @@ function Navbar() {
                   <FiShoppingCart size={22} className="text-[#ff4d2d]" />
                 </button>
                 <span className="absolute top-0 right-0 w-4 h-4 bg-[#ff4d2d] text-white text-[10px] font-bold rounded-full flex items-center justify-center leading-none pointer-events-none">
-                  1
+                  {totalQuantity}
                 </span>
                 <Tooltip text="Cart" />
               </div>

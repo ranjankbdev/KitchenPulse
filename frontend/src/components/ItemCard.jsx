@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { FaLeaf, FaDrumstickBite, FaStar, FaMinus, FaPlus, FaShoppingCart } from 'react-icons/fa';
 import { FaRegStar } from 'react-icons/fa6';
+import { useDispatch, useSelector } from 'react-redux';
+import { addToCart } from '../redux/cartSlice';
 
 const renderStars = (rating = 0) =>
   Array.from({ length: 5 }).map((_, i) =>
@@ -12,10 +14,30 @@ const renderStars = (rating = 0) =>
   );
 
 function ItemCard({ data }) {
+  const dispatch = useDispatch();
+
   const [quantity, setQuantity] = useState(0);
+  const { cartItems } = useSelector((state) => state.cart);
 
   const handleIncrease = () => setQuantity((prev) => prev + 1);
   const handleDecrease = () => setQuantity((prev) => (prev > 0 ? prev - 1 : 0));
+  const isInCart = cartItems.some((i) => i._id === data._id);
+
+  const handleAddToCart = () => {
+    if (!quantity) return;
+
+    dispatch(
+      addToCart({
+        _id: data._id,
+        name: data.name,
+        price: data.price,
+        imageUrl: data.imageUrl,
+        shop: data.shop,
+        quantity,
+        foodType: data.foodType,
+      })
+    );
+  };
 
   return (
     <div className="w-full max-w-[340px] sm:max-w-[266px] md:max-w-[290px] lg:max-w-[270px] xl:max-w-[222px] rounded-2xl border-2 border-[#ff4d2d] bg-white shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col">
@@ -63,7 +85,11 @@ function ItemCard({ data }) {
           >
             <FaPlus size={12} />
           </button>
-          <button className="px-2">
+          <button
+            disabled={!quantity}
+            className={`${isInCart ? 'bg-gray-800 hover:bg-gray-900' : 'bg-[#ff4d2d] hover:bg-[#e04325]'} text-white px-3 py-2 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed`}
+            onClick={handleAddToCart}
+          >
             <FaShoppingCart size={16} />
           </button>
         </div>
