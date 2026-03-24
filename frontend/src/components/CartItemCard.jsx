@@ -1,7 +1,11 @@
 import { FaMinus, FaPlus } from 'react-icons/fa';
 import { RiDeleteBin6Line } from 'react-icons/ri';
+import { useDispatch } from 'react-redux';
+import { increaseCartItem, decreaseCartItem, removeFromCart } from '../redux/cartSlice';
 
 function CartItemCard({ item }) {
+  const dispatch = useDispatch();
+
   return (
     <div className="flex items-center justify-between bg-white p-4 rounded-xl shadow border">
       {/* Item Info */}
@@ -22,14 +26,23 @@ function CartItemCard({ item }) {
 
       {/* Quantity Controls */}
       <div className="flex items-center gap-3">
-        <button className="p-2 cursor-pointer bg-gray-100 rounded-full hover:bg-gray-200">
+        <button
+          onClick={() => dispatch(decreaseCartItem(item._id))}
+          className="p-2 cursor-pointer bg-gray-100 rounded-full hover:bg-gray-300"
+        >
           <FaMinus size={12} />
         </button>
         <span className="font-medium">{item.quantity}</span>
-        <button className="p-2 cursor-pointer bg-gray-100 rounded-full hover:bg-gray-200">
+        <button
+          onClick={() => dispatch(increaseCartItem(item._id))}
+          className="p-2 cursor-pointer bg-gray-100 rounded-full hover:bg-gray-300"
+        >
           <FaPlus size={12} />
         </button>
-        <button className="p-2 bg-red-100 text-red-600 rounded-full hover:bg-red-200 transition cursor-pointer">
+        <button
+          onClick={() => dispatch(removeFromCart(item._id))}
+          className="p-2 bg-red-100 text-red-600 rounded-full hover:bg-red-200 transition cursor-pointer"
+        >
           <RiDeleteBin6Line size={18} />
         </button>
       </div>

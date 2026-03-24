@@ -6,8 +6,7 @@ import CartItemCard from '../components/CartItemCard';
 
 function CartPage() {
   const navigate = useNavigate();
-  const { totalAmount } = useSelector((state) => state.user);
-  const { cartItems } = useSelector((state) => state.cart);
+  const { cartItems, totalAmount } = useSelector((state) => state.cart);
 
   const totalQuantity = cartItems?.reduce((sum, item) => sum + item.quantity, 0);
 
