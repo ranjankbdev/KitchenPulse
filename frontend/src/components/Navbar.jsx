@@ -8,6 +8,7 @@ import { IoClose } from 'react-icons/io5';
 import { logoutUserAPI } from '../services/authService';
 import { setUserData } from '../redux/userSlice';
 import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import showToast from '../utils/toastHelper';
 
 function Tooltip({ text }) {
@@ -26,6 +27,7 @@ function Tooltip({ text }) {
 
 function Navbar() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const { userData, currentCity } = useSelector((state) => state.user);
   const { cartItems } = useSelector((state) => state.cart);
@@ -152,6 +154,7 @@ function Navbar() {
               {/* Cart */}
               <div className="relative group">
                 <button
+                  onClick={() => navigate('/cart')}
                   aria-label="Open cart"
                   type="button"
                   className="flex items-center justify-center p-2 rounded-lg hover:bg-[#ff4d2d]/10 cursor-pointer transition-colors"

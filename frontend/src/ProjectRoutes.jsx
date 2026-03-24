@@ -6,6 +6,7 @@ import ForgotPassword from './pages/auth/ForgotPassword.jsx';
 import HomePage from './pages/HomePage.jsx';
 import ManageShop from './pages/ManageShop.jsx';
 import ManageItem from './pages/ManageItem.jsx';
+import CartPage from './pages/CartPage.jsx';
 
 function ProjectRoutes() {
   const { userData } = useSelector((state) => state.user);
@@ -29,6 +30,10 @@ function ProjectRoutes() {
     {
       path: '/',
       element: userData ? <HomePage /> : <Navigate to="/signin" replace />,
+    },
+    {
+      path: '/cart',
+      element: userData ? <CartPage /> : <Navigate to="/sign-in" replace />,
     },
     {
       path: '/vendor/shop/new',
