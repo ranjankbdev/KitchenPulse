@@ -2,6 +2,7 @@ import { IoIosArrowRoundBack } from 'react-icons/io';
 import { FiShoppingCart } from 'react-icons/fi';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import CartItemCard from '../components/CartItemCard';
 
 function CartPage() {
   const navigate = useNavigate();
@@ -47,6 +48,11 @@ function CartPage() {
           </div>
         ) : (
           <>
+            <div className="flex-1 overflow-y-auto space-y-4">
+              {cartItems?.map((item) => (
+                <CartItemCard item={item} key={item._id} />
+              ))}
+            </div>
             {/* Fixed Bottom */}
             <div className="mt-6 bg-white p-4 rounded-xl shadow flex justify-between items-center border">
               <h1 className="text-lg font-semibold">Total Amount</h1>

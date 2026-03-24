@@ -37,7 +37,7 @@ function Navbar() {
 
   const dropdownRef = useRef(null);
 
-  const totalQuantity = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+  const totalQuantity = cartItems?.reduce((sum, item) => sum + item.quantity, 0);
 
   const handleLogout = async () => {
     try {
