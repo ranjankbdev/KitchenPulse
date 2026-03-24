@@ -7,6 +7,7 @@ import HomePage from './pages/HomePage.jsx';
 import ManageShop from './pages/ManageShop.jsx';
 import ManageItem from './pages/ManageItem.jsx';
 import CartPage from './pages/CartPage.jsx';
+import CheckoutPage from './pages/CheckoutPage.jsx';
 
 function ProjectRoutes() {
   const { userData } = useSelector((state) => state.user);
@@ -34,6 +35,10 @@ function ProjectRoutes() {
     {
       path: '/cart',
       element: userData ? <CartPage /> : <Navigate to="/sign-in" replace />,
+    },
+    {
+      path: '/checkout',
+      element: userData ? <CheckoutPage /> : <Navigate to="/sign-in" replace />,
     },
     {
       path: '/vendor/shop/new',

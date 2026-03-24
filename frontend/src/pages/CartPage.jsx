@@ -17,7 +17,7 @@ function CartPage() {
         <div className="flex items-center gap-2 mb-6">
           <button
             className="z-[10] hover:bg-[#ff4d2d]/20 rounded cursor-pointer"
-            onClick={() => navigate(-1)}
+            onClick={() => navigate('/')}
           >
             <IoIosArrowRoundBack size={35} className="text-[#ff4d2d]" />
           </button>
