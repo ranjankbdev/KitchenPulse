@@ -23,4 +23,17 @@ const getLocationFromCoordinates = async (lat, lon) => {
   };
 };
 
-export { getLocationFromCoordinates };
+const getCoordinatesFromLocation = async (address) => {
+  const { data } = await axios.get(
+    `https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(address)}&apiKey=${apiKey}`
+  );
+
+  if (!data.features || data.features.length === 0) {
+    return null;
+  }
+
+  const { lat, lon } = data.features[0].properties;
+  return { lat, lon };
+};
+
+export { getLocationFromCoordinates, getCoordinatesFromLocation };

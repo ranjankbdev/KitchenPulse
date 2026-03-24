@@ -6,9 +6,84 @@ import { MdDeliveryDining } from 'react-icons/md';
 import { FaCreditCard } from 'react-icons/fa';
 import { FaMobileScreenButton } from 'react-icons/fa6';
 import { useNavigate } from 'react-router-dom';
+import { setLocation } from '../redux/locationSlice';
+import { MapContainer, Marker, TileLayer, useMap } from 'react-leaflet';
+import { useDispatch, useSelector } from 'react-redux';
+import { useState, useEffect } from 'react';
+import { setAddress } from '../redux/locationSlice';
+import {
+  getLocationFromCoordinates,
+  getCoordinatesFromLocation,
+} from '../services/locationService';
+import 'leaflet/dist/leaflet.css';
+
+// Re-centers the map whenever location changes
+function RecenterMap({ location }) {
+  const map = useMap();
+  useEffect(() => {
+    if (location.lat && location.lon) {
+      map.setView([location.lat, location.lon], 16, { animate: true });
+    }
+  }, [location, map]);
+  return null;
+}
 
 function CheckoutPage() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const { location, address } = useSelector((state) => state.location);
+  const [addressInput, setAddressInput] = useState('');
+
+  // Updates location and address when marker is dragged
+  const handleMarkerDragEnd = (e) => {
+    const { lat, lng } = e.target._latlng;
+    dispatch(setLocation({ latitude: lat, longitude: lng }));
+    updateAddressFromCoordinates(lat, lng);
+  };
+
+  // Fetches user's current geolocation
+  const fetchCurrentLocation = async () => {
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const latitude = position.coords.latitude;
+        const longitude = position.coords.longitude;
+        dispatch(setLocation({ latitude, longitude }));
+        updateAddressFromCoordinates(latitude, longitude);
+      },
+      (error) => console.warn('Geolocation error:', error)
+    );
+  };
+
+  // Converts coordinates to address
+  const updateAddressFromCoordinates = async (lat, lng) => {
+    try {
+      const locationData = await getLocationFromCoordinates(lat, lng);
+      if (!locationData) return;
+      dispatch(setAddress(locationData.address));
+      setAddressInput(locationData.address);
+    } catch (error) {
+      console.log('GeoLocation error:', error);
+    }
+  };
+
+  // Converts address text to coordinates
+  const handleSearchCoordinates = async () => {
+    if (!addressInput) return;
+    try {
+      const coords = await getCoordinatesFromLocation(addressInput);
+      if (!coords) return;
+      const { lat, lon } = coords;
+      dispatch(setLocation({ latitude: lat, longitude: lon }));
+    } catch (error) {
+      console.log('Forward geocoding error:', error);
+    }
+  };
+
+  // Syncs Redux address
+  useEffect(() => {
+    if (address) setAddressInput(address);
+  }, [address]);
 
   return (
     <div className="bg-[#fff9f6] w-full min-h-screen flex justify-center items-center p-4 sm:p-6">
@@ -33,12 +108,15 @@ function CheckoutPage() {
 
           <div className="flex gap-2">
             <input
+              value={addressInput}
+              onChange={(e) => setAddressInput(e.target.value)}
               placeholder="Enter your delivery address"
               type="text"
               className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#ff4d2d]"
             />
 
             <button
+              onClick={handleSearchCoordinates}
               type="button"
               className="flex items-center gap-1 bg-[#ff4d2d] px-3 py-2 rounded-lg text-white text-sm hover:bg-[#e64526] transition cursor-pointer"
             >
@@ -47,6 +125,7 @@ function CheckoutPage() {
             </button>
 
             <button
+              onClick={fetchCurrentLocation}
               type="button"
               className="flex items-center gap-1 bg-blue-400 hover:bg-blue-500 px-3 py-2 rounded-lg text-white text-sm cursor-pointer"
             >
@@ -56,9 +135,30 @@ function CheckoutPage() {
           </div>
 
           {/* Map Placeholder */}
-          <div className="rounded-xl border h-57 flex items-center justify-center text-gray-400 text-sm">
-            Map
-          </div>
+          {location.lat && location.lon ? (
+            <div className="rounded-xl overflow-hidden border h-57">
+              <MapContainer
+                center={[location.lat, location.lon]}
+                zoom={21}
+                className="h-full w-full"
+              >
+                <TileLayer
+                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                />
+                <RecenterMap location={location} />
+                <Marker
+                  position={[location.lat, location.lon]}
+                  draggable
+                  eventHandlers={{ dragend: handleMarkerDragEnd }}
+                />
+              </MapContainer>
+            </div>
+          ) : (
+            <div className="rounded-xl border h-57 flex items-center justify-center text-gray-400 text-sm">
+              Use current location or search to show map
+            </div>
+          )}
         </section>
 
         {/* Payment Method */}
