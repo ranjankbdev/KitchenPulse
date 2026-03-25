@@ -1,5 +1,7 @@
 import { FaLocationDot } from 'react-icons/fa6';
 import { IoIosArrowRoundBack } from 'react-icons/io';
+import { FaLock } from 'react-icons/fa';
+import { MdOutlineShoppingCartCheckout } from 'react-icons/md';
 import { IoSearchOutline } from 'react-icons/io5';
 import { TbCurrentLocation } from 'react-icons/tb';
 import { MdDeliveryDining } from 'react-icons/md';
@@ -11,11 +13,11 @@ import { MapContainer, Marker, TileLayer, useMap } from 'react-leaflet';
 import { useDispatch, useSelector } from 'react-redux';
 import { useState, useEffect } from 'react';
 import { setAddress } from '../redux/locationSlice';
+import 'leaflet/dist/leaflet.css';
 import {
   getLocationFromCoordinates,
   getCoordinatesFromLocation,
 } from '../services/locationService';
-import 'leaflet/dist/leaflet.css';
 
 // Re-centers the map whenever location changes
 function RecenterMap({ location }) {
@@ -33,7 +35,13 @@ function CheckoutPage() {
   const dispatch = useDispatch();
 
   const { location, address } = useSelector((state) => state.location);
+  const { cartItems, totalAmount } = useSelector((state) => state.cart);
+  console.log(cartItems);
   const [addressInput, setAddressInput] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState('cod');
+  const deliveryFee = totalAmount > 500 ? 0 : 40;
+  const amountWithDeliveryFee = totalAmount + deliveryFee;
+  console.log(amountWithDeliveryFee);
 
   // Updates location and address when marker is dragged
   const handleMarkerDragEnd = (e) => {
@@ -167,7 +175,14 @@ function CheckoutPage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {/* COD */}
-            <div className="flex items-center gap-3 border rounded-xl p-4 cursor-pointer hover:border-[#ff4d2d] transition">
+            <div
+              className={`flex items-center gap-3 rounded-xl border p-4 text-left transition cursor-pointer ${
+                paymentMethod === 'cod'
+                  ? 'border-[#ff4d2d] bg-orange-50 shadow'
+                  : 'border-gray-200 hover:border-gray-300'
+              }`}
+              onClick={() => setPaymentMethod('cod')}
+            >
               <div className="bg-orange-100 p-2 rounded-full">
                 <MdDeliveryDining className="text-green-600 text-xl" size={22} />
               </div>
@@ -178,7 +193,14 @@ function CheckoutPage() {
             </div>
 
             {/* Online */}
-            <div className="flex items-center gap-3 border rounded-xl p-4 cursor-pointer hover:border-[#ff4d2d] transition">
+            <div
+              className={`flex items-center gap-3 rounded-xl border p-4 text-left transition cursor-pointer ${
+                paymentMethod === 'online'
+                  ? 'border-[#ff4d2d] bg-orange-50 shadow'
+                  : 'border-gray-200 hover:border-gray-300'
+              }`}
+              onClick={() => setPaymentMethod('online')}
+            >
               <div className="flex gap-1">
                 <div className="bg-gray-100 p-2 rounded-full">
                   <FaMobileScreenButton className="text-purple-700 text-lg" size={18} />
@@ -200,34 +222,58 @@ function CheckoutPage() {
           <h2 className="font-semibold text-lg text-gray-800 mb-3">Order Summary</h2>
 
           <div className="rounded-xl border bg-gray-50 p-4 space-y-2 text-sm">
-            <div className="flex justify-between text-gray-700">
-              <span>Pizza x 2</span>
-              <span>₹200</span>
-            </div>
+            {cartItems?.map((item) => (
+              <div key={item._id} className="flex justify-between text-sm text-gray-700">
+                <span>
+                  {item.name} x {item.quantity}
+                </span>
+                <span>₹{item.price * item.quantity}</span>
+              </div>
+            ))}
 
-            <hr />
+            <hr className="border-gray-300 my-2" />
 
             <div className="flex justify-between text-gray-800 font-medium">
               <span>Subtotal</span>
-              <span>₹200</span>
+              <span>{totalAmount}</span>
             </div>
 
             <div className="flex justify-between text-gray-700">
               <span>Delivery Fee</span>
-              <span className="text-green-600 font-medium">Free</span>
+              <span className="text-green-600 font-medium">
+                {deliveryFee === 0 ? 'Free' : `₹${deliveryFee}`}
+              </span>
             </div>
 
             <div className="flex justify-between text-lg font-bold text-[#ff4d2d] pt-2">
               <span>Total</span>
-              <span>₹200</span>
+              <span>{amountWithDeliveryFee}</span>
             </div>
           </div>
         </section>
 
         {/* CTA */}
-        <button className="w-full bg-[#ff4d2d] hover:bg-[#e64526] text-white py-3 rounded-xl font-semibold transition cursor-pointer">
-          Place Order • ₹200
+        <button
+          type="button"
+          className="w-full bg-[#ff4d2d] hover:bg-[#e64526] text-white py-3 rounded-xl font-semibold transition cursor-pointer flex items-center justify-center gap-2"
+        >
+          {paymentMethod === 'cod' ? (
+            <>
+              <MdOutlineShoppingCartCheckout />
+              <span>Confirm Order • ₹{amountWithDeliveryFee}</span>
+            </>
+          ) : (
+            <>
+              <FaLock />
+              <span>Proceed to Payment • ₹{amountWithDeliveryFee}</span>
+            </>
+          )}
         </button>
+        <p className="text-xs text-gray-500 text-center mt-1">
+          {paymentMethod === 'cod'
+            ? 'Pay when your order is delivered'
+            : 'Secure online payment powered by trusted gateways'}
+        </p>
       </div>
     </div>
   );
