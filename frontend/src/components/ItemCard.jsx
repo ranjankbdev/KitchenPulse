@@ -20,8 +20,8 @@ function ItemCard({ data }) {
   const quantity = cartItem?.quantity || 0;
 
   return (
-    <div className="w-full max-w-[340px] sm:max-w-[266px] md:max-w-[290px] lg:max-w-[270px] xl:max-w-[222px] rounded-2xl border-2 border-[#ff4d2d] bg-white shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col">
-      <div className="relative w-full h-[150px] sm:h-[170px] md:h-[190px] xl:h-[150px] flex justify-center items-center bg-white">
+    <div className="w-full rounded-2xl max-w-85 sm:max-w-66 md:max-w-72 lg:max-w-67 xl:max-w-55 border-2 border-[#ff4d2d] bg-white shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col">
+      <div className="relative w-full h-38 sm:h-42 md:h-47 xl:h-37 flex justify-center items-center bg-white">
         <div className="absolute top-3 right-3 bg-white rounded-full p-1 shadow">
           {data.foodType === 'veg' ? (
             <FaLeaf className="text-green-600 text-lg" />

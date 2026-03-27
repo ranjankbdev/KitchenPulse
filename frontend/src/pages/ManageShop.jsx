@@ -86,29 +86,31 @@ function ManageShop({ mode }) {
   };
 
   return (
-    <div className="flex justify-center flex-col items-center py-6 bg-gradient-to-br from-orange-50 relative to-white min-h-screen px-2">
-      <div
-        className="absolute top-[35px] left-[20px] z-[10] mb-[10px] hover:bg-[#ff4d2d]/20 rounded cursor-pointer"
-        onClick={() => navigate('/')}
-      >
-        <IoIosArrowRoundBack size={35} className="text-[#ff4d2d]" />
-      </div>
-
+    <div className="flex justify-center flex-col items-center p-6 relative min-h-screen bg-orange-50">
       <div className="max-w-lg w-full bg-white shadow-xl rounded-2xl p-8 border border-orange-100">
-        <div className="flex flex-col items-center mb-6">
-          <div className="bg-orange-100 p-4 rounded-full mb-2">
-            <BsShop className="text-[#ff4d2d] w-10 h-10" />
+        <div className="relative flex items-center justify-center mb-6 w-full">
+          <span
+            onClick={() => navigate('/')}
+            className="absolute left-0 top-0 hover:bg-[#ff4d2d]/20 rounded cursor-pointer"
+          >
+            <IoIosArrowRoundBack size={35} className="text-[#ff4d2d]" />
+          </span>
+
+          <div className="flex flex-col items-center">
+            <div className="bg-orange-100 p-4 rounded-full mb-4">
+              <BsShop className="text-[#ff4d2d] w-10 h-10" />
+            </div>
+
+            <div className="text-[22px] font-bold text-gray-900">
+              {mode === 'edit' ? 'Edit Restaurant' : 'Create Restaurant'}
+            </div>
+
+            <p className="text-sm text-gray-500 text-center">
+              {mode === 'edit'
+                ? 'Keep your restaurant info up to date.'
+                : 'Showcase your restaurant to attract customers.'}
+            </p>
           </div>
-
-          <h2 className="text-[22px] font-bold text-gray-900">
-            {mode === 'edit' ? 'Edit Restaurant' : 'Create Restaurant'}
-          </h2>
-
-          <p className="text-sm text-gray-500 text-center">
-            {mode === 'edit'
-              ? 'Keep your restaurant info up to date.'
-              : 'Showcase your restaurant to attract customers.'}
-          </p>
         </div>
         <form className="space-y-3" onSubmit={handleSubmit}>
           <div>

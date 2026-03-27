@@ -12,11 +12,11 @@ function CartPage() {
 
   return (
     <div className="h-screen bg-[#fff9f6] flex justify-center px-6 overflow-hidden">
-      <div className="w-full max-w-[800px] flex flex-col h-screen py-6">
+      <div className="w-full max-w-170 flex flex-col h-screen py-6">
         {/* Fixed Top */}
         <div className="flex items-center gap-2 mb-6">
           <button
-            className="z-[10] hover:bg-[#ff4d2d]/20 rounded cursor-pointer"
+            className="z-10 hover:bg-[#ff4d2d]/20 rounded cursor-pointer"
             onClick={() => navigate('/')}
           >
             <IoIosArrowRoundBack size={35} className="text-[#ff4d2d]" />

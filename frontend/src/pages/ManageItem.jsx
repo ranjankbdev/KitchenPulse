@@ -99,17 +99,17 @@ function ManageItem({ mode }) {
   }
 
   return (
-    <div className="flex justify-center flex-col items-center p-6 bg-gradient-to-br from-orange-50 relative to-white min-h-screen">
+    <div className="flex justify-center flex-col items-center p-6 relative min-h-screen bg-orange-50">
       <div className="max-w-lg w-full bg-white shadow-xl rounded-2xl p-8 border border-orange-100">
-        <div className="flex items-start gap-3 mb-6 w-full">
+        <div className="relative flex items-center justify-center mb-6 w-full">
           <span
             onClick={() => navigate('/')}
-            className="hover:bg-[#ff4d2d]/20 rounded cursor-pointer mt-1"
+            className="absolute left-0 top-0 hover:bg-[#ff4d2d]/20 rounded cursor-pointer"
           >
             <IoIosArrowRoundBack size={35} className="text-[#ff4d2d]" />
           </span>
 
-          <div className="flex flex-col items-center w-full">
+          <div className="flex flex-col items-center">
             <div className="bg-orange-100 p-4 rounded-full mb-4">
               <MdRestaurantMenu className="text-[#ff4d2d] w-16 h-16" />
             </div>
@@ -118,7 +118,7 @@ function ManageItem({ mode }) {
               {mode === 'edit' ? 'Edit Menu Item' : 'Add New Menu Item'}
             </div>
 
-            <p className="text-sm text-gray-500 text-center max-w-[300px]">
+            <p className="text-sm text-gray-500 text-center max-w-200">
               {mode === 'edit'
                 ? 'Update the details of this food item to keep your menu up-to-date.'
                 : 'Add a new dish to your restaurant menu so customers can explore it.'}

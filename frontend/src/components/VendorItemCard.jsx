@@ -22,7 +22,7 @@ function VendorItemCard({ data }) {
 
   return (
     <div className="flex bg-white rounded-xl shadow-md overflow-hidden border border-gray-200 w-full p-3 gap-4 items-center hover:shadow-lg transition">
-      <div className="w-28 h-28 flex-shrink-0">
+      <div className="w-28 h-28 shrink-0">
         <img
           src={data.imageUrl}
           alt={data.name}

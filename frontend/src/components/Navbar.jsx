@@ -18,7 +18,7 @@ function Tooltip({ text }) {
       whitespace-nowrap bg-gray-800 text-white text-xs
       px-2 py-1 rounded opacity-0
       group-hover:opacity-100 transition-all duration-200
-      pointer-events-none z-[9999]"
+      pointer-events-none z-50"
     >
       {text}
     </span>
@@ -72,7 +72,7 @@ function Navbar() {
         className={`w-full bg-white flex h-16 items-center
           ${isVendor ? 'lg:justify-around justify-between' : ''}
           ${isUser ? 'justify-between xl:justify-evenly xl:px-60' : ''}
-          gap-2 fixed top-0 z-[9999] px-3 shadow-sm border-b border-gray-100`}
+          gap-2 fixed top-0 z-50 px-3 shadow-sm border-b border-gray-100`}
       >
         {/* Left — Logo */}
         <div className="flex gap-1.5 items-center shrink-0">
@@ -124,7 +124,7 @@ function Navbar() {
               >
                 <TbReceipt2 size={16} />
                 Shop Orders
-                <span className="absolute top-[-5px] right-11 w-4 h-4 bg-[#ff4d2d] text-white text-[10px] font-bold rounded-full flex items-center justify-center leading-none pointer-events-none">
+                <span className="absolute -top-1.5 right-11 w-4 h-4 bg-[#ff4d2d] text-white text-[10px] font-bold rounded-full flex items-center justify-center leading-none pointer-events-none">
                   1
                 </span>
               </button>
@@ -132,7 +132,7 @@ function Navbar() {
                 <button className="flex items-center justify-center bg-[#ff4d2d]/10 text-[#ff4d2d] p-2 rounded-lg hover:bg-[#ff4d2d]/20 cursor-pointer transition-colors">
                   <TbReceipt2 size={18} />
                 </button>
-                <span className="absolute top-[-7px] right-[-5px] w-4 h-4 bg-[#ff4d2d] text-white text-[10px] font-bold rounded-full flex items-center justify-center leading-none pointer-events-none">
+                <span className="absolute -top-1.5 -right-1.25 w-4 h-4 bg-[#ff4d2d] text-white text-[10px] font-bold rounded-full flex items-center justify-center leading-none pointer-events-none">
                   1
                 </span>
                 <Tooltip text="Shop Orders" />
@@ -194,7 +194,7 @@ function Navbar() {
             </div>
 
             {showDropdown && (
-              <div className="absolute top-11 right-0 w-44 bg-white shadow-xl border border-gray-100 rounded-xl py-1.5 flex flex-col items-center gap-1 z-[9999]">
+              <div className="absolute top-11 right-0 w-44 bg-white shadow-xl border border-gray-100 rounded-xl py-1.5 flex flex-col items-center gap-1 z-10">
                 <button
                   type="button"
                   onClick={() => setShowDropdown(false)}
@@ -227,7 +227,7 @@ function Navbar() {
       {/* Mobile search bar */}
       {showSearch && isUser && (
         <>
-          <div className="lg:hidden fixed top-14 md:top-16 left-0 right-0 mx-3 bg-white border border-gray-200 rounded-xl shadow-lg p-2.5 flex items-center gap-2 z-[9998] mt-3">
+          <div className="lg:hidden fixed top-14 md:top-16 left-0 right-0 mx-3 bg-white border border-gray-200 rounded-xl shadow-lg p-2.5 flex items-center gap-2 z-50 mt-3">
             <div className="flex items-center gap-1.5 w-[47%] min-w-0">
               <FaLocationDot size={15} className="text-[#ff4d2d] shrink-0" />
               <span className="text-sm font-medium text-gray-700">{currentCity}</span>

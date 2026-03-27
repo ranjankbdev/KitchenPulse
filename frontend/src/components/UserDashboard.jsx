@@ -47,7 +47,7 @@ function UserDashboard() {
       <Navbar />
 
       {/* category */}
-      <div className="px-4 sm:px-10 md:px-20 xl:px-70 pt-[30px]">
+      <div className="px-4 sm:px-10 md:px-20 xl:px-70 pt-8">
         <h1 className="flex items-start gap-2 text-gray-800 text-2xl sm:text-3xl ">
           <FaUtensils className="text-[#ff4d2d]" />
           Explore by Category
@@ -58,7 +58,7 @@ function UserDashboard() {
               key={cate.category}
               name={cate.category}
               image={cate.image}
-              className="w-[120px] h-[130px] md:w-[140px] md:h-[150px] cursor-pointer"
+              className="w-37 h-37 md:w-40 md:h-40 cursor-pointer"
             />
           ))}
         </HorizontalScroll>
@@ -75,7 +75,7 @@ function UserDashboard() {
                 key={shop._id}
                 name={shop.name}
                 image={shop.imageUrl}
-                className="w-[140px] h-[150px] md:w-[160px] md:h-[170px] cursor-pointer"
+                className="max-w-67 sm:max-w-57 md:max-w-63 lg:max-w-60 xl:max-w-52 cursor-pointer"
               />
             ))
           ) : (
@@ -91,7 +91,7 @@ function UserDashboard() {
           <FaStar className="text-[#ff4d2d]" />
           Recommended for You
         </h1>
-        <div className="w-full h-auto flex flex-wrap gap-[20px] my-4">
+        <div className="w-full h-auto flex flex-wrap gap-5 my-4 justify-center">
           {updatedItemsList?.length > 0 ? (
             updatedItemsList.map((item) => <ItemCard key={item._id} data={item} />)
           ) : (

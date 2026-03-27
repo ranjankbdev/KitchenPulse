@@ -95,7 +95,7 @@ function CheckoutPage() {
 
   return (
     <div className="bg-[#fff9f6] w-full min-h-screen flex justify-center items-center p-4 sm:p-6">
-      <div className="p-5 sm:p-6 rounded-2xl w-full max-w-[800px] shadow-xl bg-white space-y-6">
+      <div className="p-5 sm:p-6 rounded-2xl w-full max-w-200 shadow-xl bg-white space-y-6">
         {/* Header */}
         <div className="flex items-center gap-3">
           <div
