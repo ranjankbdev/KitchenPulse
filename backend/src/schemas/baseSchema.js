@@ -113,6 +113,40 @@ const mongoIdField = Joi.string()
     'any.required': 'ID is required',
   });
 
+const cartItemField = Joi.object({
+  _id: mongoIdField.required(),
+  shop: mongoIdField.required(),
+  quantity: Joi.number().min(1).required().messages({
+    'number.min': 'Quantity must be at least 1',
+    'any.required': 'Quantity is required',
+  }),
+});
+
+const deliveryAddressField = Joi.object({
+  text: addressField.required(),
+  latitude: Joi.number().required().messages({
+    'any.required': 'Latitude is required',
+  }),
+  longitude: Joi.number().required().messages({
+    'any.required': 'Longitude is required',
+  }),
+}).messages({
+  'any.required': 'Delivery address is required',
+  'object.base': 'Delivery address must be an object',
+});
+
+const paymentMethodField = Joi.string().valid('cod', 'online').messages({
+  'any.only': 'Payment method must be cod or online',
+  'any.required': 'Payment method is required',
+});
+
+const orderStatusField = Joi.string()
+  .valid('pending', 'preparing', 'out_for_delivery', 'delivered')
+  .messages({
+    'any.only': 'Invalid order status',
+    'any.required': 'Status is required',
+  });
+
 export {
   fullNameField,
   emailField,
@@ -130,4 +164,8 @@ export {
   priceField,
   foodTypeField,
   mongoIdField,
+  cartItemField,
+  deliveryAddressField,
+  paymentMethodField,
+  orderStatusField,
 };

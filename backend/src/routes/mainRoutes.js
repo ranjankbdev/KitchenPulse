@@ -3,6 +3,7 @@ import { authRouter } from './authRoutes.js';
 import { userRouter } from './userRoutes.js';
 import { shopRouter } from './shopRoutes.js';
 import { itemRouter } from './itemRoutes.js';
+import { orderRouter } from './orderRoutes.js';
 import { cloudinaryRouter } from './cloudinaryRoutes.js';
 
 const mainRouter = express.Router();
@@ -18,6 +19,9 @@ mainRouter.use('/shop', shopRouter);
 
 // item routes
 mainRouter.use('/item', itemRouter);
+
+// order routes
+mainRouter.use('/order', orderRouter);
 
 // cloudnary routes
 mainRouter.use('/cloudinary', cloudinaryRouter);
