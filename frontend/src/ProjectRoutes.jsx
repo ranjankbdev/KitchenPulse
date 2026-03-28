@@ -9,6 +9,7 @@ import ManageItem from './pages/ManageItem.jsx';
 import CartPage from './pages/CartPage.jsx';
 import CheckoutPage from './pages/CheckoutPage.jsx';
 import OrderConfirmation from './pages/OrderConfirmation.jsx';
+import OrdersPage from './pages/OrdersPage.jsx';
 
 function ProjectRoutes() {
   const { userData } = useSelector((state) => state.user);
@@ -35,15 +36,19 @@ function ProjectRoutes() {
     },
     {
       path: '/cart',
-      element: userData ? <CartPage /> : <Navigate to="/sign-in" replace />,
+      element: userData ? <CartPage /> : <Navigate to="/signin" replace />,
     },
     {
       path: '/checkout',
-      element: userData ? <CheckoutPage /> : <Navigate to="/sign-in" replace />,
+      element: userData ? <CheckoutPage /> : <Navigate to="/signin" replace />,
     },
     {
       path: '/order/confirmation',
       element: userData ? <OrderConfirmation mode="edit" /> : <Navigate to="/signin" replace />,
+    },
+    {
+      path: '/orders',
+      element: userData ? <OrdersPage mode="edit" /> : <Navigate to="/signin" replace />,
     },
     {
       path: '/vendor/shop/new',
