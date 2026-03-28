@@ -1,6 +1,7 @@
 import { FaLocationDot } from 'react-icons/fa6';
 import { IoIosArrowRoundBack } from 'react-icons/io';
 import { FaLock } from 'react-icons/fa';
+import { ClipLoader } from 'react-spinners';
 import { MdOutlineShoppingCartCheckout } from 'react-icons/md';
 import { IoSearchOutline } from 'react-icons/io5';
 import { TbCurrentLocation } from 'react-icons/tb';
@@ -13,11 +14,14 @@ import { MapContainer, Marker, TileLayer, useMap } from 'react-leaflet';
 import { useDispatch, useSelector } from 'react-redux';
 import { useState, useEffect } from 'react';
 import { setAddress } from '../redux/locationSlice';
-import 'leaflet/dist/leaflet.css';
+import { createOrderAPI } from '../services/orderService';
+import { addMyOrder } from '../redux/orderSlice.js';
 import {
   getLocationFromCoordinates,
   getCoordinatesFromLocation,
 } from '../services/locationService';
+import 'leaflet/dist/leaflet.css';
+import showToast from '../utils/toastHelper.js';
 
 // Re-centers the map whenever location changes
 function RecenterMap({ location }) {
@@ -36,12 +40,12 @@ function CheckoutPage() {
 
   const { location, address } = useSelector((state) => state.location);
   const { cartItems, totalAmount } = useSelector((state) => state.cart);
-  console.log(cartItems);
+
   const [addressInput, setAddressInput] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('cod');
+  const [loading, setLoading] = useState(false);
   const deliveryFee = totalAmount > 500 ? 0 : 40;
   const amountWithDeliveryFee = totalAmount + deliveryFee;
-  console.log(amountWithDeliveryFee);
 
   // Updates location and address when marker is dragged
   const handleMarkerDragEnd = (e) => {
@@ -85,6 +89,28 @@ function CheckoutPage() {
       dispatch(setLocation({ latitude: lat, longitude: lon }));
     } catch (error) {
       console.log('Forward geocoding error:', error);
+    }
+  };
+
+  const handleCreateOrder = async () => {
+    try {
+      setLoading(true);
+      const orderData = {
+        cartItems,
+        deliveryAddress: {
+          text: addressInput,
+          latitude: location.lat,
+          longitude: location.lon,
+        },
+        paymentMethod,
+      };
+      const result = await createOrderAPI(orderData);
+      dispatch(addMyOrder(result));
+      showToast('Order placed successfully', 'success');
+    } catch (error) {
+      showToast(error, 'error');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -254,10 +280,14 @@ function CheckoutPage() {
 
         {/* CTA */}
         <button
+          disabled={loading}
+          onClick={handleCreateOrder}
           type="button"
           className="w-full bg-[#ff4d2d] hover:bg-[#e64526] text-white py-3 rounded-xl font-semibold transition cursor-pointer flex items-center justify-center gap-2"
         >
-          {paymentMethod === 'cod' ? (
+          {loading ? (
+            <ClipLoader size={20} color="white" />
+          ) : paymentMethod === 'cod' ? (
             <>
               <MdOutlineShoppingCartCheckout />
               <span>Confirm Order • ₹{amountWithDeliveryFee}</span>
