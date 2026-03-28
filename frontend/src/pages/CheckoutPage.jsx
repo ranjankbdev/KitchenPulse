@@ -107,6 +107,7 @@ function CheckoutPage() {
       const result = await createOrderAPI(orderData);
       dispatch(addMyOrder(result));
       showToast('Order placed successfully', 'success');
+      navigate('/order/confirmation');
     } catch (error) {
       showToast(error, 'error');
     } finally {

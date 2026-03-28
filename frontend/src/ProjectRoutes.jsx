@@ -8,6 +8,7 @@ import ManageShop from './pages/ManageShop.jsx';
 import ManageItem from './pages/ManageItem.jsx';
 import CartPage from './pages/CartPage.jsx';
 import CheckoutPage from './pages/CheckoutPage.jsx';
+import OrderConfirmation from './pages/OrderConfirmation.jsx';
 
 function ProjectRoutes() {
   const { userData } = useSelector((state) => state.user);
@@ -39,6 +40,10 @@ function ProjectRoutes() {
     {
       path: '/checkout',
       element: userData ? <CheckoutPage /> : <Navigate to="/sign-in" replace />,
+    },
+    {
+      path: '/order/confirmation',
+      element: userData ? <OrderConfirmation mode="edit" /> : <Navigate to="/signin" replace />,
     },
     {
       path: '/vendor/shop/new',
