@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { IoReceiptOutline, IoTimeOutline } from 'react-icons/io5';
+import { IoLocationOutline } from 'react-icons/io5';
 
 function CustomerOrderCard({ data }) {
   console.log(data);
@@ -31,7 +32,7 @@ function CustomerOrderCard({ data }) {
           </div>
         </div>
 
-        <div className="text-left sm:text-right space-y-1 mt-2">
+        <div className="text-left sm:text-right space-y-1 mt-4 sm:mt-0">
           <p className="text-sm">
             Payment:{' '}
             <span
@@ -48,7 +49,10 @@ function CustomerOrderCard({ data }) {
       </div>
 
       {/* Delivery Address */}
-      <p className="text-sm text-gray-600">📍 {data.deliveryAddress?.text}</p>
+      <div className="flex items-start gap-1 text-sm font-medium text-gray-700">
+        <IoLocationOutline className="text-lg shrink-0" />
+        <p>{data?.deliveryAddress?.text}</p>
+      </div>
 
       {/* Shop Orders */}
       {data?.shopOrders?.map((shopOrder) => {
@@ -79,7 +83,7 @@ function CustomerOrderCard({ data }) {
             <div className="flex sm:flex-row flex-col sm:justify-between border-t pt-3">
               <p className="font-semibold text-gray-800">Subtotal: ₹{shopOrder.subtotal}</p>
 
-              <p className="text-sm mt-1 sm:mt-0">
+              <p className="text-sm mt-2 sm:mt-0">
                 Status:{' '}
                 <span
                   className={`font-medium capitalize ${
@@ -103,18 +107,16 @@ function CustomerOrderCard({ data }) {
       })}
 
       {/* Order Footer */}
-      <div className="flex justify-between items-center border-t pt-3">
+      <div className="flex flex-col sm:justify-between sm:flex-row sm:items-center border-t pt-3">
         <div>
           <p className="font-semibold text-gray-900">Total: ₹{data.totalAmount}</p>
-
-          {/* Delivery Charge */}
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-gray-700 my-1 sm:my-0">
             Delivery Charges: {data.deliveryCharge === 0 ? 'Free' : `₹${data.deliveryCharge}`}
           </p>
         </div>
 
         <button
-          className="bg-[#ff4d2d] hover:bg-[#e64526] text-white px-5 py-2.5 rounded-lg text-sm font-medium transition"
+          className="bg-[#ff4d2d] hover:bg-[#e64526] text-white px-5 py-2.5 rounded-lg text-sm font-medium transition mt-3 sm:mt-0"
           onClick={() => navigate(`/orders/${data._id}`)}
         >
           Track Order

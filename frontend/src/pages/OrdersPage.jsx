@@ -4,6 +4,7 @@ import { MdOutlineReceiptLong } from 'react-icons/md';
 import { MdRestaurantMenu } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
 import CustomerOrderCard from '../components/CustomerOrderCard';
+import VendorOrderCard from '../components/VendorOrderCard';
 
 function OrdersPage() {
   const navigate = useNavigate();
@@ -62,6 +63,7 @@ function OrdersPage() {
           <div className="space-y-5">
             {myOrders.map((order) => {
               if (isUser) return <CustomerOrderCard data={order} key={order._id} />;
+              if (isVendor) return <VendorOrderCard data={order} key={order._id} />;
               return null;
             })}
           </div>

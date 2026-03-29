@@ -106,7 +106,7 @@ const getOrders = async (req, res) => {
     const orders = await Order.find({ 'shopOrders.owner': req.user.id })
       .sort({ createdAt: -1 })
       .populate('shopOrders.shop', 'name')
-      .populate('user', 'fullName mobileNumber')
+      .populate('user', 'fullName mobileNumber email')
       .populate('shopOrders.shopOrderItems.item', 'name imageUrl price')
       .populate('shopOrders.assignedDeliveryPartner', 'fullName mobileNumber email');
 
@@ -121,7 +121,6 @@ const getOrders = async (req, res) => {
       deliveryAddress: order.deliveryAddress,
       isPaid: order.isPaid,
       deliveryCharge: order.deliveryCharge,
-      totalAmount: order.totalAmount,
     }));
 
     return res.status(StatusCodes.OK).json(filteredOrders);
