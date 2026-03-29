@@ -1,8 +1,70 @@
 import { MdPhone, MdEmail } from 'react-icons/md';
 import { FaUserCircle } from 'react-icons/fa';
 import { IoLocationOutline } from 'react-icons/io5';
+import { useDispatch } from 'react-redux';
+import { updateShopOrderStatusAPI } from '../services/orderService.js';
+import { updateOrderStatus } from '../redux/orderSlice.js';
+import showToast from '../utils/toastHelper.js';
+
+const statusConfig = {
+  pending: {
+    label: 'Confirm Order',
+    next: ['confirmed'],
+  },
+  confirmed: {
+    label: 'Start Preparing',
+    next: ['preparing'],
+  },
+  preparing: {
+    label: 'Ready for Pickup',
+    next: ['ready_for_pickup'],
+  },
+};
 
 function VendorOrderCard({ data }) {
+  const dispatch = useDispatch();
+  const handleUpdateStatus = async (status, shopId) => {
+    if (!status || !shopId) return;
+    try {
+      const result = await updateShopOrderStatusAPI(data._id, shopId, status);
+      dispatch(
+        updateOrderStatus({
+          orderId: data._id,
+          shopId,
+          status: result.status,
+        })
+      );
+      console.log(result);
+    } catch (error) {
+      showToast(error, 'error');
+    }
+  };
+
+  const renderStatusAction = (status, shopOrder) => {
+    const config = statusConfig[status];
+
+    if (status === 'delivered') {
+      return <span className="text-xs text-green-500 italic font-medium">Order Delivered</span>;
+    }
+
+    if (!config) {
+      return <span className="text-xs text-gray-400 italic">Awaiting delivery partner</span>;
+    }
+
+    return (
+      <select
+        key={shopOrder.status}
+        onChange={(e) =>
+          handleUpdateStatus(e.target.value, shopOrder?.shop?._id || shopOrder?.shop)
+        }
+        className="cursor-pointer rounded-lg border px-3 py-1.5 text-sm text-[#ff4d2d] w-50"
+      >
+        <option value="">Update</option>
+        <option value={config.next[0]}>{config.label}</option>
+      </select>
+    );
+  };
+
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 space-y-5">
       {/* Customer Info */}
@@ -74,16 +136,11 @@ function VendorOrderCard({ data }) {
               <div className="text-sm">
                 Status:{' '}
                 <span className="font-semibold capitalize text-orange-400">
-                  {shopOrder?.status ? shopOrder.status.replaceAll('_', ' ') : 'N/A'}
+                  {shopOrder?.status?.replaceAll('_', ' ')}
                 </span>
               </div>
 
-              <select className="cursor-pointer rounded-lg border px-3 py-1.5 text-sm text-[#ff4d2d] focus:outline-none w-50">
-                <option value="">Update</option>
-                <option value="pending">Pending</option>
-                <option value="preparing">Preparing</option>
-                <option value="out_for_delivery">Out for delivery</option>
-              </select>
+              {renderStatusAction(shopOrder?.status, shopOrder)}
             </div>
 
             {/* Total */}

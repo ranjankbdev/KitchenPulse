@@ -129,10 +129,18 @@ const getOrders = async (req, res) => {
 };
 
 const statusFlow = {
-  pending: 'preparing',
-  preparing: 'out_for_delivery',
+  pending: 'confirmed',
+  confirmed: 'preparing',
+  preparing: 'ready_for_pickup',
+  ready_for_pickup: 'out_for_delivery',
   out_for_delivery: 'delivered',
 };
+
+// statuses only vendor can update to
+const vendorAllowedStatuses = ['confirmed', 'preparing', 'ready_for_pickup'];
+
+// statuses only delivery partner can update to
+const deliveryPartnerAllowedStatuses = ['out_for_delivery', 'delivered'];
 
 const updateShopOrderStatus = async (req, res) => {
   const { orderId, shopId } = req.params;
@@ -144,21 +152,31 @@ const updateShopOrderStatus = async (req, res) => {
   const shopOrder = order.shopOrders.find((o) => o.shop.toString() === shopId);
   if (!shopOrder) throw new ExpressError(StatusCodes.NOT_FOUND, 'Shop order not found!');
 
-  // verify vendor owns this shop order
-  if (String(shopOrder.owner) !== String(req.user.id)) {
-    throw new ExpressError(StatusCodes.FORBIDDEN, 'You are not authorized to update this order!');
+  if (shopOrder.status === 'delivered') {
+    throw new ExpressError(StatusCodes.BAD_REQUEST, 'Order already delivered!');
   }
 
-  // verify status transition is valid
+  // role-based status permission check
+  if (req.user.role === 'vendor' && !vendorAllowedStatuses.includes(status)) {
+    throw new ExpressError(
+      StatusCodes.FORBIDDEN,
+      'Vendors can only confirm, prepare or mark ready for pickup!'
+    );
+  }
+
+  if (req.user.role === 'deliveryPartner' && !deliveryPartnerAllowedStatuses.includes(status)) {
+    throw new ExpressError(
+      StatusCodes.FORBIDDEN,
+      'Delivery partners can only mark out for delivery or delivered!'
+    );
+  }
+  // verify status transition is valid (no jumping, no going back)
   const allowedNext = statusFlow[shopOrder.status];
   if (status !== allowedNext) {
     throw new ExpressError(
       StatusCodes.BAD_REQUEST,
       `Cannot move from ${shopOrder.status} to ${status}!`
     );
-  }
-  if (shopOrder.status === 'delivered') {
-    throw new ExpressError(StatusCodes.BAD_REQUEST, 'order already delivered!');
   }
 
   shopOrder.status = status;

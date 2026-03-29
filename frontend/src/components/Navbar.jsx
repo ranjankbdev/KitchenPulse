@@ -162,7 +162,7 @@ function Navbar() {
                 >
                   <FiShoppingCart size={22} className="text-[#ff4d2d]" />
                 </button>
-                <span className="absolute top-0 right-0 w-4 h-4 bg-[#ff4d2d] text-white text-[10px] font-bold rounded-full flex items-center justify-center leading-none pointer-events-none">
+                <span className="absolute -top-1 right-0 w-4 h-4 bg-[#ff4d2d] text-white text-[10px] font-bold rounded-full flex items-center justify-center leading-none pointer-events-none">
                   {totalQuantity}
                 </span>
                 <Tooltip text="Cart" />

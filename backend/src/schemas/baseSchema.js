@@ -141,7 +141,7 @@ const paymentMethodField = Joi.string().valid('cod', 'online').messages({
 });
 
 const orderStatusField = Joi.string()
-  .valid('pending', 'preparing', 'out_for_delivery', 'delivered')
+  .valid('pending', 'confirmed', 'preparing', 'ready_for_pickup', 'out_for_delivery', 'delivered')
   .messages({
     'any.only': 'Invalid order status',
     'any.required': 'Status is required',

@@ -10,4 +10,13 @@ const getOrdersAPI = async () => {
   return data;
 };
 
-export { createOrderAPI, getOrdersAPI };
+const updateShopOrderStatusAPI = async (orderId, shopId, status) => {
+  const { data } = await axiosInstance.patch(
+    `/order/${orderId}/shop/${shopId}/status`,
+    { status },
+    { withCredentials: true }
+  );
+  return data;
+};
+
+export { createOrderAPI, getOrdersAPI, updateShopOrderStatusAPI };

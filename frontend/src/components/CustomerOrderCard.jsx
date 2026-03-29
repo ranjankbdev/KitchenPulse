@@ -3,7 +3,6 @@ import { IoReceiptOutline, IoTimeOutline } from 'react-icons/io5';
 import { IoLocationOutline } from 'react-icons/io5';
 
 function CustomerOrderCard({ data }) {
-  console.log(data);
   const navigate = useNavigate();
 
   const formatDate = (dateString) => {
@@ -14,6 +13,15 @@ function CustomerOrderCard({ data }) {
       hour: '2-digit',
       minute: '2-digit',
     }).format(new Date(dateString));
+  };
+
+  const customerStatusLabel = {
+    pending: 'Order Placed',
+    confirmed: 'Order Confirmed',
+    preparing: 'Being Prepared',
+    ready_for_pickup: 'Being Prepared',
+    out_for_delivery: 'Out for Delivery',
+    delivered: 'Delivered',
   };
 
   return (
@@ -86,19 +94,20 @@ function CustomerOrderCard({ data }) {
               <p className="text-sm mt-2 sm:mt-0">
                 Status:{' '}
                 <span
-                  className={`font-medium capitalize ${
+                  className={`font-medium ${
                     shopOrder.status === 'delivered'
                       ? 'text-green-600'
                       : shopOrder.status === 'out_for_delivery'
                         ? 'text-purple-600'
-                        : shopOrder.status === 'preparing'
+                        : shopOrder.status === 'preparing' ||
+                            shopOrder.status === 'ready_for_pickup'
                           ? 'text-blue-600'
-                          : 'text-yellow-600'
+                          : shopOrder.status === 'confirmed'
+                            ? 'text-orange-500'
+                            : 'text-yellow-600'
                   }`}
                 >
-                  {shopOrder.status
-                    ? shopOrder.status.replaceAll('_', ' ').replace(/^\w/, (c) => c.toUpperCase())
-                    : 'Pending'}
+                  {customerStatusLabel[shopOrder.status] || 'Order Placed'}
                 </span>
               </p>
             </div>
