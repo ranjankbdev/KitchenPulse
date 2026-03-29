@@ -3,11 +3,13 @@ import { IoIosArrowRoundBack } from 'react-icons/io';
 import { MdOutlineReceiptLong } from 'react-icons/md';
 import { MdRestaurantMenu } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
+import CustomerOrderCard from '../components/CustomerOrderCard';
 
 function OrdersPage() {
+  const navigate = useNavigate();
+
   const { userData } = useSelector((state) => state.user);
   const { myOrders } = useSelector((state) => state.order);
-  const navigate = useNavigate();
 
   const isUser = userData?.role === 'user';
   const isVendor = userData?.role === 'vendor';
@@ -57,7 +59,12 @@ function OrdersPage() {
           </div>
         ) : (
           /* Orders List */
-          <div className="space-y-5">orderlist</div>
+          <div className="space-y-5">
+            {myOrders.map((order) => {
+              if (isUser) return <CustomerOrderCard data={order} key={order._id} />;
+              return null;
+            })}
+          </div>
         )}
       </div>
     </div>

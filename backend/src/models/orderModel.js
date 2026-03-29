@@ -1,30 +1,27 @@
 import mongoose from 'mongoose';
 
-const shopOrderItemSchema = new mongoose.Schema(
-  {
-    item: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Item',
-      required: true,
-    },
-    name: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    price: {
-      type: Number,
-      required: true,
-      min: 0,
-    },
-    quantity: {
-      type: Number,
-      required: true,
-      min: 1,
-    },
+const shopOrderItemSchema = new mongoose.Schema({
+  item: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Item',
+    required: true,
   },
-  { _id: false }
-);
+  name: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+  price: {
+    type: Number,
+    required: true,
+    min: 0,
+  },
+  quantity: {
+    type: Number,
+    required: true,
+    min: 1,
+  },
+});
 
 const shopOrderSchema = new mongoose.Schema(
   {
@@ -88,19 +85,14 @@ const orderSchema = new mongoose.Schema(
       required: true,
     },
     deliveryAddress: {
-      text: {
-        type: String,
-        required: true,
-        trim: true,
-      },
-      latitude: {
-        type: Number,
-        required: true,
-      },
-      longitude: {
-        type: Number,
-        required: true,
-      },
+      text: { type: String, required: true, trim: true },
+      latitude: { type: Number, required: true },
+      longitude: { type: Number, required: true },
+    },
+    deliveryCharge: {
+      type: Number,
+      required: true,
+      min: 0,
     },
     totalAmount: {
       type: Number,

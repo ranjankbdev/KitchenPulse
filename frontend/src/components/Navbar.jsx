@@ -119,6 +119,7 @@ function Navbar() {
           {isVendor && (
             <>
               <button
+                onClick={() => navigate('/orders')}
                 type="button"
                 className="hidden sm:flex items-center gap-1.5 cursor-pointer bg-[#ff4d2d]/10 text-[#ff4d2d] px-3 py-1.5 rounded-lg hover:bg-[#ff4d2d]/20 text-sm font-medium transition-colors"
               >
@@ -128,7 +129,7 @@ function Navbar() {
                   1
                 </span>
               </button>
-              <div className="relative group sm:hidden">
+              <div onClick={() => navigate('/orders')} className="relative group sm:hidden">
                 <button className="flex items-center justify-center bg-[#ff4d2d]/10 text-[#ff4d2d] p-2 rounded-lg hover:bg-[#ff4d2d]/20 cursor-pointer transition-colors">
                   <TbReceipt2 size={18} />
                 </button>
@@ -169,6 +170,7 @@ function Navbar() {
 
               {/* My Orders — tablet+ */}
               <button
+                onClick={() => navigate('/orders')}
                 type="button"
                 className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#ff4d2d]/10 text-[#ff4d2d] text-sm font-medium cursor-pointer hover:bg-[#ff4d2d]/20 transition-colors whitespace-nowrap"
               >
@@ -205,7 +207,10 @@ function Navbar() {
                 {isUser && (
                   <button
                     type="button"
-                    onClick={() => setShowDropdown(false)}
+                    onClick={() => {
+                      setShowDropdown(false);
+                      navigate('/orders');
+                    }}
                     className="lg:hidden px-2 py-1.5 w-40 text-center rounded-lg cursor-pointer bg-[#ff4d2d]/10 text-[#ff4d2d] text-sm font-medium hover:bg-[#ff4d2d]/20 transition-colors"
                   >
                     My Orders

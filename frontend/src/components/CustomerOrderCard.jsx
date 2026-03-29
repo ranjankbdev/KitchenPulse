@@ -1,0 +1,127 @@
+import { useNavigate } from 'react-router-dom';
+import { IoReceiptOutline, IoTimeOutline } from 'react-icons/io5';
+
+function CustomerOrderCard({ data }) {
+  console.log(data);
+  const navigate = useNavigate();
+
+  const formatDate = (dateString) => {
+    return new Intl.DateTimeFormat('en-GB', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    }).format(new Date(dateString));
+  };
+
+  return (
+    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 space-y-5">
+      {/* Order Header */}
+      <div className="flex sm:justify-between border-b pb-3 flex-col sm:flex-row">
+        <div className="flex items-start gap-2">
+          <IoReceiptOutline className="text-xl text-gray-500 mt-1" />
+          {/* order details */}
+          <div>
+            <p className="font-semibold text-gray-800">Order #{data?._id.slice(-7)}</p>
+            <p className="text-sm text-gray-500 flex items-center gap-1">
+              <IoTimeOutline />
+              {formatDate(data.createdAt)}
+            </p>
+          </div>
+        </div>
+
+        <div className="text-left sm:text-right space-y-1 mt-2">
+          <p className="text-sm">
+            Payment:{' '}
+            <span
+              className={`font-medium px-2 py-1 rounded-full ${data.isPaid ? 'text-green-600 bg-green-100' : 'text-yellow-600 bg-yellow-100'}`}
+            >
+              {data.isPaid ? 'Paid' : 'Pending'}
+            </span>
+          </p>
+
+          <p className="text-xs text-gray-500 mt-2">
+            {data.paymentMethod === 'cod' ? 'Cash on Delivery' : 'Online'}
+          </p>
+        </div>
+      </div>
+
+      {/* Delivery Address */}
+      <p className="text-sm text-gray-600">📍 {data.deliveryAddress?.text}</p>
+
+      {/* Shop Orders */}
+      {data?.shopOrders?.map((shopOrder) => {
+        return (
+          <div key={shopOrder._id} className="border rounded-xl p-4 bg-[#fffaf7] space-y-4">
+            {/* Shop Name */}
+            <p className="font-medium text-gray-800">{shopOrder.shop?.name || 'Shop'}</p>
+            {/* Items */}
+            <div className="flex gap-4 overflow-x-auto pb-2">
+              {shopOrder?.shopOrderItems?.map((item) => {
+                return (
+                  <div key={item.item._id} className="shrink-0 w-40 border rounded-xl p-2 bg-white">
+                    <img
+                      src={item.item?.imageUrl}
+                      alt={item.name}
+                      className="w-full h-24 object-cover rounded-lg"
+                    />
+                    <p className="text-sm font-medium mt-2 text-gray-800">{item.name}</p>
+                    <p className="text-xs text-gray-500">
+                      Qty {item.quantity} × ₹{item.price}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Shop Footer */}
+            <div className="flex sm:flex-row flex-col sm:justify-between border-t pt-3">
+              <p className="font-semibold text-gray-800">Subtotal: ₹{shopOrder.subtotal}</p>
+
+              <p className="text-sm mt-1 sm:mt-0">
+                Status:{' '}
+                <span
+                  className={`font-medium capitalize ${
+                    shopOrder.status === 'delivered'
+                      ? 'text-green-600'
+                      : shopOrder.status === 'out_for_delivery'
+                        ? 'text-purple-600'
+                        : shopOrder.status === 'preparing'
+                          ? 'text-blue-600'
+                          : 'text-yellow-600'
+                  }`}
+                >
+                  {shopOrder.status
+                    ? shopOrder.status.replaceAll('_', ' ').replace(/^\w/, (c) => c.toUpperCase())
+                    : 'Pending'}
+                </span>
+              </p>
+            </div>
+          </div>
+        );
+      })}
+
+      {/* Order Footer */}
+      <div className="flex justify-between items-center border-t pt-3">
+        <div>
+          <p className="font-semibold text-gray-900">Total: ₹{data.totalAmount}</p>
+
+          {/* Delivery Charge */}
+          <p className="text-sm text-gray-500">
+            Delivery Charges: {data.deliveryCharge === 0 ? 'Free' : `₹${data.deliveryCharge}`}
+          </p>
+        </div>
+
+        <button
+          className="bg-[#ff4d2d] hover:bg-[#e64526] text-white px-5 py-2.5 rounded-lg text-sm font-medium transition"
+          onClick={() => navigate(`/orders/${data._id}`)}
+        >
+          Track Order
+        </button>
+      </div>
+    </div>
+  );
+}
+
+export default CustomerOrderCard;

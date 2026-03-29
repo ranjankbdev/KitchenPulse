@@ -74,7 +74,6 @@ const createOrder = async (req, res) => {
     user: req.user.id,
     paymentMethod,
     deliveryAddress,
-    subtotal,
     deliveryCharge,
     totalAmount,
     shopOrders,
@@ -109,7 +108,7 @@ const getOrders = async (req, res) => {
       .populate('shopOrders.shop', 'name')
       .populate('user', 'fullName mobileNumber')
       .populate('shopOrders.shopOrderItems.item', 'name imageUrl price')
-      .populate('shopOrders.assignedDeliveryPartner', 'fullName mobileNumber');
+      .populate('shopOrders.assignedDeliveryPartner', 'fullName mobileNumber email');
 
     // filtering only vendor-related shop orders from full order
     const filteredOrders = orders.map((order) => ({
@@ -121,7 +120,6 @@ const getOrders = async (req, res) => {
       createdAt: order.createdAt,
       deliveryAddress: order.deliveryAddress,
       isPaid: order.isPaid,
-      subtotal: order.subtotal,
       deliveryCharge: order.deliveryCharge,
       totalAmount: order.totalAmount,
     }));
@@ -168,7 +166,7 @@ const updateShopOrderStatus = async (req, res) => {
   await order.save();
   // re-populating
   await order.populate('shopOrders.shopOrderItems.item', 'name imageUrl price');
-  const updatedShopOrder = order.shopOrders.find((o) => (o) => o.shop.toString() === shopId);
+  const updatedShopOrder = order.shopOrders.find((o) => o.shop.toString() === shopId);
 
   return res.status(StatusCodes.OK).json(updatedShopOrder);
 };
