@@ -44,11 +44,11 @@ function ProjectRoutes() {
     },
     {
       path: '/order/confirmation',
-      element: userData ? <OrderConfirmation mode="edit" /> : <Navigate to="/signin" replace />,
+      element: userData ? <OrderConfirmation /> : <Navigate to="/signin" replace />,
     },
     {
       path: '/orders',
-      element: userData ? <OrdersPage mode="edit" /> : <Navigate to="/signin" replace />,
+      element: userData ? <OrdersPage /> : <Navigate to="/signin" replace />,
     },
     {
       path: '/vendor/shop/new',

@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import { setCurrentAddress, setCurrentCity, setCurrentState } from '../redux/userSlice.js';
 import { setAddress, setLocation } from '../redux/locationSlice.js';
 
-function useGeoLocation() {
+function useGeolocation() {
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -43,4 +43,4 @@ function useGeoLocation() {
   }, [dispatch]);
 }
 
-export default useGeoLocation;
+export default useGeolocation;

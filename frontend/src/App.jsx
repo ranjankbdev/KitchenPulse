@@ -1,10 +1,12 @@
 import ProjectRoutes from './ProjectRoutes.jsx';
-import useGetCurrentUser from './hooks/useGetCurrentUser.jsx';
-import useGeoLocation from './hooks/useGeoLocation.jsx';
+import useCurrentUser from './hooks/useCurrentUser.jsx';
+import useGeolocation from './hooks/useGeoLocation.jsx';
+import useMyOrders from './hooks/useMyOrders.jsx';
 
 function App() {
-  useGetCurrentUser();
-  useGeoLocation();
+  useCurrentUser();
+  useGeolocation();
+  useMyOrders();
 
   return <ProjectRoutes />;
 }

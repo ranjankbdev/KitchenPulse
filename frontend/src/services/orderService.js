@@ -5,4 +5,9 @@ const createOrderAPI = async (orderData) => {
   return data;
 };
 
-export { createOrderAPI };
+const getOrdersAPI = async () => {
+  const { data } = await axiosInstance.get('/order', { withCredentials: true });
+  return data;
+};
+
+export { createOrderAPI, getOrdersAPI };

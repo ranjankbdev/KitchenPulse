@@ -1,10 +1,10 @@
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { getUserAPI } from '../services/userService.js';
-import showToast from '../utils/toastHelper.js';
 import { setUserData } from '../redux/userSlice.js';
+import showToast from '../utils/toastHelper.js';
 
-function useGetCurrentUser() {
+function useCurrentUser() {
   const dispatch = useDispatch();
   useEffect(() => {
     const getUser = async () => {
@@ -20,4 +20,4 @@ function useGetCurrentUser() {
   }, []);
 }
 
-export default useGetCurrentUser;
+export default useCurrentUser;
