@@ -11,9 +11,11 @@ import Navbar from './Navbar';
 import HorizontalScroll from './HorizontalScroll';
 import showToast from '../utils/toastHelper.js';
 import ItemCard from './ItemCard.jsx';
+import useGetMyOrders from '../hooks/useMyOrders.jsx';
 
 function UserDashboard() {
   const dispatch = useDispatch();
+  useGetMyOrders();
   const { currentCity, shopsInMyCity, itemsInMyCity } = useSelector((state) => state.user);
 
   const [updatedItemsList, setUpdatedItemsList] = useState([]);

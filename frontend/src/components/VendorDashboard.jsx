@@ -10,9 +10,11 @@ import { getMyShopAPI } from '../services/shopService.js';
 import Navbar from './Navbar';
 import showToast from '../utils/toastHelper';
 import VendorItemCard from '../components/VendorItemCard.jsx';
+import useGetMyOrders from '../hooks/useMyOrders.jsx';
 
 function VendorDashboard() {
   const { userData } = useSelector((state) => state.user);
+  useGetMyOrders();
   const { myShopData } = useSelector((state) => state.vendor);
 
   const dispatch = useDispatch();
