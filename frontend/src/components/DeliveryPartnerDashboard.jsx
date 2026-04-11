@@ -7,6 +7,7 @@ import {
 } from '../services/orderService.js';
 import Navbar from './Navbar.jsx';
 import showToast from '../utils/toastHelper.js';
+import DeliveryTracking from './DeliveryTracking.jsx';
 
 function DeliveryPartnerDashboard() {
   const { userData } = useSelector((state) => state.user);
@@ -113,6 +114,9 @@ function DeliveryPartnerDashboard() {
                   {totalQty} items • ₹{currentOrder?.shopOrder?.subtotal}
                 </p>
               </div>
+
+              <DeliveryTracking data={currentOrder} />
+
             </div>
           )}
         </div>
