@@ -5,4 +5,9 @@ const getUserAPI = async () => {
   return data;
 };
 
-export { getUserAPI };
+const updateUserLocationAPI = async (locationData) => {
+  const { data } = await axiosInstance.patch('/user/location', locationData);
+  return data;
+};
+
+export { getUserAPI, updateUserLocationAPI };

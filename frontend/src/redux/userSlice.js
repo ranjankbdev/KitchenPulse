@@ -7,6 +7,8 @@ const userSlice = createSlice({
     currentCity: null,
     currentState: null,
     currentAddress: null,
+    currentLat: null,
+    currentLon: null,
     shopsInMyCity: null,
     itemsInMyCity: null,
   },
@@ -24,6 +26,12 @@ const userSlice = createSlice({
     setCurrentState: (state, action) => {
       state.currentState = action.payload;
     },
+    setCurrentLat: (state, action) => {
+      state.currentLat = action.payload;
+    },
+    setCurrentLon: (state, action) => {
+      state.currentLon = action.payload;
+    },
     setShopsInMyCity: (state, action) => {
       state.shopsInMyCity = action.payload;
     },
@@ -38,6 +46,8 @@ export const {
   setCurrentAddress,
   setCurrentCity,
   setCurrentState,
+  setCurrentLat,
+  setCurrentLon,
   setShopsInMyCity,
   setItemsInMyCity,
 } = userSlice.actions;

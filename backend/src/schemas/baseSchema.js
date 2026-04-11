@@ -147,6 +147,20 @@ const orderStatusField = Joi.string()
     'any.required': 'Status is required',
   });
 
+const latitudeField = Joi.number().min(-90).max(90).required().messages({
+  'number.base': 'Latitude must be a number',
+  'number.min': 'Latitude must be >= -90',
+  'number.max': 'Latitude must be <= 90',
+  'any.required': 'Latitude is required',
+});
+
+const longitudeField = Joi.number().min(-180).max(180).required().messages({
+  'number.base': 'Longitude must be a number',
+  'number.min': 'Longitude must be >= -180',
+  'number.max': 'Longitude must be <= 180',
+  'any.required': 'Longitude is required',
+});
+
 export {
   fullNameField,
   emailField,
@@ -168,4 +182,6 @@ export {
   deliveryAddressField,
   paymentMethodField,
   orderStatusField,
+  latitudeField,
+  longitudeField,
 };

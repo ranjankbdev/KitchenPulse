@@ -8,3 +8,9 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+.leaflet-pane,
+.leaflet-top,
+.leaflet-bottom {
+  z-index: 0 !important;
+}
