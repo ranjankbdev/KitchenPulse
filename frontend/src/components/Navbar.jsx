@@ -72,6 +72,7 @@ function Navbar() {
         className={`w-full bg-white flex h-16 items-center
           ${isVendor ? 'lg:justify-around justify-between' : ''}
           ${isUser ? 'justify-between xl:justify-evenly xl:px-60' : ''}
+          ${isDeliveryPartner ? 'justify-between sm:justify-around xl:justify-evenly' : ''}
           gap-2 fixed top-0 z-50 px-3 shadow-sm border-b border-gray-100`}
       >
         {/* Left — Logo */}

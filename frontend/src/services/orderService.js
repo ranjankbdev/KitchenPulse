@@ -19,4 +19,20 @@ const updateShopOrderStatusAPI = async (orderId, shopId, status) => {
   return data;
 };
 
-export { createOrderAPI, getOrdersAPI, updateShopOrderStatusAPI };
+const getDeliveryAssignmentsAPI = async () => {
+  const { data } = await axiosInstance.get('/order/assignments');
+  return data;
+};
+
+const acceptDeliveryAssignmentAPI = async (assignmentId) => {
+  const { data } = await axiosInstance.patch(`/order/assignments/${assignmentId}/accept`);
+  return data;
+};
+
+export {
+  createOrderAPI,
+  getOrdersAPI,
+  updateShopOrderStatusAPI,
+  getDeliveryAssignmentsAPI,
+  acceptDeliveryAssignmentAPI,
+};
