@@ -4,6 +4,7 @@ import Shop from '../models/shopModel.js';
 import Order from '../models/orderModel.js';
 import User from '../models/userModel.js';
 import Item from '../models/itemModel.js';
+import DeliveryAssignment from '../models/deliveryAssignment.js';
 
 const DELIVERY_CHARGE = 40;
 const FREE_DELIVERY_THRESHOLD = 500;
@@ -142,6 +143,32 @@ const vendorAllowedStatuses = ['confirmed', 'preparing', 'ready_for_pickup'];
 // statuses only delivery partner can update to
 const deliveryPartnerAllowedStatuses = ['out_for_delivery', 'delivered'];
 
+const findAvailableDeliveryPartners = async (deliveryAddress) => {
+  const { longitude, latitude } = deliveryAddress;
+
+  // find nearby partners within 5km
+  const nearByPartners = await User.find({
+    role: 'deliveryPartner',
+    currentLocation: {
+      $near: {
+        $geometry: { type: 'Point', coordinates: [Number(longitude), Number(latitude)] },
+        $maxDistance: 5000,
+      },
+    },
+  });
+
+  // find busy ones
+  const nearByIds = nearByPartners.map((p) => p._id);
+  const busyIds = await DeliveryAssignment.find({
+    assignedTo: { $in: nearByIds },
+    status: 'accepted',
+  }).distinct('assignedTo');
+
+  // filter out busy ones
+  const busyIdSet = new Set(busyIds.map((id) => String(id)));
+  return nearByPartners.filter((p) => !busyIdSet.has(String(p._id)));
+};
+
 const updateShopOrderStatus = async (req, res) => {
   const { orderId, shopId } = req.params;
   const { status } = req.body;
@@ -180,12 +207,64 @@ const updateShopOrderStatus = async (req, res) => {
   }
 
   shopOrder.status = status;
+  let deliveryPartnersPayload = [];
+  if (status === 'ready_for_pickup' && !shopOrder.deliveryAssignment) {
+    const availablePartners = await findAvailableDeliveryPartners(order.deliveryAddress);
+    if (availablePartners.length === 0) {
+      await order.save();
+      const updatedShopOrder = order.shopOrders.find((o) => o.shop.toString() === shopId);
+      await order.populate('shopOrders.shopOrderItems.item', 'name imageUrl price');
+      await order.populate('shopOrders.shop', 'name');
+      return res.status(StatusCodes.OK).json({
+        shopOrder: updatedShopOrder,
+        assignedDeliveryPartner: null,
+        availablePartners: [],
+        assignment: null,
+        message: 'Order status updated but no available delivery partners',
+      });
+    }
+
+    // prepare list of candidate delivery partners
+    const candidates = availablePartners.map((p) => p._id);
+
+    // create delivery assignment (broadcast to all candidates)
+    const deliveryAssignment = await DeliveryAssignment.create({
+      order: order._id,
+      shop: shopOrder.shop,
+      shopOrderId: shopOrder._id,
+      broadcastedTo: candidates,
+      status: 'broadcasted',
+    });
+
+    // attach assignment to shopOrder
+    shopOrder.deliveryAssignment = deliveryAssignment._id;
+    shopOrder.assignedDeliveryPartner = null;
+    // prepare payload for frontend (basic partner info)
+    deliveryPartnersPayload = availablePartners.map((p) => ({
+      id: p._id,
+      fullName: p.fullName,
+      longitude: p.currentLocation.coordinates?.[0],
+      latitude: p.currentLocation.coordinates?.[1],
+      mobileNumber: p.mobileNumber,
+    }));
+
+    await deliveryAssignment.populate('order');
+    await deliveryAssignment.populate('shop');
+  }
+
   await order.save();
-  // re-populating
-  await order.populate('shopOrders.shopOrderItems.item', 'name imageUrl price');
   const updatedShopOrder = order.shopOrders.find((o) => o.shop.toString() === shopId);
 
-  return res.status(StatusCodes.OK).json(updatedShopOrder);
+  // re-populating
+  await order.populate('shopOrders.shopOrderItems.item', 'name imageUrl price');
+  await order.populate('shopOrders.shop', 'name');
+  await order.populate('shopOrders.assignedDeliveryPartner', 'fullName email mobileNumber');
+  return res.status(StatusCodes.OK).json({
+    shopOrder: updatedShopOrder,
+    assignedDeliveryPartner: updatedShopOrder?.assignedDeliveryPartner,
+    availablePartners: deliveryPartnersPayload,
+    assignment: updatedShopOrder?.deliveryAssignment,
+  });
 };
 
 export { createOrder, getOrders, updateShopOrderStatus };

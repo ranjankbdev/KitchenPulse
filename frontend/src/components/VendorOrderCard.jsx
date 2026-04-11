@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { MdPhone, MdEmail } from 'react-icons/md';
 import { FaUserCircle } from 'react-icons/fa';
 import { IoLocationOutline } from 'react-icons/io5';
@@ -23,6 +24,9 @@ const statusConfig = {
 
 function VendorOrderCard({ data }) {
   const dispatch = useDispatch();
+
+  const [availableBoys, setAvailableBoys] = useState([]);
+
   const handleUpdateStatus = async (status, shopId) => {
     if (!status || !shopId) return;
     try {
@@ -31,10 +35,10 @@ function VendorOrderCard({ data }) {
         updateOrderStatus({
           orderId: data._id,
           shopId,
-          status: result.status,
+          status: result.shopOrder.status,
         })
       );
-      console.log(result);
+      setAvailableBoys(result.availablePartners);
     } catch (error) {
       showToast(error, 'error');
     }
@@ -142,6 +146,31 @@ function VendorOrderCard({ data }) {
 
               {renderStatusAction(shopOrder?.status, shopOrder)}
             </div>
+
+            {shopOrder?.status === 'ready_for_pickup' && (
+              <div className="mt-3 p-2 border rounded-lg text-sm bg-orange-50">
+                {shopOrder?.assignedDeliveryPartner ? (
+                  <>
+                    <p>Assigned Delivery Partner:</p>
+                    <div className="text-gray-800 capitalize">
+                      {shopOrder?.assignedDeliveryPartner?.fullName} -{' '}
+                      {shopOrder?.assignedDeliveryPartner?.mobileNumber}
+                    </div>
+                  </>
+                ) : availableBoys?.length > 0 ? (
+                  <>
+                    <p>Available Delivery Partners:</p>
+                    {availableBoys.map((b) => (
+                      <p key={b.id} className="text-gray-800 capitalize">
+                        {b?.fullName} - {b?.mobileNumber}
+                      </p>
+                    ))}
+                  </>
+                ) : (
+                  <div>Waiting for delivery partner to accept</div>
+                )}
+              </div>
+            )}
 
             {/* Total */}
             <div className="sm:text-right text-left font-semibold text-gray-800">
