@@ -267,4 +267,64 @@ const updateShopOrderStatus = async (req, res) => {
   });
 };
 
-export { createOrder, getOrders, updateShopOrderStatus };
+const getDeliveryAssignments = async (req, res) => {
+  const assignments = await DeliveryAssignment.find({
+    broadcastedTo: req.user.id,
+    status: 'broadcasted',
+  })
+    .populate('order')
+    .populate('shop');
+
+  const assignmentSummaries = assignments.map((a) => {
+    const shopOrder = a.order.shopOrders.find((so) => so._id.equals(a.shopOrderId));
+    return {
+      assignmentId: a._id,
+      orderId: a.order._id,
+      shopName: a.shop.name,
+      deliveryAddress: a.order.deliveryAddress,
+      items: shopOrder?.shopOrderItems || [],
+      subtotal: shopOrder?.subtotal,
+    };
+  });
+
+  return res.status(StatusCodes.OK).json(assignmentSummaries);
+};
+
+const acceptDeliveryAssignment = async (req, res) => {
+  const { assignmentId } = req.params;
+  const assignment = await DeliveryAssignment.findById(assignmentId);
+  if (!assignment) throw new ExpressError(StatusCodes.NOT_FOUND, 'Assignment not found');
+  if (assignment.status !== 'broadcasted') {
+    throw new ExpressError(StatusCodes.BAD_REQUEST, 'Assignment is expired');
+  }
+
+  const alreadyAssigned = await DeliveryAssignment.findOne({
+    assignedTo: req.user.id,
+    status: 'accepted',
+  });
+  if (alreadyAssigned) {
+    throw new ExpressError(StatusCodes.BAD_REQUEST, 'You are already assigned to another order');
+  }
+
+  assignment.assignedTo = req.user.id;
+  assignment.status = 'accepted';
+  assignment.acceptedAt = new Date();
+  await assignment.save();
+
+  const order = await Order.findById(assignment.order);
+  if (!order) throw new ExpressError(StatusCodes.NOT_FOUND, 'Order not found');
+
+  const shopOrder = order.shopOrders.id(assignment.shopOrderId);
+  shopOrder.assignedDeliveryPartner = req.user.id;
+  await order.save();
+
+  return res.status(StatusCodes.OK).json({ message: 'Assignment accepted successfully!' });
+};
+
+export {
+  createOrder,
+  getOrders,
+  updateShopOrderStatus,
+  getDeliveryAssignments,
+  acceptDeliveryAssignment,
+};
