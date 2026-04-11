@@ -10,6 +10,7 @@ import CartPage from './pages/CartPage.jsx';
 import CheckoutPage from './pages/CheckoutPage.jsx';
 import OrderConfirmation from './pages/OrderConfirmation.jsx';
 import OrdersPage from './pages/OrdersPage.jsx';
+import TrackOrderPage from './pages/TrackOrderPage.jsx';
 
 function ProjectRoutes() {
   const { userData } = useSelector((state) => state.user);
@@ -49,6 +50,10 @@ function ProjectRoutes() {
     {
       path: '/orders',
       element: userData ? <OrdersPage /> : <Navigate to="/signin" replace />,
+    },
+    {
+      path: '/orders/:orderId/track',
+      element: userData ? <TrackOrderPage /> : <Navigate to="/signin" replace />,
     },
     {
       path: '/vendor/shop/new',

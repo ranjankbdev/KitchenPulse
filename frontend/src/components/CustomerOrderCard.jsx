@@ -125,8 +125,8 @@ function CustomerOrderCard({ data }) {
         </div>
 
         <button
-          className="bg-[#ff4d2d] hover:bg-[#e64526] text-white px-5 py-2.5 rounded-lg text-sm font-medium transition mt-3 sm:mt-0"
-          onClick={() => navigate(`/orders/${data._id}`)}
+          className="bg-[#ff4d2d] hover:bg-[#e64526] text-white px-5 py-2.5 rounded-lg text-sm font-medium transition mt-3 sm:mt-0 cursor-pointer"
+          onClick={() => navigate(`/orders/${data._id}/track`)}
         >
           Track Order
         </button>

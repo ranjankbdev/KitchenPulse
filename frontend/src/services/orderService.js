@@ -34,6 +34,11 @@ const getActiveDeliveryAssignmentAPI = async () => {
   return data;
 };
 
+const getOrderByIdAPI = async (orderId) => {
+  const { data } = await axiosInstance.get(`/order/${orderId}`, { orderId });
+  return data;
+};
+
 export {
   createOrderAPI,
   getOrdersAPI,
@@ -41,4 +46,5 @@ export {
   getDeliveryAssignmentsAPI,
   acceptDeliveryAssignmentAPI,
   getActiveDeliveryAssignmentAPI,
+  getOrderByIdAPI,
 };

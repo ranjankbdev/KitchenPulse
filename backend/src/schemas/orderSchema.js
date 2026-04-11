@@ -34,4 +34,10 @@ const assignmentIdSchema = Joi.object({
   }).required(),
 });
 
-export { createOrderSchema, updateShopOrderStatusSchema, assignmentIdSchema };
+const orderIdSchema = Joi.object({
+  params: Joi.object({
+    orderId: mongoIdField.required(),
+  }).required(),
+});
+
+export { createOrderSchema, updateShopOrderStatusSchema, assignmentIdSchema, orderIdSchema };

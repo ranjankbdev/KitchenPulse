@@ -5,6 +5,7 @@ import {
   createOrder,
   getActiveDeliveryAssignment,
   getDeliveryAssignments,
+  getOrderById,
   getOrders,
   updateShopOrderStatus,
 } from '../controllers/orderController.js';
@@ -13,6 +14,7 @@ import { validateSchema } from '../middlewares/validateSchema.js';
 import {
   assignmentIdSchema,
   createOrderSchema,
+  orderIdSchema,
   updateShopOrderStatusSchema,
 } from '../schemas/orderSchema.js';
 
@@ -22,16 +24,21 @@ orderRouter.post('/', verifyToken, validateSchema(createOrderSchema), wrapAsync(
 orderRouter.get('/', verifyToken, wrapAsync(getOrders));
 orderRouter.get('/active', verifyToken, wrapAsync(getActiveDeliveryAssignment));
 orderRouter.get('/assignments', verifyToken, wrapAsync(getDeliveryAssignments));
+
 orderRouter.patch(
   '/:orderId/shop/:shopId/status',
   verifyToken,
   validateSchema(updateShopOrderStatusSchema),
   wrapAsync(updateShopOrderStatus)
 );
+
 orderRouter.patch(
   '/assignments/:assignmentId/accept',
   verifyToken,
   validateSchema(assignmentIdSchema),
   wrapAsync(acceptDeliveryAssignment)
 );
+
+orderRouter.get('/:orderId', verifyToken, validateSchema(orderIdSchema), wrapAsync(getOrderById));
+
 export { orderRouter };

@@ -361,6 +361,21 @@ const getActiveDeliveryAssignment = async (req, res) => {
   });
 };
 
+const getOrderById = async (req, res) => {
+  const { orderId } = req.params;
+
+  const order = await Order.findById(orderId)
+    .populate('user')
+    .populate('shopOrders.shop')
+    .populate('shopOrders.assignedDeliveryPartner')
+    .populate('shopOrders.shopOrderItems.item')
+    .lean();
+
+  if (!order) throw new ExpressError(StatusCodes.NOT_FOUND, 'Order not found');
+
+  return res.status(StatusCodes.OK).json(order);
+};
+
 export {
   createOrder,
   getOrders,
@@ -368,4 +383,5 @@ export {
   getDeliveryAssignments,
   acceptDeliveryAssignment,
   getActiveDeliveryAssignment,
+  getOrderById,
 };
