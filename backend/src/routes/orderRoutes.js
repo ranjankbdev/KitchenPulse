@@ -3,6 +3,7 @@ import { wrapAsync } from '../utils/wrapAsync.js';
 import {
   acceptDeliveryAssignment,
   createOrder,
+  getActiveDeliveryAssignment,
   getDeliveryAssignments,
   getOrders,
   updateShopOrderStatus,
@@ -19,6 +20,7 @@ const orderRouter = express.Router();
 
 orderRouter.post('/', verifyToken, validateSchema(createOrderSchema), wrapAsync(createOrder));
 orderRouter.get('/', verifyToken, wrapAsync(getOrders));
+orderRouter.get('/active', verifyToken, wrapAsync(getActiveDeliveryAssignment));
 orderRouter.get('/assignments', verifyToken, wrapAsync(getDeliveryAssignments));
 orderRouter.patch(
   '/:orderId/shop/:shopId/status',

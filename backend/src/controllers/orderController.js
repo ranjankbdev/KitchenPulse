@@ -321,10 +321,51 @@ const acceptDeliveryAssignment = async (req, res) => {
   return res.status(StatusCodes.OK).json({ message: 'Assignment accepted successfully!' });
 };
 
+const getActiveDeliveryAssignment = async (req, res) => {
+  const assignment = await DeliveryAssignment.findOne({
+    assignedTo: req.user.id,
+    status: 'accepted',
+  })
+    .populate('shop', 'name')
+    .populate('assignedTo', 'fullName email mobileNumber currentLocation')
+    .populate({
+      path: 'order',
+      populate: [{ path: 'user', select: 'fullName email mobileNumber currentLocation' }],
+    });
+
+  if (!assignment) throw new ExpressError(StatusCodes.NOT_FOUND, 'No active assignment found');
+  if (!assignment.order) throw new ExpressError(StatusCodes.NOT_FOUND, 'Order not found');
+
+  const shopOrder = assignment.order.shopOrders.find(
+    (so) => String(so._id) === String(assignment.shopOrderId)
+  );
+  if (!shopOrder) throw new ExpressError(StatusCodes.NOT_FOUND, 'Shop order not found');
+
+  const deliveryPartnerLocation = {
+    lat: assignment.assignedTo.currentLocation.coordinates?.[1] || null,
+    lon: assignment.assignedTo.currentLocation.coordinates?.[0] || null,
+  };
+
+  const customerLocation = {
+    lat: assignment.order.deliveryAddress?.latitude || null,
+    lon: assignment.order.deliveryAddress?.longitude || null,
+  };
+
+  return res.status(StatusCodes.OK).json({
+    _id: assignment.order._id,
+    user: assignment.order.user,
+    shopOrder,
+    deliveryAddress: assignment.order.deliveryAddress,
+    deliveryPartnerLocation,
+    customerLocation,
+  });
+};
+
 export {
   createOrder,
   getOrders,
   updateShopOrderStatus,
   getDeliveryAssignments,
   acceptDeliveryAssignment,
+  getActiveDeliveryAssignment,
 };

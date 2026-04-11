@@ -3,12 +3,17 @@ import { useEffect, useState } from 'react';
 import {
   getDeliveryAssignmentsAPI,
   acceptDeliveryAssignmentAPI,
+  getActiveDeliveryAssignmentAPI,
 } from '../services/orderService.js';
 import Navbar from './Navbar.jsx';
+import showToast from '../utils/toastHelper.js';
 
 function DeliveryPartnerDashboard() {
   const { userData } = useSelector((state) => state.user);
   const [availableAssignments, setAvailableAssignments] = useState(null);
+  const [currentOrder, setCurrentOrder] = useState();
+  const [loading, setLoading] = useState(false);
+  const [showOtpBox, setShowOtpBox] = useState(false);
 
   const getDeliveryAssignments = async () => {
     try {
@@ -21,8 +26,18 @@ function DeliveryPartnerDashboard() {
 
   const acceptDeliveryAssignment = async (assignmentId) => {
     try {
-      const result = await acceptDeliveryAssignmentAPI(assignmentId);
-      console.log(result);
+      await acceptDeliveryAssignmentAPI(assignmentId);
+      await getActiveDeliveryAssignment();
+      showToast('Delivery assignment accepted successfully!', 'success');
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getActiveDeliveryAssignment = async () => {
+    try {
+      const result = await getActiveDeliveryAssignmentAPI();
+      setCurrentOrder(result);
     } catch (error) {
       console.log(error);
     }
@@ -30,7 +45,11 @@ function DeliveryPartnerDashboard() {
 
   useEffect(() => {
     getDeliveryAssignments();
+    getActiveDeliveryAssignment();
   }, [userData]);
+
+  const totalQty =
+    currentOrder?.shopOrder?.shopOrderItems?.reduce((sum, item) => sum + item.quantity, 0) || 0;
 
   return (
     <div>
@@ -44,39 +63,58 @@ function DeliveryPartnerDashboard() {
             <p className="text-green-600 font-semibold">📍 Location Active</p>
           </div>
 
-          <div className="bg-white rounded-2xl p-5 shadow-md w-[90%] border border-orange-100">
-            <h1 className="text-lg font-bold mb-4 flex items-center gap-2">Available Orders</h1>
+          {!currentOrder && (
+            <div className="bg-white rounded-2xl p-5 shadow-md w-[90%] border border-orange-100">
+              <h1 className="text-lg font-bold mb-4 flex items-center gap-2">Available Orders</h1>
 
-            <div className="space-y-4">
-              {availableAssignments?.length > 0 ? (
-                availableAssignments.map((a) => (
-                  <div
-                    className="border rounded-lg p-4 flex justify-between items-center"
-                    key={a?.assignmentId}
-                  >
-                    <div>
-                      <p className="text-sm font-semibold">{a?.shopName}</p>
-                      <p className="text-sm text-gray-500">
-                        <span className="font-semibold">Delivery Address:</span>{' '}
-                        {a?.deliveryAddress.text}
-                      </p>
-                      <p className="text-xs text-gray-400">
-                        {a.items.length} items | {a.subtotal}
-                      </p>
-                    </div>
-                    <button
-                      className="bg-orange-500 text-white px-4 py-1 rounded-lg text-sm hover:bg-orange-600 cursor-pointer"
-                      onClick={() => acceptDeliveryAssignment(a.assignmentId)}
-                    >
-                      Accept
-                    </button>
-                  </div>
-                ))
-              ) : (
-                <p className="text-gray-400 text-sm">No Available Orders</p>
-              )}
+              <div className="space-y-4">
+                {availableAssignments?.length > 0 ? (
+                  availableAssignments.map((a) => {
+                    const qty = a.items?.reduce((sum, item) => sum + item.quantity, 0);
+
+                    return (
+                      <div
+                        className="border rounded-lg p-4 flex justify-between items-center"
+                        key={a?.assignmentId}
+                      >
+                        <div>
+                          <p className="text-sm font-semibold">{a?.shopName}</p>
+                          <p className="text-sm text-gray-500">
+                            <span className="font-semibold">Delivery Address:</span>{' '}
+                            {a?.deliveryAddress.text}
+                          </p>
+                          <p className="text-xs text-gray-400">
+                            {qty} items • ₹{a.subtotal}
+                          </p>
+                        </div>
+                        <button
+                          className="bg-orange-500 text-white px-4 py-1 rounded-lg text-sm hover:bg-orange-600 cursor-pointer"
+                          onClick={() => acceptDeliveryAssignment(a.assignmentId)}
+                        >
+                          Accept
+                        </button>
+                      </div>
+                    );
+                  })
+                ) : (
+                  <p className="text-gray-400 text-sm">No Available Orders</p>
+                )}
+              </div>
             </div>
-          </div>
+          )}
+
+          {currentOrder && (
+            <div className="bg-white rounded-2xl p-5 shadow-md w-[90%] border border-orange-100">
+              <h2 className="text-lg font-bold mb-3">📦Current Order</h2>
+              <div className="border rounded-lg p-4 mb-3">
+                <p className="font-semibold text-sm">{currentOrder?.shopOrder?.shop?.name}</p>
+                <p className="text-sm text-gray-500">{currentOrder?.deliveryAddress?.text}</p>
+                <p className="text-xs text-gray-400">
+                  {totalQty} items • ₹{currentOrder?.shopOrder?.subtotal}
+                </p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

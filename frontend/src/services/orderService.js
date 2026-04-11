@@ -29,10 +29,16 @@ const acceptDeliveryAssignmentAPI = async (assignmentId) => {
   return data;
 };
 
+const getActiveDeliveryAssignmentAPI = async () => {
+  const { data } = await axiosInstance.get(`/order/active`);
+  return data;
+};
+
 export {
   createOrderAPI,
   getOrdersAPI,
   updateShopOrderStatusAPI,
   getDeliveryAssignmentsAPI,
   acceptDeliveryAssignmentAPI,
+  getActiveDeliveryAssignmentAPI,
 };
