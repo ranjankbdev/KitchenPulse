@@ -5,7 +5,12 @@ import { BsShop } from 'react-icons/bs';
 import { useSelector, useDispatch } from 'react-redux';
 import { getShopsByCityAPI } from '../services/shopService.js';
 import { getItemsByCityAPI } from '../services/itemService.js';
-import { setShopsInMyCity, setItemsInMyCity } from '../redux/userSlice.js';
+import {
+  setShopsInMyCity,
+  setItemsInMyCity,
+  setSearchQuery,
+  setSearchItems,
+} from '../redux/userSlice.js';
 import CategoryCard from './CategoryCard.jsx';
 import Navbar from './Navbar';
 import HorizontalScroll from './HorizontalScroll';
@@ -16,7 +21,9 @@ import useGetMyOrders from '../hooks/useMyOrders.jsx';
 function UserDashboard() {
   const dispatch = useDispatch();
   useGetMyOrders();
-  const { currentCity, shopsInMyCity, itemsInMyCity } = useSelector((state) => state.user);
+  const { currentCity, shopsInMyCity, itemsInMyCity, searchQuery, searchItems } = useSelector(
+    (state) => state.user
+  );
 
   const [selectedCategory, setSelectedCategory] = useState(null);
 
@@ -42,11 +49,16 @@ function UserDashboard() {
 
   const handleCategoryClick = async (value) => {
     setSelectedCategory(value);
+    dispatch(setSearchQuery(''));
+    dispatch(setSearchItems([]));
   };
 
-  const itemsToShow = selectedCategory
-    ? itemsInMyCity.filter((item) => item.category === selectedCategory)
-    : itemsInMyCity;
+  const baseItems = (searchQuery?.trim() ? searchItems : itemsInMyCity) || [];
+  const itemsToShow = baseItems.filter((item) =>
+    selectedCategory ? item.category === selectedCategory : true
+  );
+
+  const isSearching = searchQuery?.trim()?.length > 0;
 
   return (
     <div>
@@ -96,14 +108,28 @@ function UserDashboard() {
         {/* items */}
         <h1 className="flex items-start gap-2 text-gray-800 text-2xl sm:text-3xl  mt-11">
           <FaStar className="text-[#ff4d2d]" />
-          Recommended for You
+          {isSearching
+            ? `Search Results for "${searchQuery}"`
+            : selectedCategory
+              ? `${selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)} Items`
+              : 'Recommended for You'}
         </h1>
         <div className="w-full h-auto flex flex-wrap gap-5 my-4 justify-center">
           {itemsToShow?.length > 0 ? (
             itemsToShow.map((item) => <ItemCard key={item._id} data={item} />)
           ) : (
-            <div className="w-full text-center text-gray-500 mt-6">
-              No food items available right now
+            <div className="w-full max-w-md p-6 bg-gray-50 rounded-2xl shadow-sm text-center mt-6">
+              <FaStar className="text-gray-300 text-4xl mx-auto mb-2" />
+              <p className="text-gray-500 text-lg">
+                {selectedCategory
+                  ? `No items found in "${selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)}" category`
+                  : 'No search results found'}
+              </p>
+              <p className="text-gray-400 mt-1">
+                {selectedCategory
+                  ? 'Try another category.'
+                  : 'Try a different keyword or category.'}
+              </p>
             </div>
           )}
         </div>

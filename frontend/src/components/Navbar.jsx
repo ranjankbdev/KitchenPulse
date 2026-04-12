@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, use } from 'react';
 import { FiShoppingCart } from 'react-icons/fi';
 import { IoIosSearch } from 'react-icons/io';
 import { FaLocationDot } from 'react-icons/fa6';
@@ -6,9 +6,10 @@ import { TbReceipt2 } from 'react-icons/tb';
 import { useSelector } from 'react-redux';
 import { IoClose } from 'react-icons/io5';
 import { logoutUserAPI } from '../services/authService';
-import { setUserData } from '../redux/userSlice';
+import { setSearchItems, setSearchQuery, setUserData } from '../redux/userSlice';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { searchItemsAPI } from '../services/itemService.js';
 import showToast from '../utils/toastHelper';
 
 function Tooltip({ text }) {
@@ -29,13 +30,14 @@ function Navbar() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { userData, currentCity } = useSelector((state) => state.user);
+  const { userData, currentCity, searchQuery } = useSelector((state) => state.user);
   const { cartItems } = useSelector((state) => state.cart);
 
   const [showDropdown, setShowDropdown] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
 
   const dropdownRef = useRef(null);
+  const searchTimeout = useRef(null);
 
   const totalQuantity = cartItems?.reduce((sum, item) => sum + item.quantity, 0);
 
@@ -49,6 +51,34 @@ function Navbar() {
       showToast(error, 'error');
     }
   };
+
+  useEffect(() => {
+    if (!currentCity) return;
+    if (!searchQuery.trim()) {
+      dispatch(setSearchItems([]));
+      return;
+    }
+
+    if (searchTimeout.current) {
+      clearTimeout(searchTimeout.current);
+    }
+
+    searchTimeout.current = setTimeout(async () => {
+      try {
+        const result = await searchItemsAPI(currentCity, searchQuery);
+        dispatch(setSearchItems(result));
+      } catch (error) {
+        dispatch(setSearchItems([]));
+        console.log(error);
+      }
+    }, 400);
+
+    return () => {
+      if (searchTimeout.current) {
+        clearTimeout(searchTimeout.current);
+      }
+    };
+  }, [searchQuery, currentCity, dispatch]);
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -104,6 +134,8 @@ function Navbar() {
               <div className="flex items-center gap-2 flex-1 min-w-0">
                 <IoIosSearch size={18} className="text-[#ff4d2d] shrink-0" />
                 <input
+                  value={searchQuery}
+                  onChange={(e) => dispatch(setSearchQuery(e.target.value))}
                   placeholder="Search your favorite food"
                   className="w-full focus:outline-none bg-transparent text-sm text-gray-700 placeholder-gray-400"
                 />
@@ -241,6 +273,8 @@ function Navbar() {
             <div className="h-6 w-px bg-gray-400 mx-2" />
             <IoIosSearch size={18} className="text-[#ff4d2d] shrink-0 ml-1" />
             <input
+              value={searchQuery}
+              onChange={(e) => dispatch(setSearchQuery(e.target.value))}
               type="text"
               autoFocus
               placeholder="Search your favorite food items"

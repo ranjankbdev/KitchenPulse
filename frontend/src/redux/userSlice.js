@@ -11,6 +11,8 @@ const userSlice = createSlice({
     currentLon: null,
     shopsInMyCity: null,
     itemsInMyCity: null,
+    searchQuery: '',
+    searchItems: [],
   },
 
   reducers: {
@@ -38,6 +40,12 @@ const userSlice = createSlice({
     setItemsInMyCity: (state, action) => {
       state.itemsInMyCity = action.payload;
     },
+    setSearchQuery: (state, action) => {
+      state.searchQuery = action.payload;
+    },
+    setSearchItems: (state, action) => {
+      state.searchItems = action.payload;
+    },
   },
 });
 
@@ -50,5 +58,7 @@ export const {
   setCurrentLon,
   setShopsInMyCity,
   setItemsInMyCity,
+  setSearchQuery,
+  setSearchItems,
 } = userSlice.actions;
 export default userSlice.reducer;

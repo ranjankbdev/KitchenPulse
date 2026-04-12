@@ -7,6 +7,7 @@ import {
   foodTypeField,
   mongoIdField,
   cityField,
+  searchQueryField,
 } from './baseSchema.js';
 
 const createItemSchema = Joi.object({
@@ -46,4 +47,19 @@ const getItemsByCitySchema = Joi.object({
   }).required(),
 });
 
-export { createItemSchema, updateItemSchema, itemIdSchema, getItemsByCitySchema };
+const searchItemsSchema = Joi.object({
+  params: Joi.object({
+    city: cityField.required(),
+  }).required(),
+  query: Joi.object({
+    query: searchQueryField.required(),
+  }).required(),
+});
+
+export {
+  createItemSchema,
+  updateItemSchema,
+  itemIdSchema,
+  getItemsByCitySchema,
+  searchItemsSchema,
+};

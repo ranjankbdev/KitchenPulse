@@ -7,6 +7,7 @@ import {
   updateItemSchema,
   itemIdSchema,
   getItemsByCitySchema,
+  searchItemsSchema,
 } from '../schemas/itemSchema.js';
 import {
   createItem,
@@ -14,12 +15,12 @@ import {
   getItemById,
   deleteItemById,
   getItemsByCity,
+  searchItems,
 } from '../controllers/itemController.js';
 
 const itemRouter = express.Router();
 
-// Static routes
-// get by city
+// get items by city
 itemRouter.get(
   '/city/:city',
   verifyToken,
@@ -27,13 +28,23 @@ itemRouter.get(
   wrapAsync(getItemsByCity)
 );
 
-// Dynamic routes
+// search items
+itemRouter.get(
+  '/search/:city',
+  verifyToken,
+  validateSchema(searchItemsSchema),
+  wrapAsync(searchItems)
+);
+
 // create item
 itemRouter.post('/', verifyToken, validateSchema(createItemSchema), wrapAsync(createItem));
+
 // update item
 itemRouter.patch('/:itemId', verifyToken, validateSchema(updateItemSchema), wrapAsync(updateItem));
+
 // get item
 itemRouter.get('/:itemId', verifyToken, validateSchema(itemIdSchema), wrapAsync(getItemById));
+
 // delete item
 itemRouter.delete('/:itemId', verifyToken, validateSchema(itemIdSchema), wrapAsync(deleteItemById));
 

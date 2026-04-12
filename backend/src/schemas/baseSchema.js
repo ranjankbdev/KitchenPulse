@@ -161,6 +161,13 @@ const longitudeField = Joi.number().min(-180).max(180).required().messages({
   'any.required': 'Longitude is required',
 });
 
+const searchQueryField = Joi.string().trim().min(1).max(100).messages({
+  'string.empty': 'Search query is required',
+  'string.min': 'Search query must be at least 1 character',
+  'string.max': 'Search query cannot exceed 100 characters',
+  'any.required': 'Search query is required',
+});
+
 export {
   fullNameField,
   emailField,
@@ -184,4 +191,5 @@ export {
   orderStatusField,
   latitudeField,
   longitudeField,
+  searchQueryField,
 };

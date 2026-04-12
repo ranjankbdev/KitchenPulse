@@ -27,4 +27,16 @@ const getItemsByCityAPI = async (city) => {
   return data;
 };
 
-export { deleteItemByIdAPI, createItemAPI, getItemByIdAPI, updateItemAPI, getItemsByCityAPI };
+const searchItemsAPI = async (city, query) => {
+  const { data } = await axiosInstance.get(`/item/search/${city}`, { params: { query } });
+  return data;
+};
+
+export {
+  deleteItemByIdAPI,
+  createItemAPI,
+  getItemByIdAPI,
+  updateItemAPI,
+  getItemsByCityAPI,
+  searchItemsAPI,
+};
