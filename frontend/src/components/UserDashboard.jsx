@@ -18,7 +18,7 @@ function UserDashboard() {
   useGetMyOrders();
   const { currentCity, shopsInMyCity, itemsInMyCity } = useSelector((state) => state.user);
 
-  const [updatedItemsList, setUpdatedItemsList] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState(null);
 
   useEffect(() => {
     if (!currentCity) return;
@@ -40,9 +40,13 @@ function UserDashboard() {
     fetchData();
   }, [currentCity]);
 
-  useEffect(() => {
-    setUpdatedItemsList(itemsInMyCity);
-  }, [itemsInMyCity]);
+  const handleCategoryClick = async (value) => {
+    setSelectedCategory(value);
+  };
+
+  const itemsToShow = selectedCategory
+    ? itemsInMyCity.filter((item) => item.category === selectedCategory)
+    : itemsInMyCity;
 
   return (
     <div>
@@ -61,6 +65,7 @@ function UserDashboard() {
               name={cate.name}
               image={cate.image}
               className="w-37 h-37 md:w-40 md:h-40 cursor-pointer"
+              onClick={() => handleCategoryClick(cate.value)}
             />
           ))}
         </HorizontalScroll>
@@ -94,8 +99,8 @@ function UserDashboard() {
           Recommended for You
         </h1>
         <div className="w-full h-auto flex flex-wrap gap-5 my-4 justify-center">
-          {updatedItemsList?.length > 0 ? (
-            updatedItemsList.map((item) => <ItemCard key={item._id} data={item} />)
+          {itemsToShow?.length > 0 ? (
+            itemsToShow.map((item) => <ItemCard key={item._id} data={item} />)
           ) : (
             <div className="w-full text-center text-gray-500 mt-6">
               No food items available right now
