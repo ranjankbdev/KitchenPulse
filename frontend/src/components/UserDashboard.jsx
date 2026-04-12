@@ -57,8 +57,8 @@ function UserDashboard() {
         <HorizontalScroll>
           {categories.map((cate) => (
             <CategoryCard
-              key={cate.category}
-              name={cate.category}
+              key={cate.name}
+              name={cate.name}
               image={cate.image}
               className="w-37 h-37 md:w-40 md:h-40 cursor-pointer"
             />

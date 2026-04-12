@@ -1,8 +1,8 @@
 export const categories = [
-  { category: 'Snacks', image: '/Snacks.jpg' },
-  { category: 'Main Course', image: '/MainCourse.avif' },
-  { category: 'Desserts', image: '/Desserts.avif' },
-  { category: 'Beverages', image: '/Beverages.jpg' },
-  { category: 'Fast Food', image: '/FastFood.avif' },
-  { category: 'All', image: '/AllFood.avif' },
+  { name: 'All', value: null, image: '/AllFood.avif' },
+  { name: 'Snacks', value: 'snacks', image: '/Snacks.jpg' },
+  { name: 'Main Course', value: 'main_course', image: '/MainCourse.avif' },
+  { name: 'Desserts', value: 'desserts', image: '/Desserts.avif' },
+  { name: 'Beverages', value: 'beverages', image: '/Beverages.jpg' },
+  { name: 'Fast Food', value: 'fast_food', image: '/FastFood.avif' },
 ];
