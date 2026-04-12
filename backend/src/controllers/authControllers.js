@@ -2,7 +2,7 @@ import { StatusCodes } from 'http-status-codes';
 import { genToken, hashValue, compareHash } from '../utils/authHelper.js';
 import { ExpressError } from '../utils/ExpressError.js';
 import User from '../models/userModel.js';
-import { sendPasswordResetOtpEmail } from '../utils/emailService.js';
+import { sendOtpEmail } from '../utils/emailService.js';
 
 // register
 const registerUser = async (req, res) => {
@@ -106,7 +106,11 @@ const sendPasswordResetOtp = async (req, res) => {
   existingUser.resetOtpExpires = Date.now() + 5 * 60 * 1000;
   existingUser.isResetOtpVerified = false;
   await existingUser.save();
-  await sendPasswordResetOtpEmail(email, otp);
+  await sendOtpEmail(
+    email,
+    'Reset Your Password',
+    `<p>Your OTP for password reset is <b>${otp}</b>. It expires in 5 minutes.</p>`
+  );
   return res.status(StatusCodes.OK).json({ message: 'OTP sent successfully!' });
 };
 

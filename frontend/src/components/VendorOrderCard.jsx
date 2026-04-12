@@ -52,7 +52,16 @@ function VendorOrderCard({ data }) {
     }
 
     if (!config) {
-      return <span className="text-xs text-gray-400 italic">Awaiting delivery partner</span>;
+      const message =
+        shopOrder.status === 'ready_for_pickup'
+          ? 'Waiting for delivery partner'
+          : shopOrder.status === 'out_for_delivery'
+            ? 'Out for delivery'
+            : shopOrder.status === 'delivered'
+              ? 'Order delivered'
+              : 'No action available';
+
+      return <span className="text-xs text-gray-400 italic">{message}</span>;
     }
 
     return (

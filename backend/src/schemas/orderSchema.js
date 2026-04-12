@@ -5,6 +5,7 @@ import {
   deliveryAddressField,
   paymentMethodField,
   orderStatusField,
+  otpField,
 } from './baseSchema.js';
 
 const createOrderSchema = Joi.object({
@@ -40,4 +41,29 @@ const orderIdSchema = Joi.object({
   }).required(),
 });
 
-export { createOrderSchema, updateShopOrderStatusSchema, assignmentIdSchema, orderIdSchema };
+const sendDeliveryOtpSchema = Joi.object({
+  params: Joi.object({
+    orderId: mongoIdField.required(),
+    shopOrderId: mongoIdField.required(),
+  }).required(),
+});
+
+const verifyDeliveryOtpSchema = Joi.object({
+  params: Joi.object({
+    orderId: mongoIdField.required(),
+    shopOrderId: mongoIdField.required(),
+  }).required(),
+
+  body: Joi.object({
+    otp: otpField.required(),
+  }).required(),
+});
+
+export {
+  createOrderSchema,
+  updateShopOrderStatusSchema,
+  assignmentIdSchema,
+  orderIdSchema,
+  sendDeliveryOtpSchema,
+  verifyDeliveryOtpSchema,
+};

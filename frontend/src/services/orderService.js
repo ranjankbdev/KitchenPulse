@@ -39,6 +39,21 @@ const getOrderByIdAPI = async (orderId) => {
   return data;
 };
 
+const sendDeliveryOtpAPI = async (orderId, shopOrderId) => {
+  const { data } = await axiosInstance.post(
+    `/order/${orderId}/shop-orders/${shopOrderId}/delivery-otp`
+  );
+  return data;
+};
+
+const verifyDeliveryOtpAPI = async (orderId, shopOrderId, otp) => {
+  const { data } = await axiosInstance.post(
+    `/order/${orderId}/shop-orders/${shopOrderId}/verify-delivery-otp`,
+    { otp }
+  );
+  return data;
+};
+
 export {
   createOrderAPI,
   getOrdersAPI,
@@ -47,4 +62,6 @@ export {
   acceptDeliveryAssignmentAPI,
   getActiveDeliveryAssignmentAPI,
   getOrderByIdAPI,
+  sendDeliveryOtpAPI,
+  verifyDeliveryOtpAPI,
 };

@@ -1,5 +1,7 @@
 import express from 'express';
 import { wrapAsync } from '../utils/wrapAsync.js';
+import { verifyToken } from '../middlewares/authMiddleware.js';
+import { validateSchema } from '../middlewares/validateSchema.js';
 import {
   acceptDeliveryAssignment,
   createOrder,
@@ -7,15 +9,17 @@ import {
   getDeliveryAssignments,
   getOrderById,
   getOrders,
+  sendDeliveryOtp,
   updateShopOrderStatus,
+  verifyDeliveryOtp,
 } from '../controllers/orderController.js';
-import { verifyToken } from '../middlewares/authMiddleware.js';
-import { validateSchema } from '../middlewares/validateSchema.js';
 import {
   assignmentIdSchema,
   createOrderSchema,
   orderIdSchema,
+  sendDeliveryOtpSchema,
   updateShopOrderStatusSchema,
+  verifyDeliveryOtpSchema,
 } from '../schemas/orderSchema.js';
 
 const orderRouter = express.Router();
@@ -37,6 +41,20 @@ orderRouter.patch(
   verifyToken,
   validateSchema(assignmentIdSchema),
   wrapAsync(acceptDeliveryAssignment)
+);
+
+orderRouter.post(
+  '/:orderId/shop-orders/:shopOrderId/delivery-otp',
+  verifyToken,
+  validateSchema(sendDeliveryOtpSchema),
+  wrapAsync(sendDeliveryOtp)
+);
+
+orderRouter.post(
+  '/:orderId/shop-orders/:shopOrderId/verify-delivery-otp',
+  verifyToken,
+  validateSchema(verifyDeliveryOtpSchema),
+  wrapAsync(verifyDeliveryOtp)
 );
 
 orderRouter.get('/:orderId', verifyToken, validateSchema(orderIdSchema), wrapAsync(getOrderById));

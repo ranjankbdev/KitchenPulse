@@ -30,11 +30,11 @@ function OrderConfirmation() {
           </p>
 
           {/* CTA Buttons */}
-          <div
-            onClick={() => navigate('/orders')}
-            className="grid grid-cols-1 sm:grid-cols-2 gap-3"
-          >
-            <button className="bg-[#ff4d2d] hover:bg-[#e64526] text-white px-6 py-3 rounded-lg font-semibold shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <button
+              onClick={() => navigate('/orders')}
+              className="bg-[#ff4d2d] hover:bg-[#e64526] text-white px-6 py-3 rounded-lg font-semibold shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer"
+            >
               View Orders
             </button>
 

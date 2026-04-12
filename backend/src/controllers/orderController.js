@@ -1,10 +1,12 @@
 import { StatusCodes } from 'http-status-codes';
 import { ExpressError } from '../utils/ExpressError.js';
+import crypto from 'crypto';
 import Shop from '../models/shopModel.js';
 import Order from '../models/orderModel.js';
 import User from '../models/userModel.js';
 import Item from '../models/itemModel.js';
 import DeliveryAssignment from '../models/deliveryAssignment.js';
+import { sendOtpEmail } from '../utils/emailService.js';
 
 const DELIVERY_CHARGE = 40;
 const FREE_DELIVERY_THRESHOLD = 500;
@@ -316,6 +318,7 @@ const acceptDeliveryAssignment = async (req, res) => {
 
   const shopOrder = order.shopOrders.id(assignment.shopOrderId);
   shopOrder.assignedDeliveryPartner = req.user.id;
+  shopOrder.status = 'out_for_delivery';
   await order.save();
 
   return res.status(StatusCodes.OK).json({ message: 'Assignment accepted successfully!' });
@@ -376,6 +379,88 @@ const getOrderById = async (req, res) => {
   return res.status(StatusCodes.OK).json(order);
 };
 
+const sendDeliveryOtp = async (req, res) => {
+  const { orderId, shopOrderId } = req.params;
+
+  const order = await Order.findById(orderId).populate('user');
+  if (!order) throw new ExpressError(StatusCodes.NOT_FOUND, 'Order not found');
+
+  const shopOrder = order.shopOrders.id(shopOrderId);
+  if (!shopOrder) throw new ExpressError(StatusCodes.NOT_FOUND, 'Shop order not found');
+
+  if (String(shopOrder.assignedDeliveryPartner) !== req.user.id) {
+    throw new ExpressError(StatusCodes.FORBIDDEN, 'Not authorized');
+  }
+  if (shopOrder.status !== 'out_for_delivery') {
+    throw new ExpressError(
+      StatusCodes.BAD_REQUEST,
+      'OTP allowed only when order is out for delivery'
+    );
+  }
+  if (
+    shopOrder.deliveryOtp &&
+    shopOrder.deliveryOtpExpiresAt &&
+    shopOrder.deliveryOtpExpiresAt > Date.now()
+  ) {
+    const remainingMinutes = Math.ceil((shopOrder.deliveryOtpExpiresAt - Date.now()) / (1000 * 60));
+    throw new ExpressError(
+      StatusCodes.BAD_REQUEST,
+      `OTP already sent. Try again after ${remainingMinutes} minutes`
+    );
+  }
+  const otp = crypto.randomInt(100000, 1000000).toString();
+  shopOrder.deliveryOtp = otp;
+  shopOrder.deliveryOtpExpiresAt = new Date(Date.now() + 5 * 60 * 1000);
+  await order.save();
+  await sendOtpEmail(
+    order.user.email,
+    'Delivery OTP',
+    `<p>Your OTP for delivery is <b>${otp}</b>. It expires in 5 minutes.</p>`
+  );
+
+  return res
+    .status(StatusCodes.OK)
+    .json({ message: `OTP sent successfully to ${order.user.fullName}` });
+};
+
+const verifyDeliveryOtp = async (req, res) => {
+  const { orderId, shopOrderId } = req.params;
+  const { otp } = req.body;
+
+  const order = await Order.findById(orderId).populate('user');
+  if (!order) throw new ExpressError(StatusCodes.NOT_FOUND, 'Order not found');
+
+  const shopOrder = order.shopOrders.id(shopOrderId);
+  if (!shopOrder) throw new ExpressError(StatusCodes.NOT_FOUND, 'Shop order not found');
+
+  if (String(shopOrder.assignedDeliveryPartner) !== req.user.id) {
+    throw new ExpressError(StatusCodes.FORBIDDEN, 'Not authorized');
+  }
+  if (shopOrder.status === 'delivered') {
+    throw new ExpressError(StatusCodes.BAD_REQUEST, 'Order already delivered');
+  }
+  if (
+    shopOrder.deliveryOtp !== otp ||
+    !shopOrder.deliveryOtpExpiresAt ||
+    shopOrder.deliveryOtpExpiresAt < Date.now()
+  ) {
+    throw new ExpressError(StatusCodes.BAD_REQUEST, 'Invalid or expired OTP');
+  }
+
+  shopOrder.status = 'delivered';
+  shopOrder.deliveredAt = new Date();
+  shopOrder.deliveryOtp = null;
+  shopOrder.deliveryOtpExpiresAt = null;
+  await order.save();
+
+  await DeliveryAssignment.updateOne(
+    { shopOrderId: shopOrder._id, order: order._id },
+    { status: 'completed', completedAt: new Date() }
+  );
+
+  return res.status(StatusCodes.OK).json({ message: 'Order delivered successfully!' });
+};
+
 export {
   createOrder,
   getOrders,
@@ -384,4 +469,6 @@ export {
   acceptDeliveryAssignment,
   getActiveDeliveryAssignment,
   getOrderById,
+  sendDeliveryOtp,
+  verifyDeliveryOtp,
 };

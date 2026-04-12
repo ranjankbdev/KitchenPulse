@@ -1,9 +1,12 @@
 import { useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
+import { ClipLoader } from 'react-spinners';
 import {
   getDeliveryAssignmentsAPI,
   acceptDeliveryAssignmentAPI,
   getActiveDeliveryAssignmentAPI,
+  verifyDeliveryOtpAPI,
+  sendDeliveryOtpAPI,
 } from '../services/orderService.js';
 import Navbar from './Navbar.jsx';
 import showToast from '../utils/toastHelper.js';
@@ -15,6 +18,7 @@ function DeliveryPartnerDashboard() {
   const [currentOrder, setCurrentOrder] = useState();
   const [loading, setLoading] = useState(false);
   const [showOtpBox, setShowOtpBox] = useState(false);
+  const [otp, setOtp] = useState('');
 
   const getDeliveryAssignments = async () => {
     try {
@@ -41,6 +45,34 @@ function DeliveryPartnerDashboard() {
       setCurrentOrder(result);
     } catch (error) {
       console.log(error);
+    }
+  };
+
+  const sendDeliveryOtp = async (e) => {
+    try {
+      setLoading(true);
+      const result = await sendDeliveryOtpAPI(currentOrder._id, currentOrder.shopOrder._id);
+      setShowOtpBox(true);
+      showToast('OTP sent to customer', 'info');
+    } catch (error) {
+      showToast(error, 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const verifyDeliveryOtp = async (e) => {
+    try {
+      setLoading(true);
+      const result = await verifyDeliveryOtpAPI(currentOrder._id, currentOrder.shopOrder._id, otp);
+      setShowOtpBox(false);
+      setOtp('');
+      setCurrentOrder(null);
+      showToast('Order Delivered Successfully!', 'success');
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -117,6 +149,37 @@ function DeliveryPartnerDashboard() {
 
               <DeliveryTracking data={currentOrder} />
 
+              {!showOtpBox ? (
+                <button
+                  className="mt-4 w-full bg-green-500 text-white font-semibold py-2 px-4 rounded-xl shadow-md hover:bg-green-600 active:scale-95 transition-all duration-200 cursor-pointer"
+                  disabled={loading}
+                  onClick={sendDeliveryOtp}
+                >
+                  {loading ? <ClipLoader size={20} color="white" /> : 'Mark As Delivered'}
+                </button>
+              ) : (
+                <div className="mt-4 p-4 border rounded-xl bg-gray-50">
+                  <p className="text-sm font-semibold mb-2">
+                    Enter OTP sent to{' '}
+                    <span className="text-orange-500 capitalize">{currentOrder.user.fullName}</span>
+                  </p>
+                  <input
+                    type="text"
+                    className="w-full border px-3 py-2 rounded-lg mb-3 focus:outline-none focus:ring-2 focus:ring-orange-400"
+                    placeholder="Enter OTP"
+                    onChange={(e) => setOtp(e.target.value)}
+                    value={otp}
+                  />
+
+                  <button
+                    className="w-full bg-orange-500 text-white py-2 rounded-lg font-semibold hover:bg-orange-600 transition-all"
+                    disabled={loading || !otp}
+                    onClick={verifyDeliveryOtp}
+                  >
+                    {loading ? 'Verifying...' : 'Submit OTP'}
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </div>
