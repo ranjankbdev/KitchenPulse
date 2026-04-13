@@ -119,7 +119,16 @@ function UserDashboard() {
         </h1>
         <div className="w-full h-auto flex flex-wrap gap-5 my-4 justify-center">
           {itemsToShow?.length > 0 ? (
-            itemsToShow.map((item) => <ItemCard key={item._id} data={item} />)
+            itemsToShow.map((item) => (
+              <ItemCard
+                key={item._id}
+                data={item}
+                className="max-w-71 sm:w-43"
+                imageHeightClass="h-41"
+                showActions={false}
+                showDescription={false}
+              />
+            ))
           ) : (
             <div className="w-full max-w-md p-6 bg-gray-50 rounded-2xl shadow-sm text-center mt-6">
               <FaStar className="text-gray-300 text-4xl mx-auto mb-2" />

@@ -3,16 +3,23 @@ import { FaRegStar } from 'react-icons/fa6';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToCart, increaseCartItem, decreaseCartItem } from '../redux/cartSlice';
 
+// render rating stars
 const renderStars = (rating = 0) =>
   Array.from({ length: 5 }).map((_, i) =>
     i < rating ? (
-      <FaStar key={i} className="text-yellow-500 text-lg" />
+      <FaStar key={i} className="text-yellow-500 text-base" />
     ) : (
-      <FaRegStar key={i} className="text-yellow-500 text-lg" />
+      <FaRegStar key={i} className="text-yellow-500 text-base" />
     )
   );
 
-function ItemCard({ data }) {
+function ItemCard({
+  data,
+  className = '',
+  imageHeightClass = '',
+  showActions = true,
+  showDescription = true,
+}) {
   const dispatch = useDispatch();
   const { cartItems } = useSelector((state) => state.cart);
 
@@ -20,13 +27,18 @@ function ItemCard({ data }) {
   const quantity = cartItem?.quantity || 0;
 
   return (
-    <div className="w-full rounded-2xl max-w-85 sm:max-w-66 md:max-w-72 lg:max-w-67 xl:max-w-55 border-2 border-[#ff4d2d] bg-white shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col">
-      <div className="relative w-full h-38 sm:h-42 md:h-47 xl:h-37 flex justify-center items-center bg-white">
-        <div className="absolute top-3 right-3 bg-white rounded-full p-1 shadow">
+    <div
+      className={`w-full rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden hover:shadow-lg transition-all duration-300 flex flex-col ${className}`}
+    >
+      {/* image */}
+      <div
+        className={`relative w-full flex justify-center items-center bg-white ${imageHeightClass}`}
+      >
+        <div className="absolute top-3 right-3 bg-white rounded-full p-1 shadow-sm">
           {data.foodType === 'veg' ? (
-            <FaLeaf className="text-green-600 text-lg" />
+            <FaLeaf className="text-green-600 text-base" />
           ) : (
-            <FaDrumstickBite className="text-red-600 text-lg" />
+            <FaDrumstickBite className="text-red-600 text-base" />
           )}
         </div>
 
@@ -37,9 +49,26 @@ function ItemCard({ data }) {
         />
       </div>
 
-      <div className="flex-1 flex flex-col p-2">
-        <h1 className="font-semibold text-gray-900 text-base truncate">{data.name}</h1>
+      {/* content */}
+      <div className="flex-1 flex flex-col p-3">
+        <div className="flex items-center justify-between gap-2">
+          <h1 className="font-semibold text-gray-900 text-base truncate">{data.name}</h1>
 
+          {!showActions && (
+            <span className="font-semibold text-gray-800 text-sm whitespace-nowrap">
+              ₹{data.price}
+            </span>
+          )}
+        </div>
+
+        {/* description */}
+        {showDescription && (
+          <p className="text-xs text-gray-500 mt-1 line-clamp-2 leading-relaxed">
+            Freshly prepared with rich flavors and quality ingredients.
+          </p>
+        )}
+
+        {/* rating */}
         <div className="flex items-center gap-1 mt-1">
           {renderStars(data.ratings?.average || 0)}
           <span className="text-xs text-gray-500">
@@ -48,36 +77,39 @@ function ItemCard({ data }) {
         </div>
       </div>
 
-      <div className="flex items-center justify-between mt-auto p-2">
-        <span className="font-bold text-gray-900 text-lg">₹{data.price}</span>
+      {/* actions */}
+      {showActions && (
+        <div className="flex items-center justify-between mt-auto p-3">
+          <span className="font-semibold text-gray-900 text-base">₹{data.price}</span>
 
-        {quantity === 0 ? (
-          <button
-            onClick={() => dispatch(addToCart(data))}
-            className="bg-[#ff4d2d] text-white px-4 py-1.5 rounded-lg hover:bg-[#e04325] cursor-pointer"
-          >
-            Add
-          </button>
-        ) : (
-          <div className="flex items-center border rounded-full overflow-hidden">
+          {quantity === 0 ? (
             <button
-              onClick={() => dispatch(decreaseCartItem(data._id))}
-              className="px-2 py-2 hover:bg-gray-300 cursor-pointer"
+              onClick={() => dispatch(addToCart(data))}
+              className="bg-[#ff4d2d] text-white px-4 py-1.5 rounded-lg hover:bg-[#e04325] transition cursor-pointer"
             >
-              <FaMinus size={12} />
+              Add
             </button>
+          ) : (
+            <div className="flex items-center border rounded-full overflow-hidden">
+              <button
+                onClick={() => dispatch(decreaseCartItem(data._id))}
+                className="px-2 py-2 hover:bg-gray-200 cursor-pointer"
+              >
+                <FaMinus size={12} />
+              </button>
 
-            <span className="px-3">{quantity}</span>
+              <span className="px-3">{quantity}</span>
 
-            <button
-              onClick={() => dispatch(increaseCartItem(data._id))}
-              className="px-2 py-2 hover:bg-gray-300 cursor-pointer"
-            >
-              <FaPlus size={12} />
-            </button>
-          </div>
-        )}
-      </div>
+              <button
+                onClick={() => dispatch(increaseCartItem(data._id))}
+                className="px-2 py-2 hover:bg-gray-200 cursor-pointer"
+              >
+                <FaPlus size={12} />
+              </button>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

@@ -116,7 +116,12 @@ function ShopPage() {
         {filteredItems.length > 0 ? (
           <div className="flex flex-wrap gap-6 justify-start">
             {filteredItems.map((item) => (
-              <ItemCard key={item._id} data={item} />
+              <ItemCard
+                key={item._id}
+                data={item}
+                className="max-w-83 sm:max-w-71 md:max-w-87 lg:max-w-73 xl:max-w-69"
+                imageHeightClass="h-55 md:h-59 lg:h-63 xl:h-61"
+              />
             ))}
           </div>
         ) : (
