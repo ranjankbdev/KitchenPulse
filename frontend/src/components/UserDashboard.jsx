@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { FaUtensils, FaStar } from 'react-icons/fa';
 import { categories } from '../data/category.js';
 import { BsShop } from 'react-icons/bs';
+import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { getShopsByCityAPI } from '../services/shopService.js';
 import { getItemsByCityAPI } from '../services/itemService.js';
@@ -19,6 +20,7 @@ import ItemCard from './ItemCard.jsx';
 import useGetMyOrders from '../hooks/useMyOrders.jsx';
 
 function UserDashboard() {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   useGetMyOrders();
   const { currentCity, shopsInMyCity, itemsInMyCity, searchQuery, searchItems } = useSelector(
@@ -95,6 +97,7 @@ function UserDashboard() {
                 name={shop.name}
                 image={shop.imageUrl}
                 className="max-w-67 sm:max-w-57 md:max-w-63 lg:max-w-60 xl:max-w-52 cursor-pointer"
+                onClick={() => navigate(`/shop/${shop._id}`)}
               />
             ))
           ) : (

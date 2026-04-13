@@ -3,6 +3,7 @@ import { ExpressError } from '../utils/ExpressError.js';
 import Shop from '../models/shopModel.js';
 import Item from '../models/itemModel.js';
 
+// create new shop
 const createShop = async (req, res) => {
   const { name, imageUrl, address, city, state } = req.body;
 
@@ -11,12 +12,14 @@ const createShop = async (req, res) => {
     throw new ExpressError(StatusCodes.BAD_REQUEST, 'Shop already exists!');
   }
 
+  // create shop
   const shop = await Shop.create({ name, imageUrl, owner: req.user.id, address, city, state });
 
   await shop.populate('owner');
   return res.status(StatusCodes.CREATED).json(shop);
 };
 
+// update existing shop
 const updateShop = async (req, res) => {
   const { name, imageUrl, address, city, state } = req.body;
   const existingShop = await Shop.findOne({ owner: req.user.id });
@@ -25,11 +28,16 @@ const updateShop = async (req, res) => {
     throw new ExpressError(StatusCodes.NOT_FOUND, 'Shop not found. Create first.');
   }
 
+  // update shop
   const updateData = { name, imageUrl, address, city, state };
   const updatedShop = await Shop.findByIdAndUpdate(existingShop._id, updateData, {
     new: true,
     runValidators: true,
   });
+
+  if (!updatedShop) {
+    throw new ExpressError(StatusCodes.NOT_FOUND, 'Shop update failed');
+  }
 
   await updatedShop.populate('owner');
   await updatedShop.populate({
@@ -40,6 +48,7 @@ const updateShop = async (req, res) => {
   return res.status(StatusCodes.OK).json(updatedShop);
 };
 
+// get logged-in user's shop
 const getMyShop = async (req, res) => {
   const existingShop = await Shop.findOne({ owner: req.user.id }).populate([
     { path: 'owner' },
@@ -49,6 +58,7 @@ const getMyShop = async (req, res) => {
   return res.status(StatusCodes.OK).json(existingShop || null);
 };
 
+// get shops by city
 const getShopsByCity = async (req, res) => {
   const { city } = req.params;
 
@@ -58,4 +68,14 @@ const getShopsByCity = async (req, res) => {
   return res.status(StatusCodes.OK).json(shops);
 };
 
-export { createShop, updateShop, getMyShop, getShopsByCity };
+// get shop by id
+const getShopById = async (req, res) => {
+  const { shopId } = req.params;
+
+  const shop = await Shop.findById(shopId).populate('items');
+  if (!shop) throw new ExpressError(StatusCodes.BAD_REQUEST, 'Shop not found!');
+
+  return res.status(StatusCodes.OK).json(shop);
+};
+
+export { createShop, updateShop, getMyShop, getShopsByCity, getShopById };

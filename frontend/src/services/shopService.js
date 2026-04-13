@@ -24,4 +24,9 @@ const getShopsByCityAPI = async (city) => {
   return data;
 };
 
-export { getMyShopAPI, createShopAPI, updateShopAPI, getShopsByCityAPI };
+const getShopByIdAPI = async (shopId) => {
+  const { data } = await axiosInstance.get(`/shop/${shopId}`);
+  return data;
+};
+
+export { getMyShopAPI, createShopAPI, updateShopAPI, getShopsByCityAPI, getShopByIdAPI };

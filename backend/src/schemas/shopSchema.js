@@ -1,5 +1,12 @@
 import Joi from 'joi';
-import { shopNameField, cityField, stateField, addressField, imageUrlField } from './baseSchema.js';
+import {
+  shopNameField,
+  cityField,
+  stateField,
+  addressField,
+  imageUrlField,
+  mongoIdField,
+} from './baseSchema.js';
 
 const createShopSchema = Joi.object({
   body: Joi.object({
@@ -29,4 +36,10 @@ const getShopsByCitySchema = Joi.object({
   }).required(),
 });
 
-export { createShopSchema, updateShopSchema , getShopsByCitySchema};
+const shopIdSchema = Joi.object({
+  params: Joi.object({
+    shopId: mongoIdField.required(),
+  }).required(),
+});
+
+export { createShopSchema, updateShopSchema, getShopsByCitySchema, shopIdSchema };
