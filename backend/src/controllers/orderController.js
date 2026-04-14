@@ -7,6 +7,13 @@ import User from '../models/userModel.js';
 import Item from '../models/itemModel.js';
 import DeliveryAssignment from '../models/deliveryAssignment.js';
 import { sendOtpEmail } from '../utils/emailService.js';
+import RazorPay from 'razorpay';
+import Config from '../config/index.js';
+
+let instance = new RazorPay({
+  key_id: Config.razorpayKeyId,
+  key_secret: Config.razorpayKeySecret,
+});
 
 const DELIVERY_CHARGE = 40;
 const FREE_DELIVERY_THRESHOLD = 500;
@@ -51,7 +58,7 @@ const createOrder = async (req, res) => {
         }
 
         subtotal += dbItem.price * i.quantity;
-
+        // store item
         shopOrderItems.push({
           item: dbItem._id,
           name: dbItem.name,
@@ -82,6 +89,32 @@ const createOrder = async (req, res) => {
     shopOrders,
   };
 
+  if (paymentMethod === 'online') {
+    // create Razorpay order
+    const razorpayOrder = await instance.orders.create({
+      amount: totalAmount * 100,
+      currency: 'INR',
+      receipt: `receipt_${Date.now()}`,
+    });
+
+    // save order in DB with razorpayOrderId
+    const newOrder = await Order.create({
+      ...orderData,
+      razorpayOrderId: razorpayOrder.id,
+      isPaid: false,
+    });
+
+    // send Razorpay details
+    return res.status(StatusCodes.CREATED).json({
+      orderId: newOrder._id,
+      razorpayOrderId: razorpayOrder.id,
+      amount: razorpayOrder.amount,
+      currency: razorpayOrder.currency,
+      key: Config.razorpayKeyId,
+    });
+  }
+
+  // COD — save and return
   const newOrder = await Order.create(orderData);
   // populate
   const populatedOrder = await Order.findById(newOrder._id)
@@ -89,6 +122,48 @@ const createOrder = async (req, res) => {
     .populate('shopOrders.shop', 'name');
 
   return res.status(StatusCodes.CREATED).json(populatedOrder);
+};
+
+const verifyPayment = async (req, res) => {
+  const { razorpay_payment_id, razorpay_order_id, razorpay_signature, orderId } = req.body;
+
+  // verify signature
+  const body = razorpay_order_id + '|' + razorpay_payment_id;
+
+  // hash it with our secret key
+  const expectedSignature = crypto
+    .createHmac('sha256', Config.razorpayKeySecret)
+    .update(body.toString())
+    .digest('hex');
+
+  if (expectedSignature !== razorpay_signature) {
+    throw new ExpressError(StatusCodes.BAD_REQUEST, 'Invalid payment signature');
+  }
+
+  const order = await Order.findById(orderId);
+
+  if (!order) throw new ExpressError(StatusCodes.NOT_FOUND, 'Order not found');
+
+  // prevent duplicate verification
+  if (order.isPaid) throw new ExpressError(StatusCodes.BAD_REQUEST, 'Order already paid');
+
+  // verify Razorpay order matches
+  if (order.razorpayOrderId !== razorpay_order_id) {
+    throw new ExpressError(StatusCodes.BAD_REQUEST, 'Order mismatch');
+  }
+
+  // mark payment success
+  order.isPaid = true;
+  order.razorpayPaymentId = razorpay_payment_id;
+  await order.save();
+
+  // populate order
+  const populatedOrder = await Order.findById(order._id)
+    .populate('user', 'fullName email mobileNumber')
+    .populate('shopOrders.shop', 'name')
+    .populate('shopOrders.owner', 'fullName socketId')
+    .populate('shopOrders.shopOrderItems.item', 'name imageUrl price');
+  return res.status(StatusCodes.OK).json(populatedOrder);
 };
 
 const getOrders = async (req, res) => {
@@ -296,6 +371,8 @@ const acceptDeliveryAssignment = async (req, res) => {
   const { assignmentId } = req.params;
   const assignment = await DeliveryAssignment.findById(assignmentId);
   if (!assignment) throw new ExpressError(StatusCodes.NOT_FOUND, 'Assignment not found');
+
+  // prevent accepting already taken assignments
   if (assignment.status !== 'broadcasted') {
     throw new ExpressError(StatusCodes.BAD_REQUEST, 'Assignment is expired');
   }
@@ -316,6 +393,7 @@ const acceptDeliveryAssignment = async (req, res) => {
   const order = await Order.findById(assignment.order);
   if (!order) throw new ExpressError(StatusCodes.NOT_FOUND, 'Order not found');
 
+  // update shop order with assigned partner
   const shopOrder = order.shopOrders.id(assignment.shopOrderId);
   shopOrder.assignedDeliveryPartner = req.user.id;
   shopOrder.status = 'out_for_delivery';
@@ -344,6 +422,7 @@ const getActiveDeliveryAssignment = async (req, res) => {
   );
   if (!shopOrder) throw new ExpressError(StatusCodes.NOT_FOUND, 'Shop order not found');
 
+  // extract coordinates
   const deliveryPartnerLocation = {
     lat: assignment.assignedTo.currentLocation.coordinates?.[1] || null,
     lon: assignment.assignedTo.currentLocation.coordinates?.[0] || null,
@@ -388,6 +467,7 @@ const sendDeliveryOtp = async (req, res) => {
   const shopOrder = order.shopOrders.id(shopOrderId);
   if (!shopOrder) throw new ExpressError(StatusCodes.NOT_FOUND, 'Shop order not found');
 
+  // only the assigned delivery partner can send OTP
   if (String(shopOrder.assignedDeliveryPartner) !== req.user.id) {
     throw new ExpressError(StatusCodes.FORBIDDEN, 'Not authorized');
   }
@@ -397,6 +477,7 @@ const sendDeliveryOtp = async (req, res) => {
       'OTP allowed only when order is out for delivery'
     );
   }
+  // prevent OTP spam
   if (
     shopOrder.deliveryOtp &&
     shopOrder.deliveryOtpExpiresAt &&
@@ -408,6 +489,7 @@ const sendDeliveryOtp = async (req, res) => {
       `OTP already sent. Try again after ${remainingMinutes} minutes`
     );
   }
+  // generate 6-digit OTP
   const otp = crypto.randomInt(100000, 1000000).toString();
   shopOrder.deliveryOtp = otp;
   shopOrder.deliveryOtpExpiresAt = new Date(Date.now() + 5 * 60 * 1000);
@@ -433,12 +515,14 @@ const verifyDeliveryOtp = async (req, res) => {
   const shopOrder = order.shopOrders.id(shopOrderId);
   if (!shopOrder) throw new ExpressError(StatusCodes.NOT_FOUND, 'Shop order not found');
 
+  // only the assigned delivery partner can verify OTP
   if (String(shopOrder.assignedDeliveryPartner) !== req.user.id) {
     throw new ExpressError(StatusCodes.FORBIDDEN, 'Not authorized');
   }
   if (shopOrder.status === 'delivered') {
     throw new ExpressError(StatusCodes.BAD_REQUEST, 'Order already delivered');
   }
+  // check OTP
   if (
     shopOrder.deliveryOtp !== otp ||
     !shopOrder.deliveryOtpExpiresAt ||
@@ -447,12 +531,14 @@ const verifyDeliveryOtp = async (req, res) => {
     throw new ExpressError(StatusCodes.BAD_REQUEST, 'Invalid or expired OTP');
   }
 
+  // mark delivered and clear OTP
   shopOrder.status = 'delivered';
   shopOrder.deliveredAt = new Date();
   shopOrder.deliveryOtp = null;
   shopOrder.deliveryOtpExpiresAt = null;
   await order.save();
 
+  // mark assignment as completed
   await DeliveryAssignment.updateOne(
     { shopOrderId: shopOrder._id, order: order._id },
     { status: 'completed', completedAt: new Date() }
@@ -471,4 +557,5 @@ export {
   getOrderById,
   sendDeliveryOtp,
   verifyDeliveryOtp,
+  verifyPayment,
 };

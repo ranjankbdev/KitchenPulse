@@ -168,6 +168,21 @@ const searchQueryField = Joi.string().trim().min(1).max(100).messages({
   'any.required': 'Search query is required',
 });
 
+const razorpayPaymentIdField = Joi.string().trim().messages({
+  'string.empty': 'Payment ID is required',
+  'any.required': 'Payment ID is required',
+});
+
+const razorpayOrderIdField = Joi.string().trim().messages({
+  'string.empty': 'Razorpay order ID is required',
+  'any.required': 'Razorpay order ID is required',
+});
+
+const razorpaySignatureField = Joi.string().trim().messages({
+  'string.empty': 'Payment signature is required',
+  'any.required': 'Payment signature is required',
+});
+
 export {
   fullNameField,
   emailField,
@@ -192,4 +207,7 @@ export {
   latitudeField,
   longitudeField,
   searchQueryField,
+  razorpayOrderIdField,
+  razorpayPaymentIdField,
+  razorpaySignatureField,
 };

@@ -6,6 +6,9 @@ import {
   paymentMethodField,
   orderStatusField,
   otpField,
+  razorpaySignatureField,
+  razorpayOrderIdField,
+  razorpayPaymentIdField,
 } from './baseSchema.js';
 
 const createOrderSchema = Joi.object({
@@ -59,6 +62,15 @@ const verifyDeliveryOtpSchema = Joi.object({
   }).required(),
 });
 
+const verifyPaymentSchema = Joi.object({
+  body: Joi.object({
+    razorpay_payment_id: razorpayPaymentIdField.required(),
+    razorpay_order_id: razorpayOrderIdField.required(),
+    razorpay_signature: razorpaySignatureField.required(),
+    orderId: mongoIdField.required(),
+  }).required(),
+});
+
 export {
   createOrderSchema,
   updateShopOrderStatusSchema,
@@ -66,4 +78,5 @@ export {
   orderIdSchema,
   sendDeliveryOtpSchema,
   verifyDeliveryOtpSchema,
+  verifyPaymentSchema,
 };
