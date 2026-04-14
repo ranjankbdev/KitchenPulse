@@ -1,22 +1,30 @@
-import { useEffect, useState } from 'react';
-import { useNavigate, useParams, Link } from 'react-router-dom';
+import { useEffect, useState, useRef } from 'react';
+import { useNavigate, useParams, Link, useLocation } from 'react-router-dom';
 import showToast from '../utils/toastHelper.js';
 import { getShopByIdAPI } from '../services/shopService.js';
-import { FaStar, FaUtensils, FaArrowLeft } from 'react-icons/fa';
+import { FaStar, FaUtensils, FaArrowLeft, FaShoppingCart } from 'react-icons/fa';
 import HorizontalScroll from '../components/HorizontalScroll.jsx';
 import CategoryCard from '../components/CategoryCard.jsx';
 import { FaLocationDot } from 'react-icons/fa6';
 import { categories } from '../data/category.js';
+import { useSelector } from 'react-redux';
 import ItemCard from '../components/ItemCard.jsx';
 
 function ShopPage() {
   const { shopId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  const itemRefs = useRef({});
 
   const [shop, setShop] = useState(null);
   const [items, setItems] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [filteredItems, setFilteredItems] = useState([]);
+  const [activeHighlightId, setActiveHighlightId] = useState(location.state?.itemId);
+
+  const { cartItems } = useSelector((state) => state.cart);
+
+  const totalQuantity = cartItems?.reduce((sum, item) => sum + item.quantity, 0);
 
   const handleShopData = async () => {
     try {
@@ -50,6 +58,22 @@ function ShopPage() {
     return availableCategories.includes(c.value);
   });
 
+  useEffect(() => {
+    if (activeHighlightId && itemRefs.current[activeHighlightId]) {
+      itemRefs.current[activeHighlightId].scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+      });
+
+      // remove highlight after 5 sec
+      const timer = setTimeout(() => {
+        setActiveHighlightId(null);
+      }, 5000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [activeHighlightId, filteredItems]);
+
   return (
     <div className="min-h-screen bg-gray-50">
       <button
@@ -59,6 +83,17 @@ function ShopPage() {
         <FaArrowLeft />
         <span>Back</span>
       </button>
+
+      {/* cart icon */}
+      <div
+        className="absolute top-4 right-4 z-20 bg-white/90 hover:bg-white text-[#ff4d2d] p-3 rounded-full shadow-md cursor-pointer transition"
+        onClick={() => navigate('/cart', { state: { from: `/shop/${shopId}` } })}
+      >
+        <FaShoppingCart className="text-xl" />
+        <span className="absolute top-0 right-0 w-4 h-4 bg-[#ff4d2d] text-white text-[10px] font-bold rounded-full flex items-center justify-center leading-none pointer-events-none">
+          {totalQuantity}
+        </span>
+      </div>
 
       {shop && (
         <div className="relative w-full h-64 md:h-80 lg:h-96">
@@ -98,7 +133,7 @@ function ShopPage() {
                 key={cate.name}
                 name={cate.name}
                 image={cate.image}
-                className="max-w-50 sm:max-w-45 md:max-w-57 xl:max-w-51 h-50"
+                className="max-w-50 sm:max-w-45 md:max-w-57 xl:max-w-51 h-50 cursor-pointer"
                 onClick={() => setSelectedCategory(cate.value)}
                 isActive={cate.value === selectedCategory}
               />
@@ -116,12 +151,19 @@ function ShopPage() {
         {filteredItems.length > 0 ? (
           <div className="flex flex-wrap gap-6 justify-start">
             {filteredItems.map((item) => (
-              <ItemCard
+              <div
                 key={item._id}
-                data={item}
-                className="max-w-83 sm:max-w-71 md:max-w-87 lg:max-w-73 xl:max-w-69"
-                imageHeightClass="h-55 md:h-59 lg:h-63 xl:h-61"
-              />
+                ref={(el) => (itemRefs.current[item._id] = el)}
+                className={
+                  item._id === activeHighlightId ? 'ring-2 ring-[#ff4d2d] rounded-2xl' : ''
+                }
+              >
+                <ItemCard
+                  data={item}
+                  className="max-w-83 sm:max-w-71 md:max-w-87 lg:max-w-73 xl:max-w-69"
+                  imageHeightClass="h-55 md:h-59 lg:h-63 xl:h-61"
+                />
+              </div>
             ))}
           </div>
         ) : (

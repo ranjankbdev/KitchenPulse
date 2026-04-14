@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, use } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { FiShoppingCart } from 'react-icons/fi';
 import { IoIosSearch } from 'react-icons/io';
 import { FaLocationDot } from 'react-icons/fa6';
@@ -188,7 +188,7 @@ function Navbar() {
               {/* Cart */}
               <div className="relative group">
                 <button
-                  onClick={() => navigate('/cart')}
+                  onClick={() => navigate('/cart', { state: { from: '/' } })}
                   aria-label="Open cart"
                   type="button"
                   className="flex items-center justify-center p-2 rounded-lg hover:bg-[#ff4d2d]/10 cursor-pointer transition-colors"

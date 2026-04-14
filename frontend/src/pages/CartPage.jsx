@@ -1,11 +1,13 @@
 import { IoIosArrowRoundBack } from 'react-icons/io';
 import { FiShoppingCart } from 'react-icons/fi';
 import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import CartItemCard from '../components/CartItemCard';
 
 function CartPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from;
   const { cartItems, totalAmount } = useSelector((state) => state.cart);
 
   const totalQuantity = cartItems?.reduce((sum, item) => sum + item.quantity, 0);
@@ -17,7 +19,7 @@ function CartPage() {
         <div className="flex items-center gap-2 mb-6">
           <button
             className="z-10 hover:bg-[#ff4d2d]/20 rounded cursor-pointer"
-            onClick={() => navigate('/')}
+            onClick={() => navigate(from || '/')}
           >
             <IoIosArrowRoundBack size={35} className="text-[#ff4d2d]" />
           </button>

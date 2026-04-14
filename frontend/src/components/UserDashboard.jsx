@@ -123,10 +123,11 @@ function UserDashboard() {
               <ItemCard
                 key={item._id}
                 data={item}
-                className="max-w-71 sm:w-43"
+                className="max-w-71 sm:w-43 cursor-pointer"
                 imageHeightClass="h-41"
                 showActions={false}
                 showDescription={false}
+                onClick={() => navigate(`/shop/${item.shop}`, { state: { itemId: item._id } })}
               />
             ))
           ) : (

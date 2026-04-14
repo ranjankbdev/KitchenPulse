@@ -19,6 +19,7 @@ function ItemCard({
   imageHeightClass = '',
   showActions = true,
   showDescription = true,
+  onClick,
 }) {
   const dispatch = useDispatch();
   const { cartItems } = useSelector((state) => state.cart);
@@ -28,6 +29,7 @@ function ItemCard({
 
   return (
     <div
+      onClick={onClick}
       className={`w-full rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden hover:shadow-lg transition-all duration-300 flex flex-col ${className}`}
     >
       {/* image */}
@@ -79,12 +81,15 @@ function ItemCard({
 
       {/* actions */}
       {showActions && (
-        <div className="flex items-center justify-between mt-auto p-3">
+        <div className="flex items-center justify-between mt-auto p-3 h-15">
           <span className="font-semibold text-gray-900 text-base">₹{data.price}</span>
 
           {quantity === 0 ? (
             <button
-              onClick={() => dispatch(addToCart(data))}
+              onClick={(e) => {
+                e.stopPropagation();
+                dispatch(addToCart(data));
+              }}
               className="bg-[#ff4d2d] text-white px-4 py-1.5 rounded-lg hover:bg-[#e04325] transition cursor-pointer"
             >
               Add
@@ -92,7 +97,10 @@ function ItemCard({
           ) : (
             <div className="flex items-center border rounded-full overflow-hidden">
               <button
-                onClick={() => dispatch(decreaseCartItem(data._id))}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  dispatch(decreaseCartItem(data._id));
+                }}
                 className="px-2 py-2 hover:bg-gray-200 cursor-pointer"
               >
                 <FaMinus size={12} />
@@ -101,7 +109,10 @@ function ItemCard({
               <span className="px-3">{quantity}</span>
 
               <button
-                onClick={() => dispatch(increaseCartItem(data._id))}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  dispatch(increaseCartItem(data._id));
+                }}
                 className="px-2 py-2 hover:bg-gray-200 cursor-pointer"
               >
                 <FaPlus size={12} />
