@@ -96,7 +96,7 @@ function UserDashboard() {
                 key={shop._id}
                 name={shop.name}
                 image={shop.imageUrl}
-                className="max-w-67 sm:max-w-57 md:max-w-63 lg:max-w-60 xl:max-w-52 cursor-pointer"
+                className="max-w-53 cursor-pointer h-45"
                 onClick={() => navigate(`/shop/${shop._id}`)}
               />
             ))
@@ -117,17 +117,20 @@ function UserDashboard() {
               ? `${selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)} Items`
               : 'Recommended for You'}
         </h1>
-        <div className="w-full h-auto flex flex-wrap gap-5 my-4 justify-center">
+        <div
+          className={`w-full h-auto flex flex-wrap gap-5 my-4 ${!itemsToShow?.length > 0 ? 'justify-center' : ''} `}
+        >
           {itemsToShow?.length > 0 ? (
             itemsToShow.map((item) => (
               <ItemCard
                 key={item._id}
                 data={item}
-                className="max-w-71 sm:w-43 cursor-pointer"
-                imageHeightClass="h-41"
+                className="max-w-85 sm:w-42 md:w-47 lg:w-50 xl:w-55 cursor-pointer"
+                imageHeightClass="h-45"
                 showActions={false}
                 showDescription={false}
-                onClick={() => navigate(`/shop/${item.shop}`, { state: { itemId: item._id } })}
+                shopName={item.shop?.name}
+                onClick={() => navigate(`/shop/${item.shop._id}`, { state: { itemId: item._id } })}
               />
             ))
           ) : (

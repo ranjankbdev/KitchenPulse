@@ -19,6 +19,7 @@ function ItemCard({
   imageHeightClass = '',
   showActions = true,
   showDescription = true,
+  shopName = null,
   onClick,
 }) {
   const dispatch = useDispatch();
@@ -62,6 +63,8 @@ function ItemCard({
             </span>
           )}
         </div>
+
+        {shopName && <p className="text-xs text-gray-400 mt-0.5">{shopName}</p>}
 
         {/* description */}
         {showDescription && (

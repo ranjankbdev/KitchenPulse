@@ -70,7 +70,7 @@ const getItemsByCity = async (req, res) => {
 
   const shops = await Shop.find({ city: city.toLowerCase().trim() });
   const shopIds = shops.map((shop) => shop._id);
-  const items = await Item.find({ shop: { $in: shopIds } });
+  const items = await Item.find({ shop: { $in: shopIds } }).populate('shop', 'name');
 
   return res.status(StatusCodes.OK).json(items);
 };

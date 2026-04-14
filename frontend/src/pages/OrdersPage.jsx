@@ -17,7 +17,7 @@ function OrdersPage() {
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-orange-50 px-4 py-10">
-      <div className="w-full max-w-xl bg-white shadow-xl rounded-2xl p-8 border border-orange-100 relative">
+      <div className="w-full max-w-2xl bg-white shadow-xl rounded-2xl p-8 border border-orange-100 relative">
         <div className="flex items-center mb-6 w-full">
           <button
             onClick={() => navigate('/')}
