@@ -9,6 +9,7 @@ import DeliveryAssignment from '../models/deliveryAssignment.js';
 import { sendOtpEmail } from '../utils/emailService.js';
 import RazorPay from 'razorpay';
 import Config from '../config/index.js';
+import Rating from '../models/ratingModel.js';
 
 let instance = new RazorPay({
   key_id: Config.razorpayKeyId,
@@ -175,8 +176,32 @@ const getOrders = async (req, res) => {
       .sort({ createdAt: -1 })
       .populate('shopOrders.shop', 'name')
       .populate('shopOrders.owner', 'fullName email mobileNumber')
-      .populate('shopOrders.shopOrderItems.item', 'name imageUrl price');
+      .populate('shopOrders.shopOrderItems.item', 'name imageUrl price ratings')
+      .lean();
 
+    // fetch all ratings
+    const ratings = await Rating.find({ user: req.user.id }).lean();
+    // create a map for fast lookup
+    const ratingMap = new Map();
+    for (const r of ratings) {
+      const key = `${r.order?.toString()}-${r.item?.toString()}`;
+      ratingMap.set(key, r.rating);
+    }
+
+    // loop through orders → shopOrders → items
+    for (const order of orders) {
+      for (const shopOrder of order.shopOrders) {
+        for (const orderItem of shopOrder.shopOrderItems) {
+          const itemId = orderItem.item?._id?.toString();
+          // skip if itemId is invalid
+          if (!itemId) continue;
+
+          const key = `${order._id.toString()}-${itemId}`;
+          // attach user's rating to each order item (for frontend use)
+          orderItem.userRating = ratingMap.get(key) || null;
+        }
+      }
+    }
     return res.status(StatusCodes.OK).json(orders);
   }
 

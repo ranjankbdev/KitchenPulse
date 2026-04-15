@@ -183,6 +183,14 @@ const razorpaySignatureField = Joi.string().trim().messages({
   'any.required': 'Payment signature is required',
 });
 
+const ratingField = Joi.number().integer().min(1).max(5).required().messages({
+  'number.base': 'Rating must be a number',
+  'number.integer': 'Rating must be a whole number',
+  'number.min': 'Rating must be at least 1',
+  'number.max': 'Rating cannot exceed 5',
+  'any.required': 'Rating is required',
+});
+
 export {
   fullNameField,
   emailField,
@@ -210,4 +218,5 @@ export {
   razorpayOrderIdField,
   razorpayPaymentIdField,
   razorpaySignatureField,
+  ratingField,
 };
