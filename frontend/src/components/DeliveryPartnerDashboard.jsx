@@ -25,7 +25,7 @@ function DeliveryPartnerDashboard() {
       const result = await getDeliveryAssignmentsAPI();
       setAvailableAssignments(result);
     } catch (error) {
-      console.log(error);
+      showToast(error, 'error');
     }
   };
 
@@ -35,7 +35,7 @@ function DeliveryPartnerDashboard() {
       await getActiveDeliveryAssignment();
       showToast('Delivery assignment accepted successfully!', 'success');
     } catch (error) {
-      console.log(error);
+      showToast(error, 'error');
     }
   };
 
@@ -44,7 +44,7 @@ function DeliveryPartnerDashboard() {
       const result = await getActiveDeliveryAssignmentAPI();
       setCurrentOrder(result);
     } catch (error) {
-      console.log(error);
+      showToast(error, 'error');
     }
   };
 
@@ -70,7 +70,7 @@ function DeliveryPartnerDashboard() {
       setCurrentOrder(null);
       showToast('Order Delivered Successfully!', 'success');
     } catch (error) {
-      console.log(error);
+      showToast(error, 'error');
     } finally {
       setLoading(false);
     }
@@ -172,7 +172,7 @@ function DeliveryPartnerDashboard() {
                   />
 
                   <button
-                    className="w-full bg-orange-500 text-white py-2 rounded-lg font-semibold hover:bg-orange-600 transition-all"
+                    className="w-full bg-orange-500 text-white py-2 rounded-lg font-semibold hover:bg-orange-600 transition-all cursor-pointer"
                     disabled={loading || !otp}
                     onClick={verifyDeliveryOtp}
                   >

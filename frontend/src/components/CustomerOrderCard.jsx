@@ -1,6 +1,62 @@
 import { useNavigate } from 'react-router-dom';
-import { IoReceiptOutline, IoTimeOutline } from 'react-icons/io5';
-import { IoLocationOutline } from 'react-icons/io5';
+import { IoReceiptOutline, IoTimeOutline, IoLocationOutline } from 'react-icons/io5';
+import { useState, useEffect } from 'react';
+import { FaStar } from 'react-icons/fa';
+import { rateItemAPI } from '../services/ratingService.js';
+import showToast from '../utils/toastHelper.js';
+
+function StarRating({ itemId, orderId, existingRating }) {
+  const [selected, setSelected] = useState(existingRating || 0);
+  const [hovered, setHovered] = useState(0);
+  const [rated, setRated] = useState(!!existingRating);
+  const [loading, setLoading] = useState(false);
+
+  const handleRate = async (star) => {
+    if (rated || loading) return;
+    try {
+      setLoading(true);
+      const res = await rateItemAPI({ rating: star, orderId, itemId });
+      if (res?.message) {
+        setSelected(star);
+        setRated(true);
+        showToast('Rating submitted successfully!', 'success');
+      }
+    } catch (error) {
+      showToast(error, 'error');
+      setRated(false);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (existingRating) {
+      setSelected(existingRating);
+      setRated(true);
+    }
+  }, [existingRating]);
+
+  if (rated) {
+    return <p className="text-xs text-green-600 font-medium mt-1">Rated {selected} ★</p>;
+  }
+
+  return (
+    <div className="flex items-center gap-1 mt-1">
+      {[1, 2, 3, 4, 5].map((star) => (
+        <FaStar
+          key={star}
+          size={16}
+          className={`cursor-pointer transition-colors ${
+            star <= (hovered || selected) ? 'text-yellow-400' : 'text-gray-300'
+          }`}
+          onMouseEnter={() => setHovered(star)}
+          onMouseLeave={() => setHovered(0)}
+          onClick={() => handleRate(star)}
+        />
+      ))}
+    </div>
+  );
+}
 
 function CustomerOrderCard({ data }) {
   const navigate = useNavigate();
@@ -82,6 +138,14 @@ function CustomerOrderCard({ data }) {
                     <p className="text-xs text-gray-500">
                       Qty {item.quantity} × ₹{item.price}
                     </p>
+                    {/* rating */}
+                    {shopOrder.status === 'delivered' && (
+                      <StarRating
+                        itemId={item.item?._id}
+                        orderId={data._id}
+                        existingRating={item.userRating}
+                      />
+                    )}
                   </div>
                 );
               })}
