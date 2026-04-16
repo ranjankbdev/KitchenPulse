@@ -19,8 +19,14 @@ function DeliveryTracking({ data }) {
   const customerlon = data?.customerLocation?.lon;
   const deliveryPartnerLat = data?.deliveryPartnerLocation?.lat;
   const deliveryPartnerlon = data?.deliveryPartnerLocation?.lon;
-  console.log(customerLat, customerlon)
-  if (!customerLat || !customerlon || !deliveryPartnerLat || !deliveryPartnerlon) return null;
+
+  if (
+  customerLat == null ||
+  customerlon == null ||
+  deliveryPartnerLat == null ||
+  deliveryPartnerlon == null
+)
+  return <p className="text-center text-sm text-gray-400">Loading map...</p>;
   const path = [
     [deliveryPartnerLat, deliveryPartnerlon],
     [customerLat, customerlon],

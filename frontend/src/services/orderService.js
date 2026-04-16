@@ -59,6 +59,11 @@ const verifyPaymentAPI = async (paymentData) => {
   const { data } = await axiosInstance.post(`/order/verify-payment`, paymentData);
   return data;
 };
+// get delivery partner earnings
+const getEarningsAPI = async () => {
+  const { data } = await axiosInstance.get('/order/earnings');
+  return data;
+};
 
 export {
   createOrderAPI,
@@ -71,4 +76,5 @@ export {
   sendDeliveryOtpAPI,
   verifyDeliveryOtpAPI,
   verifyPaymentAPI,
+  getEarningsAPI,
 };
