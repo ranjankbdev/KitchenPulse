@@ -40,6 +40,10 @@ const deliveryAssignmentSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
+    commission: {
+      type: Number,
+      default: 0,
+    },
   },
   { timestamps: true }
 );

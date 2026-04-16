@@ -7,6 +7,7 @@ import {
   createOrder,
   getActiveDeliveryAssignment,
   getDeliveryAssignments,
+  getEarnings,
   getOrderById,
   getOrders,
   sendDeliveryOtp,
@@ -37,6 +38,9 @@ orderRouter.get('/active', verifyToken, wrapAsync(getActiveDeliveryAssignment));
 
 // get all delivery assignments
 orderRouter.get('/assignments', verifyToken, wrapAsync(getDeliveryAssignments));
+
+// get earnings for delivery partner
+orderRouter.get('/earnings', verifyToken, wrapAsync(getEarnings))
 
 // verify razorpay payment
 orderRouter.post(

@@ -18,6 +18,7 @@ let instance = new RazorPay({
 
 const DELIVERY_CHARGE = 40;
 const FREE_DELIVERY_THRESHOLD = 500;
+const DELIVERYPARTNER_COMMISSION = 30;
 
 const createOrder = async (req, res) => {
   const { cartItems, paymentMethod, deliveryAddress } = req.body;
@@ -382,7 +383,8 @@ const getDeliveryAssignments = async (req, res) => {
     return {
       assignmentId: a._id,
       orderId: a.order._id,
-      shopName: a.shop.name,
+      shopName: a.shop?.name,
+      shopAddress: a.shop?.address,
       deliveryAddress: a.order.deliveryAddress,
       items: shopOrder?.shopOrderItems || [],
       subtotal: shopOrder?.subtotal,
@@ -462,6 +464,7 @@ const getActiveDeliveryAssignment = async (req, res) => {
     _id: assignment.order._id,
     user: assignment.order.user,
     shopOrder,
+    shopName: assignment.shop?.name,
     deliveryAddress: assignment.order.deliveryAddress,
     deliveryPartnerLocation,
     customerLocation,
@@ -563,13 +566,33 @@ const verifyDeliveryOtp = async (req, res) => {
   shopOrder.deliveryOtpExpiresAt = null;
   await order.save();
 
-  // mark assignment as completed
+  // mark assignment as completed and set commission earned
   await DeliveryAssignment.updateOne(
     { shopOrderId: shopOrder._id, order: order._id },
-    { status: 'completed', completedAt: new Date() }
+    { status: 'completed', completedAt: new Date(), commission: DELIVERYPARTNER_COMMISSION }
   );
 
   return res.status(StatusCodes.OK).json({ message: 'Order delivered successfully!' });
+};
+
+const getEarnings = async (req, res) => {
+  const assignments = await DeliveryAssignment.find({
+    assignedTo: req.user.id,
+    status: 'completed',
+  })
+    .populate('shop', 'name')
+    .populate('order', '_id')
+    .sort({ completedAt: -1 });
+
+  const earnings = assignments.map((a) => ({
+    assignmentId: a._id,
+    orderId: a.order?._id,
+    shopName: a.shop?.name,
+    commission: a.commission,
+    completedAt: a.completedAt,
+  }));
+
+  return res.status(StatusCodes.OK).json(earnings);
 };
 
 export {
@@ -583,4 +606,5 @@ export {
   sendDeliveryOtp,
   verifyDeliveryOtp,
   verifyPayment,
+  getEarnings,
 };
