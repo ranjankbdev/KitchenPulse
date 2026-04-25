@@ -8,6 +8,8 @@ function useGetMyOrders() {
   const dispatch = useDispatch();
   const { userData } = useSelector((state) => state.user);
   useEffect(() => {
+    if (!userData) return;
+
     const fetchOrders = async () => {
       try {
         const result = await getOrdersAPI();
@@ -16,9 +18,9 @@ function useGetMyOrders() {
         showToast(error, 'error');
       }
     };
-    
+
     fetchOrders();
-  }, [userData]);
+  }, [userData, dispatch]);
 }
 
 export default useGetMyOrders;

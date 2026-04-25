@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { useNavigate, useParams, Link, useLocation } from 'react-router-dom';
+import { ClipLoader } from 'react-spinners';
 import showToast from '../utils/toastHelper.js';
 import { getShopByIdAPI } from '../services/shopService.js';
 import { FaStar, FaUtensils, FaArrowLeft, FaShoppingCart } from 'react-icons/fa';
@@ -21,6 +22,7 @@ function ShopPage() {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [filteredItems, setFilteredItems] = useState([]);
   const [activeHighlightId, setActiveHighlightId] = useState(location.state?.itemId);
+  const [loading, setLoading] = useState(false);
 
   const { cartItems } = useSelector((state) => state.cart);
 
@@ -28,12 +30,15 @@ function ShopPage() {
 
   const handleShopData = async () => {
     try {
+      setLoading(true);
       const result = await getShopByIdAPI(shopId);
       setShop(result);
       setItems(result.items);
     } catch (error) {
       showToast('Failed to load shop data', 'error');
       console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -76,6 +81,11 @@ function ShopPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {loading && (
+        <div className="flex justify-center items-center fixed inset-0 z-50">
+          <ClipLoader size={50} color="#ff4d2d" />
+        </div>
+      )}
       <button
         className="absolute top-4 left-4 z-20 flex items-center gap-2 bg-black/50 hover:bg-black/70 text-white px-3 py-2 rounded-full shadow-md transition cursor-pointer"
         onClick={() => navigate('/')}
@@ -95,7 +105,7 @@ function ShopPage() {
         </span>
       </div>
 
-      {shop && (
+      {!loading && shop && (
         <div className="relative w-full h-64 md:h-80 lg:h-96">
           <img src={shop.imageUrl} alt={shop.name} className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-linear-to-t from-black/60 via-black/20 to-transparent flex flex-col justify-end p-6 text-white">

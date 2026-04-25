@@ -112,6 +112,8 @@ function DeliveryPartnerDashboard() {
   };
 
   useEffect(() => {
+    if (!userData) return;
+
     getDeliveryAssignments();
     getActiveDeliveryAssignment();
     getEarnings();

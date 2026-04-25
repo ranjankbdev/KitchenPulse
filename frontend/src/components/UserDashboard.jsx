@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { FaUtensils, FaStar } from 'react-icons/fa';
 import { categories } from '../data/category.js';
 import { BsShop } from 'react-icons/bs';
+import { ClipLoader } from 'react-spinners';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { getShopsByCityAPI } from '../services/shopService.js';
@@ -28,12 +29,14 @@ function UserDashboard() {
   );
 
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (!currentCity) return;
 
     const fetchData = async () => {
       try {
+        setLoading(true);
         const [shops, items] = await Promise.all([
           getShopsByCityAPI(currentCity),
           getItemsByCityAPI(currentCity),
@@ -43,6 +46,8 @@ function UserDashboard() {
         dispatch(setItemsInMyCity(items));
       } catch (error) {
         showToast(error, 'error');
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -90,7 +95,11 @@ function UserDashboard() {
           Popular Restaurants in {currentCity}
         </h1>
         <HorizontalScroll>
-          {shopsInMyCity?.length > 0 ? (
+          {loading ? (
+            <div className="w-full flex justify-center items-center py-6">
+              <ClipLoader size={30} color="#ff4d2d" />
+            </div>
+          ) : shopsInMyCity?.length > 0 ? (
             shopsInMyCity.map((shop) => (
               <CategoryCard
                 key={shop._id}
@@ -120,7 +129,11 @@ function UserDashboard() {
         <div
           className={`w-full h-auto flex flex-wrap gap-5 my-4 ${!itemsToShow?.length > 0 ? 'justify-center' : ''} `}
         >
-          {itemsToShow?.length > 0 ? (
+          {loading ? (
+            <div className="w-full flex justify-center items-center py-10">
+              <ClipLoader size={30} color="#ff4d2d" />
+            </div>
+          ) : itemsToShow?.length > 0 ? (
             itemsToShow.map((item) => (
               <ItemCard
                 key={item._id}

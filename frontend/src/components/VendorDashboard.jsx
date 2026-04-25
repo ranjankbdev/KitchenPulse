@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { BsShop } from 'react-icons/bs';
 import { FaPlus } from 'react-icons/fa6';
 import { FiEdit } from 'react-icons/fi';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { ClipLoader } from 'react-spinners';
 import { MdRestaurantMenu } from 'react-icons/md';
 import { setMyShopData } from '../redux/vendorSlice.js';
 import { getMyShopAPI } from '../services/shopService.js';
@@ -20,13 +21,20 @@ function VendorDashboard() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const [loading, setLoading] = useState(false);
+
   useEffect(() => {
+    if (!userData) return;
+
     const fetchShop = async () => {
       try {
+        setLoading(true);
         const result = await getMyShopAPI();
         dispatch(setMyShopData(result));
       } catch (error) {
         showToast(error, 'error');
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -37,8 +45,14 @@ function VendorDashboard() {
     <div>
       <Navbar />
 
+      {loading && (
+        <div className="flex justify-center items-center fixed inset-0">
+          <ClipLoader size={40} color="#ff4d2d" />
+        </div>
+      )}
+
       {/* NO SHOP */}
-      {!myShopData && (
+      {!loading && !myShopData && (
         <div className="flex justify-center items-center p-4 sm:p-6">
           <div className="w-full max-w-md bg-white shadow-lg rounded-2xl p-6 border border-gray-100 hover:shadow-xl transition-shadow duration-300">
             <div className="flex flex-col items-center text-center">
@@ -63,7 +77,7 @@ function VendorDashboard() {
       )}
 
       {/* SHOP EXISTS */}
-      {myShopData && (
+      {!loading && myShopData && (
         <>
           <div className="w-full flex flex-col items-center gap-6 px-4 sm:px-6">
             <h1 className="text-2xl sm:text-3xl text-gray-900 flex items-center gap-3 mt-8 text-center">
