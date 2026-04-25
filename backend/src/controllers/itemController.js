@@ -11,7 +11,6 @@ const createItem = async (req, res) => {
   await Item.create({ name, imageUrl, shop: shop._id, foodType, category, price });
 
   const updatedShop = await Shop.findById(shop._id).populate([
-    { path: 'owner' },
     { path: 'items', options: { sort: { updatedAt: -1 } } },
   ]);
   return res.status(StatusCodes.CREATED).json(updatedShop);

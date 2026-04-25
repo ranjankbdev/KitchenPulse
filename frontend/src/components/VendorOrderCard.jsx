@@ -35,7 +35,7 @@ function VendorOrderCard({ data }) {
         updateOrderStatus({
           orderId: data._id,
           shopId,
-          status: result.shopOrder.status,
+          status: result.status,
         })
       );
       setAvailableBoys(result.availablePartners);

@@ -51,11 +51,10 @@ const updateShop = async (req, res) => {
 // get logged-in user's shop
 const getMyShop = async (req, res) => {
   const existingShop = await Shop.findOne({ owner: req.user.id }).populate([
-    { path: 'owner' },
     { path: 'items', options: { sort: { updatedAt: -1 } } },
   ]);
 
-  return res.status(StatusCodes.OK).json(existingShop || null);
+  return res.status(StatusCodes.OK).json(existingShop);
 };
 
 // get shops by city
@@ -63,7 +62,7 @@ const getShopsByCity = async (req, res) => {
   const { city } = req.params;
 
   const formattedCity = city.toLowerCase().trim();
-  const shops = await Shop.find({ city: formattedCity }).populate('items');
+  const shops = await Shop.find({ city: formattedCity });
 
   return res.status(StatusCodes.OK).json(shops);
 };

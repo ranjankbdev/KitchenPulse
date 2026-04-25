@@ -25,9 +25,6 @@ const createOrder = async (req, res) => {
 
   // group items by shop
   const groupItemsByShop = cartItems.reduce((acc, item) => {
-    if (!item.shop) {
-      throw new ExpressError(StatusCodes.BAD_REQUEST, 'invalid shop in cart item');
-    }
     const shopId = item.shop;
     acc[shopId] = acc[shopId] || [];
     acc[shopId].push(item);
@@ -37,7 +34,7 @@ const createOrder = async (req, res) => {
   // build shopOrders
   const shopOrders = await Promise.all(
     Object.entries(groupItemsByShop).map(async ([shopId, items]) => {
-      const shop = await Shop.findById(shopId).populate('owner');
+      const shop = await Shop.findById(shopId);
       if (!shop) throw new ExpressError(StatusCodes.NOT_FOUND, 'Shop not found!');
 
       // fetch all items
@@ -276,6 +273,9 @@ const updateShopOrderStatus = async (req, res) => {
   const { orderId, shopId } = req.params;
   const { status } = req.body;
 
+  const user = await User.findById(req.user.id);
+  if (!user) throw new ExpressError(StatusCodes.NOT_FOUND, 'User not found!');
+
   const order = await Order.findById(orderId);
   if (!order) throw new ExpressError(StatusCodes.NOT_FOUND, 'Order not found!');
 
@@ -287,14 +287,14 @@ const updateShopOrderStatus = async (req, res) => {
   }
 
   // role-based status permission check
-  if (req.user.role === 'vendor' && !vendorAllowedStatuses.includes(status)) {
+  if (user.role === 'vendor' && !vendorAllowedStatuses.includes(status)) {
     throw new ExpressError(
       StatusCodes.FORBIDDEN,
       'Vendors can only confirm, prepare or mark ready for pickup!'
     );
   }
 
-  if (req.user.role === 'deliveryPartner' && !deliveryPartnerAllowedStatuses.includes(status)) {
+  if (user.role === 'deliveryPartner' && !deliveryPartnerAllowedStatuses.includes(status)) {
     throw new ExpressError(
       StatusCodes.FORBIDDEN,
       'Delivery partners can only mark out for delivery or delivered!'
@@ -311,19 +311,16 @@ const updateShopOrderStatus = async (req, res) => {
 
   shopOrder.status = status;
   let deliveryPartnersPayload = [];
+
   if (status === 'ready_for_pickup' && !shopOrder.deliveryAssignment) {
     const availablePartners = await findAvailableDeliveryPartners(order.deliveryAddress);
     if (availablePartners.length === 0) {
       await order.save();
       const updatedShopOrder = order.shopOrders.find((o) => o.shop.toString() === shopId);
-      await order.populate('shopOrders.shopOrderItems.item', 'name imageUrl price');
-      await order.populate('shopOrders.shop', 'name');
+
       return res.status(StatusCodes.OK).json({
-        shopOrder: updatedShopOrder,
-        assignedDeliveryPartner: null,
+        status: updatedShopOrder.status,
         availablePartners: [],
-        assignment: null,
-        message: 'Order status updated but no available delivery partners',
       });
     }
 
@@ -358,15 +355,9 @@ const updateShopOrderStatus = async (req, res) => {
   await order.save();
   const updatedShopOrder = order.shopOrders.find((o) => o.shop.toString() === shopId);
 
-  // re-populating
-  await order.populate('shopOrders.shopOrderItems.item', 'name imageUrl price');
-  await order.populate('shopOrders.shop', 'name');
-  await order.populate('shopOrders.assignedDeliveryPartner', 'fullName email mobileNumber');
   return res.status(StatusCodes.OK).json({
-    shopOrder: updatedShopOrder,
-    assignedDeliveryPartner: updatedShopOrder?.assignedDeliveryPartner,
+    status: updatedShopOrder.status,
     availablePartners: deliveryPartnersPayload,
-    assignment: updatedShopOrder?.deliveryAssignment,
   });
 };
 
@@ -382,7 +373,6 @@ const getDeliveryAssignments = async (req, res) => {
     const shopOrder = a.order.shopOrders.find((so) => so._id.equals(a.shopOrderId));
     return {
       assignmentId: a._id,
-      orderId: a.order._id,
       shopName: a.shop?.name,
       shopAddress: a.shop?.address,
       deliveryAddress: a.order.deliveryAddress,
