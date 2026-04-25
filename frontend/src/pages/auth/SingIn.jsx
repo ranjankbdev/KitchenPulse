@@ -11,6 +11,8 @@ import { auth } from '../../config/firebase.js';
 import showToast from '../../utils/toastHelper';
 import { setUserData } from '../../redux/userSlice.js';
 
+const GUEST_EMAIL = import.meta.env.VITE_EMAIL_ID;
+
 function SignIn() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -143,6 +145,18 @@ function SignIn() {
               {loading ? <ClipLoader size={20} color="white" /> : 'Sign In'}
             </button>
           </form>
+
+          <button
+            onClick={() => {
+              setEmail(GUEST_EMAIL);
+              setPassword('111111');
+            }}
+            type="button"
+            className="mt-4 w-full font-semibold py-2 rounded-lg transition duration-200 bg-[#ff4d2d] text-white hover:bg-[#e64323] cursor-pointer"
+          >
+            Continue as Guest
+          </button>
+
           <button
             onClick={handleGoogleAuthentication}
             type="button"
