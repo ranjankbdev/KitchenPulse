@@ -15,7 +15,6 @@ const createShop = async (req, res) => {
   // create shop
   const shop = await Shop.create({ name, imageUrl, owner: req.user.id, address, city, state });
 
-  await shop.populate('owner');
   return res.status(StatusCodes.CREATED).json(shop);
 };
 
@@ -39,7 +38,6 @@ const updateShop = async (req, res) => {
     throw new ExpressError(StatusCodes.NOT_FOUND, 'Shop update failed');
   }
 
-  await updatedShop.populate('owner');
   await updatedShop.populate({
     path: 'items',
     options: { sort: { updatedAt: -1 } },

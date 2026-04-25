@@ -157,7 +157,7 @@ function Navbar() {
                 className="hidden sm:flex items-center gap-1.5 cursor-pointer bg-[#ff4d2d]/10 text-[#ff4d2d] px-3 py-1.5 rounded-lg hover:bg-[#ff4d2d]/20 text-sm font-medium transition-colors"
               >
                 <TbReceipt2 size={16} />
-                Shop Orders
+                Restaurant Orders
                 <span className="absolute -top-1.5 right-11 w-4 h-4 bg-[#ff4d2d] text-white text-[10px] font-bold rounded-full flex items-center justify-center leading-none pointer-events-none">
                   1
                 </span>
@@ -169,7 +169,7 @@ function Navbar() {
                 <span className="absolute -top-1.5 -right-1.25 w-4 h-4 bg-[#ff4d2d] text-white text-[10px] font-bold rounded-full flex items-center justify-center leading-none pointer-events-none">
                   1
                 </span>
-                <Tooltip text="Shop Orders" />
+                <Tooltip text="Restaurant Orders" />
               </div>
             </>
           )}

@@ -93,7 +93,7 @@ function SignUp() {
         role,
       };
       const data = await googleAuthAPI(user);
-      showToast(data.message, 'success');
+      showToast('Welcome! You are signed in', 'success');
       dispatch(setUserData(data));
       setMobileNumber('');
       setRole('user');

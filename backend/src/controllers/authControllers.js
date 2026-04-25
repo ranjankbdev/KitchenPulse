@@ -51,7 +51,6 @@ const registerUser = async (req, res) => {
     email: savedUser.email,
     mobileNumber: savedUser.mobileNumber,
     role: savedUser.role,
-    message: 'User created successfully!',
   });
 };
 
@@ -84,14 +83,13 @@ const loginUser = async (req, res) => {
     email: existingUser.email,
     mobileNumber: existingUser.mobileNumber,
     role: existingUser.role,
-    message: 'Login successfull!',
   });
 };
 
 // logout
 const logoutUser = async (req, res) => {
   res.clearCookie('token');
-  return res.status(StatusCodes.OK).json({ message: 'Logout successfull!' });
+  return res.status(StatusCodes.OK).json();
 };
 
 // otp for reset password
@@ -111,7 +109,7 @@ const sendPasswordResetOtp = async (req, res) => {
     'Reset Your Password',
     `<p>Your OTP for password reset is <b>${otp}</b>. It expires in 5 minutes.</p>`
   );
-  return res.status(StatusCodes.OK).json({ message: 'OTP sent successfully!' });
+  return res.status(StatusCodes.OK).json();
 };
 
 // verify otp for reset password
@@ -135,7 +133,7 @@ const verifyPasswordResetOtp = async (req, res) => {
   existingUser.passwordResetOtp = undefined;
   existingUser.resetOtpExpires = undefined;
   await existingUser.save();
-  return res.status(StatusCodes.OK).json({ message: 'OTP verified successfully!' });
+  return res.status(StatusCodes.OK).json();
 };
 
 // reset password
@@ -154,7 +152,7 @@ const resetUserPassword = async (req, res) => {
   existingUser.passwordResetOtp = undefined;
   existingUser.resetOtpExpires = undefined;
   await existingUser.save();
-  return res.status(StatusCodes.OK).json({ message: 'Password reset successfully!' });
+  return res.status(StatusCodes.OK).json();
 };
 
 // google register
@@ -181,7 +179,6 @@ const googleAuth = async (req, res) => {
       email: googleUser.email,
       mobileNumber: googleUser.mobileNumber,
       role: googleUser.role,
-      message: 'Login successful!',
     });
   }
 
@@ -218,7 +215,6 @@ const googleAuth = async (req, res) => {
     email: googleUser.email,
     mobileNumber: googleUser.mobileNumber,
     role: googleUser.role,
-    message: 'User created successfully!',
   });
 };
 

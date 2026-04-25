@@ -29,7 +29,7 @@ const updateUserLocation = async (req, res) => {
     throw new ExpressError(StatusCodes.NOT_FOUND, 'User not found!');
   }
 
-  return res.status(StatusCodes.OK).json({ message: 'Location updated!' });
+  return res.status(StatusCodes.OK).json();
 };
 
 export { getUser, updateUserLocation };

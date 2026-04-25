@@ -18,9 +18,7 @@ const rateItem = async (req, res) => {
 
   // chek item exist + delivered
   for (const shopOrder of order.shopOrders) {
-    const found = shopOrder.shopOrderItems.some(
-      (i) => i.item?.toString() === itemId
-    );
+    const found = shopOrder.shopOrderItems.some((i) => i.item?.toString() === itemId);
     if (found) {
       itemFound = true;
 
@@ -29,16 +27,14 @@ const rateItem = async (req, res) => {
       }
     }
   }
-  
+
   if (!itemDelivered) throw new ExpressError(StatusCodes.NOT_FOUND, 'Order not delivered!');
   if (!itemFound) throw new ExpressError(StatusCodes.NOT_FOUND, 'Item not found!');
 
   // existing review check
   const existingReview = await Rating.findOne({ user: req.user.id, item: itemId, order: orderId });
   if (existingReview) {
-    return res
-      .status(StatusCodes.BAD_REQUEST)
-      .json({ message: 'You have already rated this item' });
+    throw new ExpressError(StatusCodes.BAD_REQUEST, 'You have already rated this item');
   }
 
   // create rating
@@ -53,7 +49,7 @@ const rateItem = async (req, res) => {
   item.ratings.count = newCount;
   item.ratings.average = newAvg;
   await item.save();
-  return res.status(StatusCodes.CREATED).json({ message: 'Rating submitted successfully!' });
+  return res.status(StatusCodes.CREATED).json();
 };
 
 export { rateItem };

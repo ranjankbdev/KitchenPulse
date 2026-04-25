@@ -63,7 +63,7 @@ function SignIn() {
       const result = await signInWithPopup(auth, provider);
       const data = await googleAuthAPI({ email: result.user.email });
       dispatch(setUserData(data));
-      showToast(data.message, 'success');
+      showToast('Welcome! You are signed in', 'success');
     } catch (error) {
       showToast(error, 'error');
     } finally {

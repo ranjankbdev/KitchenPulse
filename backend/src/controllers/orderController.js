@@ -416,7 +416,7 @@ const acceptDeliveryAssignment = async (req, res) => {
   shopOrder.status = 'out_for_delivery';
   await order.save();
 
-  return res.status(StatusCodes.OK).json({ message: 'Assignment accepted successfully!' });
+  return res.status(StatusCodes.OK).json();
 };
 
 const getActiveDeliveryAssignment = async (req, res) => {
@@ -518,9 +518,7 @@ const sendDeliveryOtp = async (req, res) => {
     `<p>Your OTP for delivery is <b>${otp}</b>. It expires in 5 minutes.</p>`
   );
 
-  return res
-    .status(StatusCodes.OK)
-    .json({ message: `OTP sent successfully to ${order.user.fullName}` });
+  return res.status(StatusCodes.OK).json();
 };
 
 const verifyDeliveryOtp = async (req, res) => {
@@ -562,7 +560,7 @@ const verifyDeliveryOtp = async (req, res) => {
     { status: 'completed', completedAt: new Date(), commission: DELIVERYPARTNER_COMMISSION }
   );
 
-  return res.status(StatusCodes.OK).json({ message: 'Order delivered successfully!' });
+  return res.status(StatusCodes.OK).json();
 };
 
 const getEarnings = async (req, res) => {
