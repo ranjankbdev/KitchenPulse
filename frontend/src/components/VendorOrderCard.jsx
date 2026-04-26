@@ -104,10 +104,22 @@ function VendorOrderCard({ data }) {
             Payment:
             <span
               className={`rounded-full px-3 py-1 ms-1 ${
-                data.isPaid ? 'text-green-700 bg-green-100' : 'text-yellow-700 bg-orange-100'
+                (
+                  data.paymentMethod === 'online'
+                    ? data.isPaid
+                    : data.shopOrders?.every((so) => so.isPaid)
+                )
+                  ? 'text-green-700 bg-green-100'
+                  : 'text-yellow-700 bg-orange-100'
               }`}
             >
-              {data.isPaid ? 'Paid' : 'Pending'}
+              {(
+                data.paymentMethod === 'online'
+                  ? data.isPaid
+                  : data.shopOrders?.every((so) => so.isPaid)
+              )
+                ? 'Paid'
+                : 'Pending'}
             </span>
           </p>
           <p>Order ID: #{data?._id?.slice(-7)}</p>

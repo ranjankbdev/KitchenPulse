@@ -66,7 +66,7 @@ const createOrder = async (req, res) => {
         });
       }
 
-      return { shop: shop._id, owner: shop.owner._id, subtotal, shopOrderItems };
+      return { shop: shop._id, owner: shop.owner, subtotal, shopOrderItems };
     })
   );
 
@@ -152,6 +152,7 @@ const verifyPayment = async (req, res) => {
   }
 
   // mark payment success
+  order.shopOrders.forEach((so) => (so.isPaid = true));
   order.isPaid = true;
   order.razorpayPaymentId = razorpay_payment_id;
   await order.save();
@@ -552,6 +553,13 @@ const verifyDeliveryOtp = async (req, res) => {
   shopOrder.deliveredAt = new Date();
   shopOrder.deliveryOtp = null;
   shopOrder.deliveryOtpExpiresAt = null;
+
+  if (order.paymentMethod === 'cod') {
+    shopOrder.isPaid = true;
+    const allPaid = order.shopOrders.every((so) => so.isPaid);
+    if (allPaid) order.isPaid = true;
+  }
+
   await order.save();
 
   // mark assignment as completed and set commission earned

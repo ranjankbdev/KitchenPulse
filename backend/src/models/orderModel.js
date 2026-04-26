@@ -75,6 +75,10 @@ const shopOrderSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
+    isPaid: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );

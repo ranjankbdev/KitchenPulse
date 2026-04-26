@@ -85,7 +85,7 @@ function TrackOrderPage() {
                 )}
               </>
             ) : (
-              <p className="text-green-600 font-semibold text-lg">✅ Delivered</p>
+              <p className="text-green-600 font-semibold text-lg">Delivered</p>
             )}
 
             {/* Live tracking map (only if delivery partner exists and not delivered) */}

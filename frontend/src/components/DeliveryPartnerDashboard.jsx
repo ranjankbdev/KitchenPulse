@@ -199,7 +199,7 @@ function DeliveryPartnerDashboard() {
                   <button
                     onClick={verifyDeliveryOtp}
                     disabled={loading}
-                    className="bg-[#ff4d2d] text-white px-5 rounded-xl font-medium hover:bg-[#e64526] transition cursor-pointer flex items-center justify-center"
+                    className="w-30 bg-[#ff4d2d] text-white px-5 rounded-xl font-medium hover:bg-[#e64526] transition cursor-pointer flex items-center justify-center"
                   >
                     {loading ? <ClipLoader size={16} color="white" /> : 'Verify'}
                   </button>
