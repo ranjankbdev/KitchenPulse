@@ -36,8 +36,12 @@ const useImagePicker = (setPicture, setPreview) => {
   }, [revokePreviousBlob]);
 
   const handleImageSelection = useCallback(
-    (file) => {
-      if (!file || !validateFile(file)) return;
+    (file, inputRef) => {
+      if (!file) return;
+      if (!validateFile(file)) {
+        if (inputRef?.current) inputRef.current.value = '';
+        return;
+      }
 
       revokePreviousBlob();
 

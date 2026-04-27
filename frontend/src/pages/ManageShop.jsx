@@ -9,6 +9,7 @@ import { createShopAPI, updateShopAPI } from '../services/shopService.js';
 import { setMyShopData } from '../redux/vendorSlice.js';
 import showToast from '../utils/toastHelper.js';
 import useImagePicker from '../hooks/useImagePicker.js';
+import { useRef } from 'react';
 
 function ManageShop({ mode }) {
   const navigate = useNavigate();
@@ -16,6 +17,8 @@ function ManageShop({ mode }) {
 
   const { myShopData } = useSelector((state) => state.vendor);
   const { currentCity, currentState, currentAddress } = useSelector((state) => state.user);
+
+  const imageInputRef = useRef(null);
 
   const [name, setName] = useState('');
   const [address, setAddress] = useState('');
@@ -119,13 +122,14 @@ function ManageShop({ mode }) {
               type="text"
               placeholder="Enter Shop Name"
               className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-1 focus:ring-orange-500"
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e) => handleImageSelection(e.target.files[0], imageInputRef)}
               value={name}
             />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Restaurant Image</label>
             <input
+              ref={imageInputRef}
               type="file"
               accept="image/*"
               className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-1 focus:ring-orange-500"

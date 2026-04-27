@@ -9,6 +9,7 @@ import { setMyShopData } from '../redux/vendorSlice.js';
 import { createItemAPI, getItemByIdAPI, updateItemAPI } from '../services/itemService.js';
 import showToast from '../utils/toastHelper.js';
 import useImagePicker from '../hooks/useImagePicker.js';
+import { useRef } from 'react';
 
 function ManageItem({ mode }) {
   const navigate = useNavigate();
@@ -23,6 +24,8 @@ function ManageItem({ mode }) {
   const [foodType, setFoodType] = useState('veg');
   const [preview, setPreview] = useState(null);
   const [picture, setPicture] = useState(null);
+
+  const imageInputRef = useRef(null);
 
   const { handleImageSelection } = useImagePicker(setPicture, setPreview);
 
@@ -140,10 +143,11 @@ function ManageItem({ mode }) {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Item Image</label>
             <input
+              ref={imageInputRef}
               type="file"
               accept="image/*"
               className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
-              onChange={(e) => handleImageSelection(e.target.files[0])}
+              onChange={(e) => handleImageSelection(e.target.files[0], imageInputRef)}
             />
             {preview && (
               <div className="mt-4">
