@@ -88,7 +88,14 @@ function CheckoutPage() {
     }
   }, [currentAddress]);
 
-  const deliveryFee = totalAmount > 500 ? 0 : 40;
+  const deliveryFee = Object.values(
+    cartItems.reduce((acc, item) => {
+      const shopId = item.shop;
+      acc[shopId] = (acc[shopId] || 0) + item.price * item.quantity;
+      return acc;
+    }, {})
+  ).reduce((sum, shopSubtotal) => sum + (shopSubtotal >= 500 ? 0 : 40), 0);
+  
   const amountWithDeliveryFee = totalAmount + deliveryFee;
 
   const handleMarkerDragEnd = (e) => {

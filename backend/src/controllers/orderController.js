@@ -74,8 +74,10 @@ const createOrder = async (req, res) => {
   const subtotal = shopOrders.reduce((sum, o) => sum + o.subtotal, 0);
 
   // calculate delivery charge
-  const deliveryCharge = subtotal >= FREE_DELIVERY_THRESHOLD ? 0 : DELIVERY_CHARGE;
-
+  const deliveryCharge = shopOrders.reduce((sum, o) => {
+    return sum + (o.subtotal >= FREE_DELIVERY_THRESHOLD ? 0 : DELIVERY_CHARGE);
+  }, 0);
+  
   // final amount
   const totalAmount = subtotal + deliveryCharge;
 
