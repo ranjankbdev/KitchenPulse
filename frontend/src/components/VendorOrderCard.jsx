@@ -27,6 +27,9 @@ function VendorOrderCard({ data }) {
 
   const [availableBoys, setAvailableBoys] = useState([]);
 
+  // vendor always has only their own shopOrder (filtered in backend)
+  const shopOrder = data.shopOrders[0];
+
   const handleUpdateStatus = async (status, shopId) => {
     if (!status || !shopId) return;
     try {
@@ -44,7 +47,7 @@ function VendorOrderCard({ data }) {
     }
   };
 
-  const renderStatusAction = (status, shopOrder) => {
+  const renderStatusAction = (status) => {
     const config = statusConfig[status];
 
     if (status === 'delivered') {
@@ -123,7 +126,10 @@ function VendorOrderCard({ data }) {
             </span>
           </p>
           <p>Order ID: #{data?._id?.slice(-7)}</p>
-          <p className="mt-1">Ordered on: {new Date(data?.createdAt).toLocaleString()}</p>
+          <p className="mt-1">Ordered at: {new Date(data?.createdAt).toLocaleString()}</p>
+          {shopOrder?.status === 'delivered' && shopOrder?.deliveredAt && (
+            <p className="mt-1">Delivered at: {new Date(shopOrder.deliveredAt).toLocaleString()}</p>
+          )}
         </div>
       </div>
 
@@ -133,73 +139,68 @@ function VendorOrderCard({ data }) {
         <p>{data?.deliveryAddress?.text}</p>
       </div>
 
-      {/* LOOP EACH SHOP ORDER */}
-      {data?.shopOrders?.length > 0 &&
-        data?.shopOrders?.map((shopOrder) => (
-          <div key={shopOrder._id} className="pt-4 space-y-3">
-            {/* Items */}
-            <div className="flex gap-4 overflow-x-auto pb-2">
-              {shopOrder?.shopOrderItems?.map((item) => (
-                <div key={item._id} className="shrink-0 w-40 border rounded-xl p-2 bg-gray-50">
-                  <img
-                    src={item?.item?.imageUrl}
-                    alt={item?.item?.name}
-                    className="w-full h-24 object-cover rounded-lg"
-                  />
+      <div className="pt-4 space-y-3">
+        {/* Items */}
+        <div className="flex gap-4 overflow-x-auto pb-2">
+          {shopOrder?.shopOrderItems?.map((item) => (
+            <div key={item._id} className="shrink-0 w-40 border rounded-xl p-2 bg-gray-50">
+              <img
+                src={item?.item?.imageUrl}
+                alt={item?.item?.name}
+                className="w-full h-24 object-cover rounded-lg"
+              />
 
-                  <p className="text-sm font-medium mt-2 text-gray-800">{item?.item?.name}</p>
+              <p className="text-sm font-medium mt-2 text-gray-800">{item?.item?.name}</p>
 
-                  <p className="text-xs text-gray-500">
-                    Qty {item.quantity} × ₹{item.price}
-                  </p>
-                </div>
-              ))}
+              <p className="text-xs text-gray-500">
+                Qty {item.quantity} × ₹{item.price}
+              </p>
             </div>
-            <hr />
-            {/* Status + Action */}
-            <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:justify-between">
-              <div className="text-sm">
-                Status:{' '}
-                <span className="font-semibold capitalize text-orange-400">
-                  {shopOrder?.status?.replaceAll('_', ' ')}
-                </span>
-              </div>
-
-              {renderStatusAction(shopOrder?.status, shopOrder)}
-            </div>
-
-            {(shopOrder?.status === 'ready_for_pickup' ||
-              shopOrder?.status === 'out_for_delivery') && (
-              <div className="mt-3 p-2 border rounded-lg text-sm bg-orange-50">
-                {shopOrder?.assignedDeliveryPartner ? (
-                  <>
-                    <p>Assigned Delivery Partner:</p>
-                    <div className="text-gray-800 capitalize">
-                      {shopOrder?.assignedDeliveryPartner?.fullName} -{' '}
-                      {shopOrder?.assignedDeliveryPartner?.mobileNumber}
-                    </div>
-                  </>
-                ) : availableBoys?.length > 0 ? (
-                  <>
-                    <p>Available Delivery Partners:</p>
-                    {availableBoys.map((b) => (
-                      <p key={b.id} className="text-gray-800 capitalize">
-                        {b?.fullName} - {b?.mobileNumber}
-                      </p>
-                    ))}
-                  </>
-                ) : (
-                  <div>Waiting for delivery partner to accept</div>
-                )}
-              </div>
-            )}
-
-            {/* Total */}
-            <div className="sm:text-right text-left font-semibold text-gray-800">
-              Total: ₹{shopOrder?.subtotal}
-            </div>
+          ))}
+        </div>
+        <hr />
+        {/* Status + Action */}
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:justify-between">
+          <div className="text-sm">
+            Status:{' '}
+            <span className="font-semibold capitalize text-orange-400">
+              {shopOrder?.status?.replaceAll('_', ' ')}
+            </span>
           </div>
-        ))}
+
+          {renderStatusAction(shopOrder?.status)}
+        </div>
+
+        {(shopOrder?.status === 'ready_for_pickup' || shopOrder?.status === 'out_for_delivery') && (
+          <div className="mt-3 p-2 border rounded-lg text-sm bg-orange-50">
+            {shopOrder?.assignedDeliveryPartner ? (
+              <>
+                <p>Assigned Delivery Partner:</p>
+                <div className="text-gray-800 capitalize">
+                  {shopOrder?.assignedDeliveryPartner?.fullName} -{' '}
+                  {shopOrder?.assignedDeliveryPartner?.mobileNumber}
+                </div>
+              </>
+            ) : availableBoys?.length > 0 ? (
+              <>
+                <p>Available Delivery Partners:</p>
+                {availableBoys.map((b) => (
+                  <p key={b.id} className="text-gray-800 capitalize">
+                    {b?.fullName} - {b?.mobileNumber}
+                  </p>
+                ))}
+              </>
+            ) : (
+              <div>Waiting for delivery partner to accept</div>
+            )}
+          </div>
+        )}
+
+        {/* Total */}
+        <div className="sm:text-right text-left font-semibold text-gray-800">
+          Total: ₹{shopOrder?.subtotal}
+        </div>
+      </div>
     </div>
   );
 }
