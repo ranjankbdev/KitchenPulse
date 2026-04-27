@@ -225,35 +225,37 @@ function DeliveryPartnerDashboard() {
                   </p>
                 </div>
               ) : (
-                availableAssignments.map((assignment) => (
-                  <div
-                    key={assignment.assignmentId}
-                    className="border border-gray-100 rounded-xl p-4 space-y-2 bg-[#fffaf7]"
-                  >
-                    <div className="sm:flex sm:justify-between">
-                      <div className="">
-                        <p className="font-medium text-gray-800">{assignment.shopName}</p>
-                        <p className="text-sm text-gray-500">{assignment.shopAddress}</p>
-                        <p className="text-sm text-gray-600">
-                          Items: {assignment.items?.map((i) => i.name).join(', ')}
-                        </p>
-                        <p className="text-sm font-medium text-gray-700">
-                          Subtotal: ₹{assignment.subtotal}
-                        </p>
-                      </div>
-                      <div className="mt-5 sm:mt-0">
-                        <p className="font-medium text-gray-800">Delivery Address</p>
-                        <p>{assignment.deliveryAddress?.text}</p>
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => acceptDeliveryAssignment(assignment.assignmentId)}
-                      className="mt-1 w-full bg-[#ff4d2d] text-white py-2 rounded-lg text-sm font-medium hover:bg-[#e64526] transition cursor-pointer"
+                <div className='max-h-96 overflow-y-auto space-y-3 pr-1'>
+                  {availableAssignments.map((assignment) => (
+                    <div
+                      key={assignment.assignmentId}
+                      className="border border-gray-100 rounded-xl p-4 space-y-2 bg-[#fffaf7]"
                     >
-                      Accept
-                    </button>
-                  </div>
-                ))
+                      <div className="sm:flex sm:justify-between">
+                        <div className="">
+                          <p className="font-medium text-gray-800">{assignment.shopName}</p>
+                          <p className="text-sm text-gray-500">{assignment.shopAddress}</p>
+                          <p className="text-sm text-gray-600">
+                            Items: {assignment.items?.map((i) => i.name).join(', ')}
+                          </p>
+                          <p className="text-sm font-medium text-gray-700">
+                            Subtotal: ₹{assignment.subtotal}
+                          </p>
+                        </div>
+                        <div className="mt-5 sm:mt-0">
+                          <p className="font-medium text-gray-800">Delivery Address</p>
+                          <p>{assignment.deliveryAddress?.text}</p>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => acceptDeliveryAssignment(assignment.assignmentId)}
+                        className="mt-1 w-full bg-[#ff4d2d] text-white py-2 rounded-lg text-sm font-medium hover:bg-[#e64526] transition cursor-pointer"
+                      >
+                        Accept
+                      </button>
+                    </div>
+                  ))}
+                </div>
               )}
             </div>
           )}

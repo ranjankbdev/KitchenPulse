@@ -3,6 +3,7 @@ import { IoReceiptOutline, IoTimeOutline, IoLocationOutline } from 'react-icons/
 import { useState, useEffect } from 'react';
 import { FaStar } from 'react-icons/fa';
 import { rateItemAPI } from '../services/ratingService.js';
+import { formatDateTime } from '../utils/dateFormatter.js';
 import showToast from '../utils/toastHelper.js';
 
 function StarRating({ itemId, orderId, existingRating }) {
@@ -61,16 +62,6 @@ function StarRating({ itemId, orderId, existingRating }) {
 function CustomerOrderCard({ data }) {
   const navigate = useNavigate();
 
-  const formatDate = (dateString) => {
-    return new Intl.DateTimeFormat('en-GB', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    }).format(new Date(dateString));
-  };
-
   const customerStatusLabel = {
     pending: 'Order Placed',
     confirmed: 'Order Confirmed',
@@ -91,7 +82,7 @@ function CustomerOrderCard({ data }) {
             <p className="font-semibold text-gray-800">Order #{data?._id.slice(-7)}</p>
             <p className="text-sm text-gray-500 flex items-center gap-1">
               <IoTimeOutline />
-              {formatDate(data.createdAt)}
+              {formatDateTime(data.createdAt)}
             </p>
           </div>
         </div>

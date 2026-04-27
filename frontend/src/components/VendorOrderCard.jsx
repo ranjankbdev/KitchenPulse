@@ -168,7 +168,8 @@ function VendorOrderCard({ data }) {
               {renderStatusAction(shopOrder?.status, shopOrder)}
             </div>
 
-            {shopOrder?.status === 'ready_for_pickup' && (
+            {(shopOrder?.status === 'ready_for_pickup' ||
+              shopOrder?.status === 'out_for_delivery') && (
               <div className="mt-3 p-2 border rounded-lg text-sm bg-orange-50">
                 {shopOrder?.assignedDeliveryPartner ? (
                   <>

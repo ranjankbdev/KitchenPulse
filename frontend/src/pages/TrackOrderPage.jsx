@@ -4,6 +4,7 @@ import { ClipLoader } from 'react-spinners';
 import { IoIosArrowRoundBack } from 'react-icons/io';
 import { getOrderByIdAPI } from '../services/orderService';
 import DeliveryTracking from '../components/DeliveryTracking';
+import { formatDateTime } from '../utils/dateFormatter';
 
 function TrackOrderPage() {
   const { orderId } = useParams();
@@ -85,7 +86,14 @@ function TrackOrderPage() {
                 )}
               </>
             ) : (
-              <p className="text-green-600 font-semibold text-lg">Delivered</p>
+              <>
+                <p className="text-green-600 font-semibold text-lg">✅ Delivered</p>
+                {shopOrder.deliveredAt && (
+                  <p className="text-sm text-gray-500">
+                    Delivered at: {formatDateTime(shopOrder.deliveredAt)}
+                  </p>
+                )}
+              </>
             )}
 
             {/* Live tracking map (only if delivery partner exists and not delivered) */}
