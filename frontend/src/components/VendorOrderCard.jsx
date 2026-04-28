@@ -146,11 +146,11 @@ function VendorOrderCard({ data }) {
             <div key={item._id} className="shrink-0 w-40 border rounded-xl p-2 bg-gray-50">
               <img
                 src={item?.item?.imageUrl}
-                alt={item?.item?.name}
+                alt={item?.name}
                 className="w-full h-24 object-cover rounded-lg"
               />
 
-              <p className="text-sm font-medium mt-2 text-gray-800">{item?.item?.name}</p>
+              <p className="text-sm font-medium mt-2 text-gray-800">{item?.name}</p>
 
               <p className="text-xs text-gray-500">
                 Qty {item.quantity} × ₹{item.price}

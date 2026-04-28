@@ -17,11 +17,9 @@ function StarRating({ itemId, orderId, existingRating }) {
     try {
       setLoading(true);
       const res = await rateItemAPI({ rating: star, orderId, itemId });
-      if (res?.message) {
-        setSelected(star);
-        setRated(true);
-        showToast('Rating submitted successfully!', 'success');
-      }
+      setSelected(star);
+      setRated(true);
+      showToast('Rating submitted successfully!', 'success');
     } catch (error) {
       showToast(error, 'error');
       setRated(false);

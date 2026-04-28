@@ -95,7 +95,7 @@ function CheckoutPage() {
       return acc;
     }, {})
   ).reduce((sum, shopSubtotal) => sum + (shopSubtotal >= 500 ? 0 : 40), 0);
-  
+
   const amountWithDeliveryFee = totalAmount + deliveryFee;
 
   const handleMarkerDragEnd = (e) => {
@@ -353,7 +353,7 @@ function CheckoutPage() {
 
             <div className="flex justify-between text-gray-800 font-medium">
               <span>Subtotal</span>
-              <span>{totalAmount}</span>
+              <span>₹{totalAmount}</span>
             </div>
 
             <div className="flex justify-between text-gray-700">
@@ -365,7 +365,7 @@ function CheckoutPage() {
 
             <div className="flex justify-between text-lg font-bold text-[#ff4d2d] pt-2">
               <span>Total</span>
-              <span>{amountWithDeliveryFee}</span>
+              <span>₹{amountWithDeliveryFee}</span>
             </div>
           </div>
         </section>

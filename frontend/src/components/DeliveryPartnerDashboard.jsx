@@ -47,9 +47,8 @@ function DeliveryPartnerDashboard() {
     try {
       const result = await getDeliveryAssignmentsAPI();
       setAvailableAssignments(result);
-      console.log(result);
     } catch (error) {
-      showToast('error', 'error');
+      showToast(error, 'error');
     }
   };
 
@@ -75,7 +74,7 @@ function DeliveryPartnerDashboard() {
   const sendDeliveryOtp = async (e) => {
     try {
       setLoading(true);
-      const result = await sendDeliveryOtpAPI(currentOrder._id, currentOrder.shopOrder._id);
+      await sendDeliveryOtpAPI(currentOrder._id, currentOrder.shopOrder._id);
       setShowOtpBox(true);
       showToast('OTP sent to customer', 'info');
     } catch (error) {

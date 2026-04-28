@@ -79,7 +79,7 @@ function ManageShop({ mode }) {
         mode === 'edit' ? 'Restaurant updated successfully!' : 'Restaurant created successfully!',
         'success'
       );
-      navigate('/vendor');
+      navigate('/');
     } catch (err) {
       console.error('Error submitting shop:', err);
       showToast('Something went wrong!', 'error');
@@ -122,7 +122,7 @@ function ManageShop({ mode }) {
               type="text"
               placeholder="Enter Shop Name"
               className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-1 focus:ring-orange-500"
-              onChange={(e) => handleImageSelection(e.target.files[0], imageInputRef)}
+              onChange={(e) => setName(e.target.value)}
               value={name}
             />
           </div>
@@ -133,7 +133,7 @@ function ManageShop({ mode }) {
               type="file"
               accept="image/*"
               className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-1 focus:ring-orange-500"
-              onChange={(e) => handleImageSelection(e.target.files[0])}
+              onChange={(e) => handleImageSelection(e.target.files[0], imageInputRef)}
             />
             {preview && (
               <div className="mt-4 relative">
