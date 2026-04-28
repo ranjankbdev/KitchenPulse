@@ -2,9 +2,14 @@ import { StatusCodes } from 'http-status-codes';
 import { getShopByOwner, getItemAndCheckOwnership } from '../utils/dbHelpers.js';
 import Item from '../models/itemModel.js';
 import Shop from '../models/shopModel.js';
+import { ExpressError } from '../utils/ExpressError.js';
 
 // create new item
 const createItem = async (req, res) => {
+  if (req.user.role !== 'vendor') {
+    throw new ExpressError(StatusCodes.FORBIDDEN, 'Access denied!');
+  }
+
   const { name, imageUrl, foodType, category, price } = req.body;
 
   const shop = await getShopByOwner(req.user.id);
@@ -18,6 +23,10 @@ const createItem = async (req, res) => {
 
 // update existing item
 const updateItem = async (req, res) => {
+  if (req.user.role !== 'vendor') {
+    throw new ExpressError(StatusCodes.FORBIDDEN, 'Access denied!');
+  }
+
   const { itemId } = req.params;
 
   const shop = await getShopByOwner(req.user.id);
@@ -39,6 +48,10 @@ const updateItem = async (req, res) => {
 
 // get single item by id
 const getItemById = async (req, res) => {
+  if (req.user.role !== 'vendor') {
+    throw new ExpressError(StatusCodes.FORBIDDEN, 'Access denied!');
+  }
+
   const { itemId } = req.params;
 
   const shop = await getShopByOwner(req.user.id);
@@ -49,6 +62,10 @@ const getItemById = async (req, res) => {
 
 // delete item by id
 const deleteItemById = async (req, res) => {
+  if (req.user.role !== 'vendor') {
+    throw new ExpressError(StatusCodes.FORBIDDEN, 'Access denied!');
+  }
+
   const { itemId } = req.params;
 
   const shop = await getShopByOwner(req.user.id);

@@ -36,7 +36,7 @@ const registerUser = async (req, res) => {
   });
 
   const savedUser = await newUser.save();
-  const token = genToken(savedUser._id);
+  const token = genToken(savedUser._id, savedUser.role);
 
   res.cookie('token', token, {
     secure: false,
@@ -69,7 +69,7 @@ const loginUser = async (req, res) => {
     throw new ExpressError(StatusCodes.UNAUTHORIZED, 'Invalid email or password!');
   }
 
-  const token = genToken(existingUser._id);
+  const token = genToken(existingUser._id, existingUser.role);
   res.cookie('token', token, {
     secure: false,
     sameSite: 'strict',
@@ -166,7 +166,7 @@ const googleAuth = async (req, res) => {
 
   if (googleUser) {
     // User exists → just login (SignIn flow)
-    const token = genToken(googleUser._id);
+    const token = genToken(googleUser._id, googleUser.role);
     res.cookie('token', token, {
       secure: false,
       sameSite: 'strict',
@@ -201,7 +201,7 @@ const googleAuth = async (req, res) => {
   });
   await googleUser.save();
 
-  const token = genToken(googleUser._id);
+  const token = genToken(googleUser._id, googleUser.role);
   res.cookie('token', token, {
     secure: false,
     sameSite: 'strict',

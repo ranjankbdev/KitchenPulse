@@ -5,6 +5,10 @@ import Item from '../models/itemModel.js';
 
 // create new shop
 const createShop = async (req, res) => {
+  if (req.user.role !== 'vendor') {
+    throw new ExpressError(StatusCodes.FORBIDDEN, 'Access denied!');
+  }
+
   const { name, imageUrl, address, city, state } = req.body;
 
   const existingShop = await Shop.findOne({ owner: req.user.id });
@@ -20,6 +24,10 @@ const createShop = async (req, res) => {
 
 // update existing shop
 const updateShop = async (req, res) => {
+  if (req.user.role !== 'vendor') {
+    throw new ExpressError(StatusCodes.FORBIDDEN, 'Access denied!');
+  }
+
   const { name, imageUrl, address, city, state } = req.body;
   const existingShop = await Shop.findOne({ owner: req.user.id });
 
@@ -48,6 +56,10 @@ const updateShop = async (req, res) => {
 
 // get logged-in user's shop
 const getMyShop = async (req, res) => {
+  if (req.user.role !== 'vendor') {
+    throw new ExpressError(StatusCodes.FORBIDDEN, 'Access denied!');
+  }
+  
   const existingShop = await Shop.findOne({ owner: req.user.id }).populate([
     { path: 'items', options: { sort: { updatedAt: -1 } } },
   ]);

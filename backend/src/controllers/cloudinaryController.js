@@ -6,6 +6,10 @@ import CloudinaryConfig from '../config/cloudinary.js';
 const { cloudName, apiKey, apiSecret } = CloudinaryConfig;
 
 const generateUploadSignature = async (req, res) => {
+  if (req.user.role !== 'vendor') {
+    throw new ExpressError(StatusCodes.FORBIDDEN, 'Access denied!');
+  }
+  
   if (!cloudName || !apiKey || !apiSecret) {
     throw new ExpressError(
       StatusCodes.INTERNAL_SERVER_ERROR,

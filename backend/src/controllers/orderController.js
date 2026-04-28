@@ -21,6 +21,10 @@ const FREE_DELIVERY_THRESHOLD = 500;
 const DELIVERYPARTNER_COMMISSION = 30;
 
 const createOrder = async (req, res) => {
+  if (req.user.role !== 'user') {
+    throw new ExpressError(StatusCodes.FORBIDDEN, 'Access denied!');
+  }
+
   const { cartItems, paymentMethod, deliveryAddress } = req.body;
 
   // group items by shop
@@ -77,7 +81,7 @@ const createOrder = async (req, res) => {
   const deliveryCharge = shopOrders.reduce((sum, o) => {
     return sum + (o.subtotal >= FREE_DELIVERY_THRESHOLD ? 0 : DELIVERY_CHARGE);
   }, 0);
-  
+
   // final amount
   const totalAmount = subtotal + deliveryCharge;
 
@@ -119,13 +123,17 @@ const createOrder = async (req, res) => {
   const newOrder = await Order.create(orderData);
   // populate
   const populatedOrder = await Order.findById(newOrder._id)
-    .populate('shopOrders.shopOrderItems.item', 'name imageUrl price')
+    .populate('shopOrders.shopOrderItems.item', 'imageUrl')
     .populate('shopOrders.shop', 'name');
 
   return res.status(StatusCodes.CREATED).json(populatedOrder);
 };
 
 const verifyPayment = async (req, res) => {
+  if (req.user.role !== 'user') {
+    throw new ExpressError(StatusCodes.FORBIDDEN, 'Access denied!');
+  }
+
   const { razorpay_payment_id, razorpay_order_id, razorpay_signature, orderId } = req.body;
 
   // verify signature
@@ -161,23 +169,21 @@ const verifyPayment = async (req, res) => {
 
   // populate order
   const populatedOrder = await Order.findById(order._id)
-    .populate('user', 'fullName email mobileNumber')
     .populate('shopOrders.shop', 'name')
-    .populate('shopOrders.owner', 'fullName socketId')
-    .populate('shopOrders.shopOrderItems.item', 'name imageUrl price');
+    .populate('shopOrders.shopOrderItems.item', 'imageUrl');
   return res.status(StatusCodes.OK).json(populatedOrder);
 };
 
 const getOrders = async (req, res) => {
-  const user = await User.findById(req.user.id);
-  if (!user) throw new ExpressError(StatusCodes.NOT_FOUND, 'User not found!');
+  if (req.user.role !== 'user' && req.user.role !== 'vendor') {
+    throw new ExpressError(StatusCodes.FORBIDDEN, 'Access denied!');
+  }
 
-  if (user.role === 'user') {
+  if (req.user.role === 'user') {
     const orders = await Order.find({ user: req.user.id })
       .sort({ createdAt: -1 })
       .populate('shopOrders.shop', 'name')
-      .populate('shopOrders.owner', 'fullName email mobileNumber')
-      .populate('shopOrders.shopOrderItems.item', 'name imageUrl price ratings')
+      .populate('shopOrders.shopOrderItems.item', 'imageUrl ratings')
       .lean();
 
     // fetch all ratings
@@ -206,13 +212,13 @@ const getOrders = async (req, res) => {
     return res.status(StatusCodes.OK).json(orders);
   }
 
-  if (user.role === 'vendor') {
+  if (req.user.role === 'vendor') {
     const orders = await Order.find({ 'shopOrders.owner': req.user.id })
       .sort({ createdAt: -1 })
       .populate('shopOrders.shop', 'name')
       .populate('user', 'fullName mobileNumber email')
-      .populate('shopOrders.shopOrderItems.item', 'name imageUrl price')
-      .populate('shopOrders.assignedDeliveryPartner', 'fullName mobileNumber email');
+      .populate('shopOrders.shopOrderItems.item', 'imageUrl')
+      .populate('shopOrders.assignedDeliveryPartner', 'fullName mobileNumber');
 
     // filtering only vendor-related shop orders from full order
     const filteredOrders = orders.map((order) => ({
@@ -229,7 +235,6 @@ const getOrders = async (req, res) => {
 
     return res.status(StatusCodes.OK).json(filteredOrders);
   }
-  throw new ExpressError(StatusCodes.FORBIDDEN, 'Access denied!');
 };
 
 const statusFlow = {
@@ -242,9 +247,6 @@ const statusFlow = {
 
 // statuses only vendor can update to
 const vendorAllowedStatuses = ['confirmed', 'preparing', 'ready_for_pickup'];
-
-// statuses only delivery partner can update to
-const deliveryPartnerAllowedStatuses = ['out_for_delivery', 'delivered'];
 
 const findAvailableDeliveryPartners = async (deliveryAddress) => {
   const { longitude, latitude } = deliveryAddress;
@@ -273,11 +275,12 @@ const findAvailableDeliveryPartners = async (deliveryAddress) => {
 };
 
 const updateShopOrderStatus = async (req, res) => {
+  if (req.user.role !== 'vendor') {
+    throw new ExpressError(StatusCodes.FORBIDDEN, 'Access denied!');
+  }
+
   const { orderId, shopId } = req.params;
   const { status } = req.body;
-
-  const user = await User.findById(req.user.id);
-  if (!user) throw new ExpressError(StatusCodes.NOT_FOUND, 'User not found!');
 
   const order = await Order.findById(orderId);
   if (!order) throw new ExpressError(StatusCodes.NOT_FOUND, 'Order not found!');
@@ -290,19 +293,13 @@ const updateShopOrderStatus = async (req, res) => {
   }
 
   // role-based status permission check
-  if (user.role === 'vendor' && !vendorAllowedStatuses.includes(status)) {
+  if (!vendorAllowedStatuses.includes(status)) {
     throw new ExpressError(
       StatusCodes.FORBIDDEN,
       'Vendors can only confirm, prepare or mark ready for pickup!'
     );
   }
 
-  if (user.role === 'deliveryPartner' && !deliveryPartnerAllowedStatuses.includes(status)) {
-    throw new ExpressError(
-      StatusCodes.FORBIDDEN,
-      'Delivery partners can only mark out for delivery or delivered!'
-    );
-  }
   // verify status transition is valid (no jumping, no going back)
   const allowedNext = statusFlow[shopOrder.status];
   if (status !== allowedNext) {
@@ -365,6 +362,10 @@ const updateShopOrderStatus = async (req, res) => {
 };
 
 const getDeliveryAssignments = async (req, res) => {
+  if (req.user.role !== 'deliveryPartner') {
+    throw new ExpressError(StatusCodes.FORBIDDEN, 'Access denied!');
+  }
+
   const assignments = await DeliveryAssignment.find({
     broadcastedTo: req.user.id,
     status: 'broadcasted',
@@ -388,6 +389,10 @@ const getDeliveryAssignments = async (req, res) => {
 };
 
 const acceptDeliveryAssignment = async (req, res) => {
+  if (req.user.role !== 'deliveryPartner') {
+    throw new ExpressError(StatusCodes.FORBIDDEN, 'Access denied!');
+  }
+
   const { assignmentId } = req.params;
   const assignment = await DeliveryAssignment.findById(assignmentId);
   if (!assignment) throw new ExpressError(StatusCodes.NOT_FOUND, 'Assignment not found');
@@ -423,6 +428,10 @@ const acceptDeliveryAssignment = async (req, res) => {
 };
 
 const getActiveDeliveryAssignment = async (req, res) => {
+  if (req.user.role !== 'deliveryPartner') {
+    throw new ExpressError(StatusCodes.FORBIDDEN, 'Access denied!');
+  }
+
   const assignment = await DeliveryAssignment.findOne({
     assignedTo: req.user.id,
     status: 'accepted',
@@ -465,6 +474,10 @@ const getActiveDeliveryAssignment = async (req, res) => {
 };
 
 const getOrderById = async (req, res) => {
+  if (req.user.role !== 'user') {
+    throw new ExpressError(StatusCodes.FORBIDDEN, 'Access denied!');
+  }
+
   const { orderId } = req.params;
 
   const order = await Order.findById(orderId)
@@ -480,6 +493,10 @@ const getOrderById = async (req, res) => {
 };
 
 const sendDeliveryOtp = async (req, res) => {
+  if (req.user.role !== 'deliveryPartner') {
+    throw new ExpressError(StatusCodes.FORBIDDEN, 'Access denied!');
+  }
+
   const { orderId, shopOrderId } = req.params;
 
   const order = await Order.findById(orderId).populate('user');
@@ -525,6 +542,10 @@ const sendDeliveryOtp = async (req, res) => {
 };
 
 const verifyDeliveryOtp = async (req, res) => {
+  if (req.user.role !== 'deliveryPartner') {
+    throw new ExpressError(StatusCodes.FORBIDDEN, 'Access denied!');
+  }
+
   const { orderId, shopOrderId } = req.params;
   const { otp } = req.body;
 
@@ -574,6 +595,10 @@ const verifyDeliveryOtp = async (req, res) => {
 };
 
 const getEarnings = async (req, res) => {
+  if (req.user.role !== 'deliveryPartner') {
+    throw new ExpressError(StatusCodes.FORBIDDEN, 'Access denied!');
+  }
+
   const assignments = await DeliveryAssignment.find({
     assignedTo: req.user.id,
     status: 'completed',

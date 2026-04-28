@@ -5,6 +5,9 @@ import Order from '../models/orderModel.js';
 import Item from '../models/itemModel.js';
 
 const rateItem = async (req, res) => {
+  if (req.user.role !== 'user') {
+    throw new ExpressError(StatusCodes.FORBIDDEN, 'Access denied!');
+  }
   const { orderId, rating, itemId } = req.body;
 
   // chec order exist and order belongs to this user

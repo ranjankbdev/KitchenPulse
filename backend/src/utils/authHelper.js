@@ -9,8 +9,8 @@ const hashValue = async (plainValue) => {
 };
 
 // generate JWT authentication token
-const genToken = (id) => {
-  return jwt.sign({ id }, Config.secretKey, {
+const genToken = (id, role) => {
+  return jwt.sign({ id, role }, Config.secretKey, {
     expiresIn: '3d',
   });
 };
