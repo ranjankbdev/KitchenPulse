@@ -2,21 +2,17 @@ import axiosInstance from '../config/axiosInstance.js';
 
 // create new order
 const createOrderAPI = async (orderData) => {
-  const { data } = await axiosInstance.post('/order', orderData, { withCredentials: true });
+  const { data } = await axiosInstance.post('/order', orderData);
   return data;
 };
 // get all user orders
 const getOrdersAPI = async () => {
-  const { data } = await axiosInstance.get('/order', { withCredentials: true });
+  const { data } = await axiosInstance.get('/order');
   return data;
 };
 // update shop order status
 const updateShopOrderStatusAPI = async (orderId, shopId, status) => {
-  const { data } = await axiosInstance.patch(
-    `/order/${orderId}/shop/${shopId}/status`,
-    { status },
-    { withCredentials: true }
-  );
+  const { data } = await axiosInstance.patch(`/order/${orderId}/shop/${shopId}/status`, { status });
   return data;
 };
 // get all assigned orders

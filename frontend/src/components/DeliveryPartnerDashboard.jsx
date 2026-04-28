@@ -85,21 +85,22 @@ function DeliveryPartnerDashboard() {
     }
   };
 
-  const verifyDeliveryOtp = async (e) => {
-    try {
-      setLoading(true);
-      const result = await verifyDeliveryOtpAPI(currentOrder._id, currentOrder.shopOrder._id, otp);
-      setShowOtpBox(false);
-      setOtp('');
-      setCurrentOrder(null);
-      await getEarnings();
-      showToast('Order Delivered Successfully!', 'success');
-    } catch (error) {
-      showToast(error, 'error');
-    } finally {
-      setLoading(false);
-    }
-  };
+const verifyDeliveryOtp = async (e) => {
+  try {
+    setLoading(true);
+    await verifyDeliveryOtpAPI(currentOrder._id, currentOrder.shopOrder._id, otp);
+    await getDeliveryAssignments();
+    await getEarnings();
+    setCurrentOrder(null);
+    setShowOtpBox(false);
+    setOtp('');
+    showToast('Order Delivered Successfully!', 'success');
+  } catch (error) {
+    showToast(error, 'error');
+  } finally {
+    setLoading(false);
+  }
+};
 
   // fetch earnings from backend
   const getEarnings = async () => {

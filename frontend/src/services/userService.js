@@ -1,7 +1,7 @@
 import axiosInstance from '../config/axiosInstance.js';
 
 const getUserAPI = async () => {
-  const { data } = await axiosInstance.get('/user/me', { withCredentials: true });
+  const { data } = await axiosInstance.get('/user/me');
   return data;
 };
 

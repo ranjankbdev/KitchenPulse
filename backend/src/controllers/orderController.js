@@ -443,7 +443,7 @@ const getActiveDeliveryAssignment = async (req, res) => {
       populate: [{ path: 'user', select: 'fullName email mobileNumber currentLocation' }],
     });
 
-  if (!assignment) throw new ExpressError(StatusCodes.NOT_FOUND, 'No active assignment found');
+  if (!assignment) return res.status(StatusCodes.OK).json(null);
   if (!assignment.order) throw new ExpressError(StatusCodes.NOT_FOUND, 'Order not found');
 
   const shopOrder = assignment.order.shopOrders.find(
