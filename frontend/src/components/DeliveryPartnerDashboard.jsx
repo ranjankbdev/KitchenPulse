@@ -1,4 +1,4 @@
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { ClipLoader } from 'react-spinners';
 import { FaBoxOpen } from 'react-icons/fa';
@@ -13,6 +13,7 @@ import {
 import Navbar from './Navbar.jsx';
 import showToast from '../utils/toastHelper.js';
 import DeliveryTracking from './DeliveryTracking.jsx';
+import { setDeliveryAssignments } from '../redux/orderSlice.js';
 
 // helper to check if a date is today
 const isToday = (date) => {
@@ -35,20 +36,27 @@ const isThisWeek = (date) => {
 
 function DeliveryPartnerDashboard() {
   const { userData } = useSelector((state) => state.user);
-  const [availableAssignments, setAvailableAssignments] = useState(null);
+  const { deliveryAssignments } = useSelector((state) => state.order);
+  const dispatch = useDispatch();
+
   const [currentOrder, setCurrentOrder] = useState();
   const [loading, setLoading] = useState(false);
+  const [loadingAssignments, setLoadingAssignments] = useState(false);
   const [showOtpBox, setShowOtpBox] = useState(false);
   const [otp, setOtp] = useState('');
+  const [otpLoading, setOtpLoading] = useState(false);
   const [earnings, setEarnings] = useState([]);
   const [earningsTab, setEarningsTab] = useState('today');
 
   const getDeliveryAssignments = async () => {
     try {
+      setLoadingAssignments(true);
       const result = await getDeliveryAssignmentsAPI();
-      setAvailableAssignments(result);
+      dispatch(setDeliveryAssignments(result));
     } catch (error) {
       showToast(error, 'error');
+    } finally {
+      setLoadingAssignments(false);
     }
   };
 
@@ -73,33 +81,33 @@ function DeliveryPartnerDashboard() {
 
   const sendDeliveryOtp = async (e) => {
     try {
-      setLoading(true);
+      setOtpLoading(true);
       await sendDeliveryOtpAPI(currentOrder._id, currentOrder.shopOrder._id);
       setShowOtpBox(true);
       showToast('OTP sent to customer', 'info');
     } catch (error) {
       showToast(error, 'error');
     } finally {
-      setLoading(false);
+      setOtpLoading(false);
     }
   };
 
-const verifyDeliveryOtp = async (e) => {
-  try {
-    setLoading(true);
-    await verifyDeliveryOtpAPI(currentOrder._id, currentOrder.shopOrder._id, otp);
-    await getDeliveryAssignments();
-    await getEarnings();
-    setCurrentOrder(null);
-    setShowOtpBox(false);
-    setOtp('');
-    showToast('Order Delivered Successfully!', 'success');
-  } catch (error) {
-    showToast(error, 'error');
-  } finally {
-    setLoading(false);
-  }
-};
+  const verifyDeliveryOtp = async (e) => {
+    try {
+      setLoading(true);
+      await verifyDeliveryOtpAPI(currentOrder._id, currentOrder.shopOrder._id, otp);
+      await getDeliveryAssignments();
+      await getEarnings();
+      setCurrentOrder(null);
+      setShowOtpBox(false);
+      setOtp('');
+      showToast('Order Delivered Successfully!', 'success');
+    } catch (error) {
+      showToast(error, 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // fetch earnings from backend
   const getEarnings = async () => {
@@ -182,10 +190,10 @@ const verifyDeliveryOtp = async (e) => {
               {!showOtpBox ? (
                 <button
                   onClick={sendDeliveryOtp}
-                  disabled={loading}
+                  disabled={otpLoading}
                   className="w-full bg-[#ff4d2d] text-white py-2.5 rounded-xl font-medium hover:bg-[#e64526] transition cursor-pointer flex justify-center"
                 >
-                  {loading ? <ClipLoader size={18} color="white" /> : 'Send Delivery OTP'}
+                  {otpLoading ? <ClipLoader size={18} color="white" /> : 'Send Delivery OTP'}
                 </button>
               ) : (
                 <div className="flex gap-2">
@@ -213,11 +221,11 @@ const verifyDeliveryOtp = async (e) => {
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 space-y-4">
               <h2 className="text-lg font-semibold text-gray-800">Available Assignments</h2>
 
-              {!availableAssignments ? (
+              {loadingAssignments ? (
                 <div className="flex justify-center py-6">
                   <ClipLoader size={24} color="#ff4d2d" />
                 </div>
-              ) : availableAssignments.length === 0 ? (
+              ) : deliveryAssignments.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-6 text-gray-400">
                   <FaBoxOpen size={28} className="mb-2" />
                   <p className="text-sm">
@@ -225,8 +233,8 @@ const verifyDeliveryOtp = async (e) => {
                   </p>
                 </div>
               ) : (
-                <div className='max-h-96 overflow-y-auto space-y-3 pr-1'>
-                  {availableAssignments.map((assignment) => (
+                <div className="max-h-96 overflow-y-auto space-y-3 pr-1">
+                  {deliveryAssignments.map((assignment) => (
                     <div
                       key={assignment.assignmentId}
                       className="border border-gray-100 rounded-xl p-4 space-y-2 bg-[#fffaf7]"

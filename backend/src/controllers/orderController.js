@@ -362,10 +362,24 @@ const updateShopOrderStatus = async (req, res) => {
 
     await deliveryAssignment.populate('order');
     await deliveryAssignment.populate('shop');
+
+    // notify each nearby delivery partner
+    candidates.forEach((partnerId) => {
+      getIO().to(`deliveryPartner:${partnerId}`).emit('order_status_updated');
+    });
   }
 
   await order.save();
   const updatedShopOrder = order.shopOrders.find((o) => o.shop.toString() === shopId);
+
+  // notify to the user who placed the order
+  if (status === 'confirmed' || status === 'preparing') {
+    getIO().to(`user:${order.user}`).emit('order_status_updated', {
+      orderId,
+      shopId,
+      status: updatedShopOrder.status,
+    });
+  }
 
   return res.status(StatusCodes.OK).json({
     status: updatedShopOrder.status,
@@ -435,6 +449,18 @@ const acceptDeliveryAssignment = async (req, res) => {
   shopOrder.assignedDeliveryPartner = req.user.id;
   shopOrder.status = 'out_for_delivery';
   await order.save();
+
+  // notify to the user/vendor order is out for delivery
+  getIO().to(`user:${order.user}`).emit('order_status_updated', {
+    orderId: order._id,
+    shopId: shopOrder.shop,
+    status: 'out_for_delivery',
+  });
+  getIO().to(`vendor:${shopOrder.owner}`).emit('order_status_updated', {
+    orderId: order._id,
+    shopId: shopOrder.shop,
+    status: 'out_for_delivery',
+  });
 
   return res.status(StatusCodes.OK).json();
 };
@@ -550,6 +576,9 @@ const sendDeliveryOtp = async (req, res) => {
     `<p>Your OTP for delivery is <b>${otp}</b>. It expires in 5 minutes.</p>`
   );
 
+  // notify the user that otp is send
+  getIO().to(`user:${order.user._id}`).emit('delivery:otp_sent');
+
   return res.status(StatusCodes.OK).json();
 };
 
@@ -602,6 +631,18 @@ const verifyDeliveryOtp = async (req, res) => {
     { shopOrderId: shopOrder._id, order: order._id },
     { status: 'completed', completedAt: new Date(), commission: DELIVERYPARTNER_COMMISSION }
   );
+
+  // delivered → notify user and vendor both
+  getIO().to(`user:${order.user._id}`).emit('order_status_updated', {
+    orderId: order._id,
+    shopId: shopOrder.shop,
+    status: 'delivered',
+  });
+  getIO().to(`vendor:${shopOrder.owner}`).emit('order_status_updated', {
+    orderId: order._id,
+    shopId: shopOrder.shop,
+    status: 'delivered',
+  });
 
   return res.status(StatusCodes.OK).json();
 };

@@ -4,6 +4,7 @@ const orderSlice = createSlice({
   name: 'order',
   initialState: {
     myOrders: [],
+    deliveryAssignments: [],
   },
 
   reducers: {
@@ -26,9 +27,13 @@ const orderSlice = createSlice({
         }
       }
     },
+    setDeliveryAssignments: (state, action) => {
+      state.deliveryAssignments = action.payload;
+    },
   },
 });
 
-export const { addMyOrder, setMyOrders, updateOrderStatus } = orderSlice.actions;
+export const { addMyOrder, setMyOrders, updateOrderStatus, setDeliveryAssignments } =
+  orderSlice.actions;
 
 export default orderSlice.reducer;
