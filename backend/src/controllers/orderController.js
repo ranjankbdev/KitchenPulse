@@ -10,6 +10,7 @@ import { sendOtpEmail } from '../utils/emailService.js';
 import RazorPay from 'razorpay';
 import Config from '../config/index.js';
 import Rating from '../models/ratingModel.js';
+import { getIO } from '../socket/socketManager.js';
 
 let instance = new RazorPay({
   key_id: Config.razorpayKeyId,
@@ -126,6 +127,11 @@ const createOrder = async (req, res) => {
     .populate('shopOrders.shopOrderItems.item', 'imageUrl')
     .populate('shopOrders.shop', 'name');
 
+  // notify all owner
+  for (const shopOrder of newOrder.shopOrders) {
+    getIO().to(`vendor:${shopOrder.owner}`).emit('new_order');
+  }
+
   return res.status(StatusCodes.CREATED).json(populatedOrder);
 };
 
@@ -171,6 +177,12 @@ const verifyPayment = async (req, res) => {
   const populatedOrder = await Order.findById(order._id)
     .populate('shopOrders.shop', 'name')
     .populate('shopOrders.shopOrderItems.item', 'imageUrl');
+
+  // notify all owner
+  for (const shopOrder of order.shopOrders) {
+    getIO().to(`vendor:${shopOrder.owner}`).emit('new_order');
+  }
+
   return res.status(StatusCodes.OK).json(populatedOrder);
 };
 
