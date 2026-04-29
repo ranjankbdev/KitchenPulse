@@ -1,6 +1,8 @@
 import mongoose from 'mongoose';
+import http from 'http';
 import Config from './config/index.js';
 import app from './app.js';
+import { initSocket } from './socket/socketManager.js';
 
 // connect to MongoDB and start the server
 const start = async () => {
@@ -8,7 +10,10 @@ const start = async () => {
     await mongoose.connect(Config.mongoUri);
     console.log(`Connected to Database...`);
 
-    app.listen(Config.port, () => {
+    const server = http.createServer(app);
+    initSocket(server);
+
+    server.listen(Config.port, () => {
       console.log(`Server listening on port ${Config.port}...`);
     });
   } catch (error) {
