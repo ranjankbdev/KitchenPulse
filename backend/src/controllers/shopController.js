@@ -28,15 +28,16 @@ const updateShop = async (req, res) => {
     throw new ExpressError(StatusCodes.FORBIDDEN, 'Access denied!');
   }
 
-  const { name, imageUrl, address, city, state } = req.body;
   const existingShop = await Shop.findOne({ owner: req.user.id });
-
   if (!existingShop) {
     throw new ExpressError(StatusCodes.NOT_FOUND, 'Shop not found. Create first.');
   }
 
   // update shop
-  const updateData = { name, imageUrl, address, city, state };
+  const updateData = Object.fromEntries(
+    Object.entries(req.body).filter(([_, v]) => v !== undefined && v !== null)
+  );
+
   const updatedShop = await Shop.findByIdAndUpdate(existingShop._id, updateData, {
     new: true,
     runValidators: true,
