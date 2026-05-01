@@ -22,6 +22,7 @@ function ItemCard({
   shopName = null,
   onClick,
 }) {
+  console.log(data);
   const dispatch = useDispatch();
   const { cartItems } = useSelector((state) => state.cart);
 
@@ -67,9 +68,9 @@ function ItemCard({
         {shopName && <p className="text-xs text-gray-400 mt-0.5">{shopName}</p>}
 
         {/* description */}
-        {showDescription && (
+        {showDescription && data.description && (
           <p className="text-xs text-gray-500 mt-1 line-clamp-2 leading-relaxed">
-            Freshly prepared with rich flavors and quality ingredients.
+            {data.description}
           </p>
         )}
 

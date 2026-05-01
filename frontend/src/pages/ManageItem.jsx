@@ -24,6 +24,7 @@ function ManageItem({ mode }) {
   const [foodType, setFoodType] = useState('veg');
   const [preview, setPreview] = useState(null);
   const [picture, setPicture] = useState(null);
+  const [description, setDescription] = useState('');
 
   const imageInputRef = useRef(null);
 
@@ -43,6 +44,7 @@ function ManageItem({ mode }) {
           setFoodType(item.foodType);
           setPreview(item.imageUrl);
           setPicture(null);
+          setDescription(item.description || '');
         } catch (error) {
           showToast('Failed to load item data!', 'error');
         } finally {
@@ -75,7 +77,7 @@ function ManageItem({ mode }) {
         imageUrl = await uploadImage(picture);
       }
 
-      const itemData = { name, price: Number(price), category, foodType, imageUrl };
+      const itemData = { name, description, price: Number(price), category, foodType, imageUrl };
       let response;
       if (mode === 'edit') {
         response = await updateItemAPI(itemId, itemData);
@@ -137,6 +139,17 @@ function ManageItem({ mode }) {
               className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
               onChange={(e) => setName(e.target.value)}
               value={name}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+            <textarea
+              placeholder="Enter food description"
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 resize-none"
+              rows={3}
+              onChange={(e) => setDescription(e.target.value)}
+              value={description}
             />
           </div>
 

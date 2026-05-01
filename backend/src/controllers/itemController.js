@@ -10,10 +10,10 @@ const createItem = async (req, res) => {
     throw new ExpressError(StatusCodes.FORBIDDEN, 'Access denied!');
   }
 
-  const { name, imageUrl, foodType, category, price } = req.body;
+  const { name, description, imageUrl, foodType, category, price } = req.body;
 
   const shop = await getShopByOwner(req.user.id);
-  await Item.create({ name, imageUrl, shop: shop._id, foodType, category, price });
+  await Item.create({ name, description, imageUrl, shop: shop._id, foodType, category, price });
 
   const updatedShop = await Shop.findById(shop._id).populate([
     { path: 'items', options: { sort: { updatedAt: -1 } } },

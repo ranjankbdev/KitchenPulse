@@ -7,6 +7,12 @@ const itemSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    description: {
+      type: String,
+      trim: true,
+      default: '',
+      maxlength: 200,
+    },
     imageUrl: {
       type: String,
       required: true,
