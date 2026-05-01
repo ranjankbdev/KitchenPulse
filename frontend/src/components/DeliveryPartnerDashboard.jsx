@@ -13,7 +13,7 @@ import {
 import Navbar from './Navbar.jsx';
 import showToast from '../utils/toastHelper.js';
 import DeliveryTracking from './DeliveryTracking.jsx';
-import { setDeliveryAssignments } from '../redux/orderSlice.js';
+import { setActiveOrderUserId, setDeliveryAssignments } from '../redux/orderSlice.js';
 
 // helper to check if a date is today
 const isToday = (date) => {
@@ -47,6 +47,7 @@ function DeliveryPartnerDashboard() {
   const [otpLoading, setOtpLoading] = useState(false);
   const [earnings, setEarnings] = useState([]);
   const [earningsTab, setEarningsTab] = useState('today');
+  const [myLocation, setMyLocation] = useState(null);
 
   const getDeliveryAssignments = async () => {
     try {
@@ -74,6 +75,9 @@ function DeliveryPartnerDashboard() {
     try {
       const result = await getActiveDeliveryAssignmentAPI();
       setCurrentOrder(result);
+      if (result) {
+        dispatch(setActiveOrderUserId(result.user._id));
+      }
     } catch (error) {
       showToast(error, 'error');
     }
@@ -99,6 +103,7 @@ function DeliveryPartnerDashboard() {
       await getDeliveryAssignments();
       await getEarnings();
       setCurrentOrder(null);
+      dispatch(setActiveOrderUserId(null));
       setShowOtpBox(false);
       setOtp('');
       showToast('Order Delivered Successfully!', 'success');
@@ -126,6 +131,23 @@ function DeliveryPartnerDashboard() {
     getActiveDeliveryAssignment();
     getEarnings();
   }, [userData]);
+
+  useEffect(() => {
+    if (!currentOrder) return;
+
+    const watchId = navigator.geolocation.watchPosition(
+      (pos) => {
+        setMyLocation({
+          lat: pos.coords.latitude,
+          lon: pos.coords.longitude,
+        });
+      },
+      (err) => console.error(err),
+      { enableHighAccuracy: true }
+    );
+
+    return () => navigator.geolocation.clearWatch(watchId);
+  }, [currentOrder]);
 
   // filter earnings based on selected tab
   const filteredEarnings = earnings.filter((e) => {
@@ -174,7 +196,7 @@ function DeliveryPartnerDashboard() {
                 <div className="h-60 w-full rounded-xl overflow-hidden">
                   <DeliveryTracking
                     data={{
-                      deliveryPartnerLocation: {
+                      deliveryPartnerLocation: myLocation || {
                         lat: currentOrder.deliveryPartnerLocation?.lat,
                         lon: currentOrder.deliveryPartnerLocation?.lon,
                       },

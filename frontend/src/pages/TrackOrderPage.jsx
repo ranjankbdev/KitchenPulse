@@ -5,12 +5,15 @@ import { IoIosArrowRoundBack } from 'react-icons/io';
 import { getOrderByIdAPI } from '../services/orderService';
 import DeliveryTracking from '../components/DeliveryTracking';
 import { formatDateTime } from '../utils/dateFormatter';
+import socket from '../config/socket';
 
 function TrackOrderPage() {
   const { orderId } = useParams();
   const navigate = useNavigate();
   const [currentOrder, setCurrentOrder] = useState();
   const [loading, setLoading] = useState(false);
+  const [partnerLocation, setPartnerLocation] = useState(null);
+  
 
   const getOrderById = async () => {
     try {
@@ -27,6 +30,15 @@ function TrackOrderPage() {
   useEffect(() => {
     getOrderById();
   }, [orderId]);
+
+  useEffect(() => {
+    // listen for real-time location updates sent by delivery partner
+    socket.on('partner_location_updated', ({ latitude, longitude }) => {
+      setPartnerLocation({ lat: latitude, lon: longitude });
+    });
+
+    return () => socket.off('partner_location_updated');
+  }, []);
 
   return (
     <div className="max-w-3xl mx-auto p-4 flex flex-col gap-6">
@@ -101,7 +113,7 @@ function TrackOrderPage() {
               <div className="h-100 w-full rounded-2xl overflow-hidden shadow-md">
                 <DeliveryTracking
                   data={{
-                    deliveryPartnerLocation: {
+                    deliveryPartnerLocation: partnerLocation || {
                       lat: shopOrder.assignedDeliveryPartner.currentLocation.coordinates[1],
                       lon: shopOrder.assignedDeliveryPartner.currentLocation.coordinates[0],
                     },

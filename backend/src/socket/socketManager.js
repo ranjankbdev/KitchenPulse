@@ -33,6 +33,11 @@ const initSocket = (httpServer) => {
       socket.join(roomId);
     });
 
+    // delivery partner emits their location
+    socket.on('location_update', ({ customerId, latitude, longitude }) => {
+      io.to(`user:${customerId}`).emit('partner_location_updated', { latitude, longitude });
+    });
+
     socket.on('disconnect', () => {});
   });
 };

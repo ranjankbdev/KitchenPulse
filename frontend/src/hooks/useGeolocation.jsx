@@ -9,6 +9,7 @@ import {
   setCurrentState,
 } from '../redux/userSlice.js';
 import { updateUserLocationAPI } from '../services/userService.js';
+import socket from '../config/socket.js';
 
 const DISTANCE_THRESHOLD_METERS = 500; // minimum movement to trigger update
 
@@ -27,6 +28,9 @@ function useGeolocation() {
   const dispatch = useDispatch();
   const { userData } = useSelector((state) => state.user);
 
+  const { activeOrderUserId } = useSelector((state) => state.order);
+
+  const activeOrderUserIdRef = useRef(activeOrderUserId);
   const lastSavedPosition = useRef(null);
   const lastSavedTime = useRef(null);
   const watchId = useRef(null);
@@ -36,6 +40,10 @@ function useGeolocation() {
   useEffect(() => {
     THROTTLE_MS.current = userData?.role === 'deliveryPartner' ? 30000 : null;
   }, [userData]);
+
+  useEffect(() => {
+  activeOrderUserIdRef.current = activeOrderUserId;
+}, [activeOrderUserId]);
 
   // save location to backend + redux
   const saveLocation = async (latitude, longitude) => {
@@ -54,6 +62,15 @@ function useGeolocation() {
 
       lastSavedPosition.current = { latitude, longitude };
       lastSavedTime.current = Date.now();
+
+      // emit real-time location of deliveryPartner to customer
+      if (userData?.role === 'deliveryPartner' && activeOrderUserIdRef.current) {
+        socket.emit('location_update', {
+          customerId: activeOrderUserIdRef.current,
+          latitude,
+          longitude,
+        });
+      }
     } catch (error) {
       console.log('Location save error:', error);
     }
