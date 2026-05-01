@@ -81,8 +81,18 @@ function useSocket() {
         }
       });
 
-      socket.on('order_status_updated', ({ orderId, shopId, status }) => {
+      socket.on('order_status_updated', async ({ orderId, shopId, status }) => {
         dispatch(updateOrderStatus({ orderId, shopId, status }));
+
+        // refetch orders on delivered to get updated
+        if (status === 'delivered') {
+          try {
+            const updatedOrders = await getOrdersAPI();
+            dispatch(setMyOrders(updatedOrders));
+          } catch (error) {
+            console.log('Failed to fetch orders:', error);
+          }
+        }
         if (vendorStatusMessages[status]) {
           showToast(vendorStatusMessages[status], 'info');
         }
