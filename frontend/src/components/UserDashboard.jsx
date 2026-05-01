@@ -127,9 +127,7 @@ function UserDashboard() {
               ? `${selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)} Items`
               : 'Recommended for You'}
         </h1>
-        <div
-          className={`w-full h-auto flex flex-wrap gap-5 my-4 ${!itemsToShow?.length > 0 ? 'justify-center' : ''} `}
-        >
+        <div className="w-full h-auto grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5 my-4">
           {loading ? (
             <div className="w-full flex justify-center items-center py-10">
               <ClipLoader size={30} color="#ff4d2d" />
@@ -139,7 +137,7 @@ function UserDashboard() {
               <ItemCard
                 key={item._id}
                 data={item}
-                className="max-w-85 sm:w-42 md:w-47 lg:w-50 xl:w-55 cursor-pointer"
+                className="cursor-pointer"
                 imageHeightClass="h-45"
                 showActions={false}
                 showDescription={false}

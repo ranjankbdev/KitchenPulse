@@ -47,6 +47,16 @@ function HorizontalScroll({ children }) {
     checkScroll();
   }, [children]);
 
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+
+    const observer = new ResizeObserver(() => checkScroll());
+    observer.observe(el);
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <div className="w-full relative mt-4">
       {showLeft && (

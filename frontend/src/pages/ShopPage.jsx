@@ -161,7 +161,7 @@ function ShopPage() {
               : 'All Items'}
           </h2>
           {filteredItems.length > 0 ? (
-            <div className="flex flex-wrap gap-6 justify-start">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
               {filteredItems.map((item) => (
                 <div
                   key={item._id}
@@ -172,8 +172,8 @@ function ShopPage() {
                 >
                   <ItemCard
                     data={item}
-                    className="max-w-83 sm:max-w-71 md:max-w-87 lg:max-w-73 xl:max-w-69"
-                    imageHeightClass="h-55 md:h-59 lg:h-63 xl:h-61"
+                    className="w-full cursor-pointer"
+                    imageHeightClass="h-44"
                   />
                 </div>
               ))}

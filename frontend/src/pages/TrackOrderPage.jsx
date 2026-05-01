@@ -110,7 +110,7 @@ function TrackOrderPage() {
 
             {/* Live tracking map (only if delivery partner exists and not delivered) */}
             {shopOrder.assignedDeliveryPartner && shopOrder.status !== 'delivered' && (
-              <div className="h-100 w-full rounded-2xl overflow-hidden shadow-md">
+              <div className="w-full rounded-3xl overflow-hidden shadow-md">
                 <DeliveryTracking
                   data={{
                     deliveryPartnerLocation: partnerLocation || {
