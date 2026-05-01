@@ -19,6 +19,7 @@ import HorizontalScroll from './HorizontalScroll';
 import showToast from '../utils/toastHelper.js';
 import ItemCard from './ItemCard.jsx';
 import useGetMyOrders from '../hooks/useMyOrders.jsx';
+import Footer from './common/Footer.jsx';
 
 function UserDashboard() {
   const navigate = useNavigate();
@@ -163,6 +164,7 @@ function UserDashboard() {
           )}
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

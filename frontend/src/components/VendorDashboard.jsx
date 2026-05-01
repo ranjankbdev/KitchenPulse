@@ -42,7 +42,7 @@ function VendorDashboard() {
   }, [userData, dispatch]);
 
   return (
-    <div>
+    <div className='mb-12'>
       <Navbar />
 
       {loading && (
