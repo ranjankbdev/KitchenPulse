@@ -106,7 +106,9 @@ function useSocket() {
         try {
           const assignments = await getDeliveryAssignmentsAPI();
           dispatch(setDeliveryAssignments(assignments));
-          showToast(`New delivery assignment available!`, 'info');
+          if (assignments.length > 0) {
+            showToast(`New delivery assignment available!`, 'info');
+          }
         } catch (error) {
           console.error('Failed to fetch assignments:', error);
         }

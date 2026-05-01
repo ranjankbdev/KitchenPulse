@@ -582,6 +582,69 @@ const sendDeliveryOtp = async (req, res) => {
   return res.status(StatusCodes.OK).json();
 };
 
+const retryUnassignedOrders = async (completedPartnerId) => {
+  try {
+    // find orders stuck at ready_for_pickup with no assigned partner
+    const stuckOrders = await Order.find({
+      shopOrders: {
+        $elemMatch: {
+          status: 'ready_for_pickup',
+          assignedDeliveryPartner: null,
+        },
+      },
+    });
+
+    for (const order of stuckOrders) {
+      for (const shopOrder of order.shopOrders) {
+        if (shopOrder.status !== 'ready_for_pickup' || shopOrder.assignedDeliveryPartner !== null)
+          continue;
+
+        const availablePartners = await findAvailableDeliveryPartners(order.deliveryAddress);
+        if (availablePartners.length === 0) continue;
+
+        const candidates = availablePartners.map((p) => p._id);
+
+        // no assignment created yet (was 0 partners at broadcast time)
+        if (!shopOrder.deliveryAssignment) {
+          const deliveryAssignment = await DeliveryAssignment.create({
+            order: order._id,
+            shop: shopOrder.shop,
+            shopOrderId: shopOrder._id,
+            broadcastedTo: candidates,
+            status: 'broadcasted',
+          });
+          shopOrder.deliveryAssignment = deliveryAssignment._id;
+          await order.save();
+
+          candidates.forEach((partnerId) => {
+            getIO().to(`deliveryPartner:${partnerId}`).emit('order_status_updated');
+          });
+          continue;
+        }
+
+        // assignment exists but stuck in broadcasted
+        const existingAssignment = await DeliveryAssignment.findById(shopOrder.deliveryAssignment);
+        if (!existingAssignment || existingAssignment.status !== 'broadcasted') continue;
+
+        // add newly free partner if not already in broadcastedTo
+        const alreadyBroadcasted = existingAssignment.broadcastedTo.map((id) => String(id));
+        const newCandidates = candidates.filter((id) => !alreadyBroadcasted.includes(String(id)));
+
+        if (newCandidates.length === 0) continue;
+
+        existingAssignment.broadcastedTo.push(...newCandidates);
+        await existingAssignment.save();
+
+        newCandidates.forEach((partnerId) => {
+          getIO().to(`deliveryPartner:${partnerId}`).emit('order_status_updated');
+        });
+      }
+    }
+  } catch (error) {
+    console.error('retryUnassignedOrders error:', error);
+  }
+};
+
 const verifyDeliveryOtp = async (req, res) => {
   if (req.user.role !== 'deliveryPartner') {
     throw new ExpressError(StatusCodes.FORBIDDEN, 'Access denied!');
@@ -643,6 +706,8 @@ const verifyDeliveryOtp = async (req, res) => {
     shopId: shopOrder.shop,
     status: 'delivered',
   });
+
+  retryUnassignedOrders(req.user.id);
 
   return res.status(StatusCodes.OK).json();
 };

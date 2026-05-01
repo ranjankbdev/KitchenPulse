@@ -146,18 +146,20 @@ function UserDashboard() {
               />
             ))
           ) : (
-            <div className="w-full max-w-md p-6 bg-gray-50 rounded-2xl shadow-sm text-center mt-6">
-              <FaStar className="text-gray-300 text-4xl mx-auto mb-2" />
-              <p className="text-gray-500 text-lg">
-                {selectedCategory
-                  ? `No items found in "${selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)}" category`
-                  : 'No search results found'}
-              </p>
-              <p className="text-gray-400 mt-1">
-                {selectedCategory
-                  ? 'Try another category.'
-                  : 'Try a different keyword or category.'}
-              </p>
+            <div className="col-span-2 sm:col-span-3 lg:col-span-4 flex justify-center">
+              <div className="w-full max-w-md p-6 bg-gray-50 rounded-2xl shadow-sm text-center mt-6">
+                <FaStar className="text-gray-300 text-4xl mx-auto mb-2" />
+                <p className="text-gray-500 text-lg">
+                  {selectedCategory
+                    ? `No items found in "${selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)}" category`
+                    : 'No search results found'}
+                </p>
+                <p className="text-gray-400 mt-1">
+                  {selectedCategory
+                    ? 'Try another category.'
+                    : 'Try a different keyword or category.'}
+                </p>
+              </div>
             </div>
           )}
         </div>

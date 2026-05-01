@@ -22,7 +22,6 @@ function ItemCard({
   shopName = null,
   onClick,
 }) {
-  console.log(data);
   const dispatch = useDispatch();
   const { cartItems } = useSelector((state) => state.cart);
 
@@ -69,7 +68,7 @@ function ItemCard({
 
         {/* description */}
         {showDescription && data.description && (
-          <p className="text-xs text-gray-500 mt-1 line-clamp-2 leading-relaxed">
+          <p className="text-xs text-gray-500 mt-1 leading-relaxed">
             {data.description}
           </p>
         )}
