@@ -150,7 +150,7 @@ function ForgotPassword() {
 
             <div className="mb-6">
               <label htmlFor="c-password" className="block mb-1 font-medium text-gray-700">
-                Password
+                Confirm Password
               </label>
               <input
                 id="c-password"
