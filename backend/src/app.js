@@ -1,4 +1,5 @@
 import express from 'express';
+import helmet from 'helmet';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import { StatusCodes } from 'http-status-codes';
@@ -6,6 +7,13 @@ import { ExpressError } from './utils/ExpressError.js';
 import { mainRouter } from './routes/mainRoutes.js';
 
 const app = express();
+
+// security headers
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
+  })
+);
 
 // enable CORS so frontend can communicate with backend
 app.use(
@@ -29,7 +37,6 @@ app.use((req, res, next) => {
 
 // global error handler
 app.use((err, req, res, next) => {
-  console.log('Error : ', err);
   let statusCode = err.statusCode || StatusCodes.INTERNAL_SERVER_ERROR;
   let message = err.message || 'Something went wrong!';
 

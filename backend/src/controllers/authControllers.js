@@ -39,8 +39,8 @@ const registerUser = async (req, res) => {
   const token = genToken(savedUser._id, savedUser.role);
 
   res.cookie('token', token, {
-    secure: false,
-    sameSite: 'strict',
+    secure: true,
+    sameSite: 'none',
     maxAge: 7 * 24 * 60 * 60 * 1000,
     httpOnly: true,
   });
@@ -71,8 +71,8 @@ const loginUser = async (req, res) => {
 
   const token = genToken(existingUser._id, existingUser.role);
   res.cookie('token', token, {
-    secure: false,
-    sameSite: 'strict',
+    secure: true,
+    sameSite: 'none',
     maxAge: 7 * 24 * 60 * 60 * 1000,
     httpOnly: true,
   });
@@ -168,8 +168,8 @@ const googleAuth = async (req, res) => {
     // User exists → just login (SignIn flow)
     const token = genToken(googleUser._id, googleUser.role);
     res.cookie('token', token, {
-      secure: false,
-      sameSite: 'strict',
+      secure: true,
+      sameSite: 'none',
       maxAge: 7 * 24 * 60 * 60 * 1000,
       httpOnly: true,
     });
@@ -203,8 +203,8 @@ const googleAuth = async (req, res) => {
 
   const token = genToken(googleUser._id, googleUser.role);
   res.cookie('token', token, {
-    secure: false,
-    sameSite: 'strict',
+    secure: true,
+    sameSite: 'none',
     maxAge: 7 * 24 * 60 * 60 * 1000,
     httpOnly: true,
   });

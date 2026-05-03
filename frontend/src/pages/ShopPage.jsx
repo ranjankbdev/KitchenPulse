@@ -29,6 +29,15 @@ function ShopPage() {
 
   const totalQuantity = cartItems?.reduce((sum, item) => sum + item.quantity, 0);
 
+  const avgRating =
+    items.length > 0
+      ? (items.reduce((sum, item) => sum + (item.ratings?.average || 0), 0) / items.length).toFixed(
+          1
+        )
+      : null;
+
+  const totalReviews = items.reduce((sum, item) => sum + (item.ratings?.count || 0), 0);
+
   const handleShopData = async () => {
     try {
       setLoading(true);
@@ -37,7 +46,6 @@ function ShopPage() {
       setItems(result.items);
     } catch (error) {
       showToast('Failed to load shop data', 'error');
-      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -113,11 +121,13 @@ function ShopPage() {
             <div className="absolute inset-0 bg-linear-to-t from-black/60 via-black/20 to-transparent flex flex-col justify-end p-6 text-white">
               <h1 className="text-3xl md:text-5xl font-extrabold drop-shadow-lg">{shop.name}</h1>
               <div className="block sm:flex sm:items-center gap-4 mt-2">
-                <div className="flex items-center gap-1">
-                  <FaStar className="text-yellow-400" />
-                  <span className="font-medium">{shop.rating || 4.5}</span>
-                  <span className="text-gray-200">({shop.reviewCount || 0} reviews)</span>
-                </div>
+                {avgRating && (
+                  <div className="flex items-center gap-1">
+                    <FaStar className="text-yellow-400" />
+                    <span className="font-medium">{avgRating}</span>
+                    <span className="text-gray-200">({totalReviews} reviews)</span>
+                  </div>
+                )}
                 <div className="flex items-center gap-1">
                   <FaLocationDot className="text-[#eb654d]" />
                   <span className="text-gray-200">{shop.address}</span>
@@ -170,11 +180,7 @@ function ShopPage() {
                     item._id === activeHighlightId ? 'ring-2 ring-[#ff4d2d] rounded-2xl' : ''
                   }
                 >
-                  <ItemCard
-                    data={item}
-                    className="w-full cursor-pointer"
-                    imageHeightClass="h-44"
-                  />
+                  <ItemCard data={item} className="w-full cursor-pointer" imageHeightClass="h-44" />
                 </div>
               ))}
             </div>

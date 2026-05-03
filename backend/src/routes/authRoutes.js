@@ -18,14 +18,22 @@ import {
   resetUserPasswordSchema,
   googleAuthSchema,
 } from '../schemas/authSchema.js';
+import rateLimit from 'express-rate-limit';
+
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10, // only 10 requests per 15 minutes
+  message: 'Too many requests, please try again later',
+});
 
 const authRouter = express.Router();
 
-authRouter.post('/register', validateSchema(registerSchema), wrapAsync(registerUser));
-authRouter.post('/login', validateSchema(loginSchema), wrapAsync(loginUser));
+authRouter.post('/register', authLimiter, validateSchema(registerSchema), wrapAsync(registerUser));
+authRouter.post('/login', authLimiter, validateSchema(loginSchema), wrapAsync(loginUser));
 authRouter.post('/logout', wrapAsync(logoutUser));
 authRouter.post(
   '/password-reset/otp',
+  authLimiter,
   validateSchema(sendPasswordResetOtpSchema),
   wrapAsync(sendPasswordResetOtp)
 );

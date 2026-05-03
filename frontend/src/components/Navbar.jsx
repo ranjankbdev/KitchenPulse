@@ -69,7 +69,6 @@ function Navbar() {
         dispatch(setSearchItems(result));
       } catch (error) {
         dispatch(setSearchItems([]));
-        console.log(error);
       }
     }, 400);
 
@@ -158,17 +157,12 @@ function Navbar() {
               >
                 <TbReceipt2 size={16} />
                 Restaurant Orders
-                <span className="absolute -top-1.5 right-11 w-4 h-4 bg-[#ff4d2d] text-white text-[10px] font-bold rounded-full flex items-center justify-center leading-none pointer-events-none">
-                  1
-                </span>
               </button>
               <div onClick={() => navigate('/orders')} className="relative group sm:hidden">
                 <button className="flex items-center justify-center bg-[#ff4d2d]/10 text-[#ff4d2d] p-2 rounded-lg hover:bg-[#ff4d2d]/20 cursor-pointer transition-colors">
                   <TbReceipt2 size={18} />
                 </button>
-                <span className="absolute -top-1.5 -right-1.25 w-4 h-4 bg-[#ff4d2d] text-white text-[10px] font-bold rounded-full flex items-center justify-center leading-none pointer-events-none">
-                  1
-                </span>
+                
                 <Tooltip text="Restaurant Orders" />
               </div>
             </>

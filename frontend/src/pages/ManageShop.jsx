@@ -81,7 +81,6 @@ function ManageShop({ mode }) {
       );
       navigate('/');
     } catch (err) {
-      console.error('Error submitting shop:', err);
       showToast('Something went wrong!', 'error');
     } finally {
       setLoading(false);

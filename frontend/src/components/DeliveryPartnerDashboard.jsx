@@ -119,9 +119,7 @@ function DeliveryPartnerDashboard() {
     try {
       const result = await getEarningsAPI();
       setEarnings(result);
-    } catch (error) {
-      console.log(error);
-    }
+    } catch {}
   };
 
   useEffect(() => {
@@ -142,7 +140,7 @@ function DeliveryPartnerDashboard() {
           lon: pos.coords.longitude,
         });
       },
-      (err) => console.error(err),
+      (err) => {},
       { enableHighAccuracy: true }
     );
 
@@ -164,7 +162,7 @@ function DeliveryPartnerDashboard() {
     currentOrder?.shopOrder?.shopOrderItems?.reduce((sum, item) => sum + item.quantity, 0) || 0;
 
   return (
-    <div className='pb-19'>
+    <div className="pb-19">
       <Navbar />
       <div className="flex justify-center items-center p-2 sm:p-6">
         <div className="w-full max-w-2xl flex flex-col gap-6">

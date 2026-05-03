@@ -42,8 +42,8 @@ function useGeolocation() {
   }, [userData]);
 
   useEffect(() => {
-  activeOrderUserIdRef.current = activeOrderUserId;
-}, [activeOrderUserId]);
+    activeOrderUserIdRef.current = activeOrderUserId;
+  }, [activeOrderUserId]);
 
   // save location to backend + redux
   const saveLocation = async (latitude, longitude) => {
@@ -71,9 +71,7 @@ function useGeolocation() {
           longitude,
         });
       }
-    } catch (error) {
-      console.log('Location save error:', error);
-    }
+    } catch {}
   };
 
   // called every time position changes
@@ -104,16 +102,15 @@ function useGeolocation() {
   useEffect(() => {
     if (!userData) return;
     if (!navigator.geolocation) {
-      console.log('Geolocation not supported');
       return;
     }
 
     // start watching position
-    watchId.current = navigator.geolocation.watchPosition(
-      handlePosition,
-      (error) => console.log('Geolocation error:', error),
-      { enableHighAccuracy: true, timeout: 30000, maximumAge: 0 }
-    );
+    watchId.current = navigator.geolocation.watchPosition(handlePosition, (error) => {}, {
+      enableHighAccuracy: true,
+      timeout: 30000,
+      maximumAge: 0,
+    });
 
     // cleanup on unmount
     return () => {

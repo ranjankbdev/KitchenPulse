@@ -56,7 +56,7 @@ function useSocket() {
             const updatedOrders = await getOrdersAPI();
             dispatch(setMyOrders(updatedOrders));
           } catch (error) {
-            console.error('Failed to fetch orders:', error);
+            showToast(error, 'error');
           }
         }
         if (customerStatusMessages[status]) {
@@ -77,7 +77,7 @@ function useSocket() {
           const updatedOrders = await getOrdersAPI();
           dispatch(setMyOrders(updatedOrders));
         } catch (error) {
-          console.error('Failed to fetch orders:', error);
+          showToast(error, 'error');
         }
       });
 
@@ -90,7 +90,7 @@ function useSocket() {
             const updatedOrders = await getOrdersAPI();
             dispatch(setMyOrders(updatedOrders));
           } catch (error) {
-            console.log('Failed to fetch orders:', error);
+            showToast(error, 'error');
           }
         }
         if (vendorStatusMessages[status]) {
@@ -110,7 +110,7 @@ function useSocket() {
             showToast(`New delivery assignment available!`, 'info');
           }
         } catch (error) {
-          console.error('Failed to fetch assignments:', error);
+          showToast(error, 'error');
         }
       });
     }

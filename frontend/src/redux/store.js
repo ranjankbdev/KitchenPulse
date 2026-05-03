@@ -11,7 +11,7 @@ const store = configureStore({
     cart: cartSlice,
     order: orderSlice,
   },
-  devTools: true,
+  devTools: false,
 });
 
 export default store;

@@ -6,6 +6,7 @@ import { getOrderByIdAPI } from '../services/orderService';
 import DeliveryTracking from '../components/DeliveryTracking';
 import { formatDateTime } from '../utils/dateFormatter';
 import socket from '../config/socket';
+import showToast from '../utils/toastHelper';
 
 function TrackOrderPage() {
   const { orderId } = useParams();
@@ -13,15 +14,14 @@ function TrackOrderPage() {
   const [currentOrder, setCurrentOrder] = useState();
   const [loading, setLoading] = useState(false);
   const [partnerLocation, setPartnerLocation] = useState(null);
-  
 
   const getOrderById = async () => {
     try {
       setLoading(true);
       const result = await getOrderByIdAPI(orderId);
       setCurrentOrder(result);
-    } catch (error) {
-      console.log(error);
+    } catch {
+      showToast('Failed to load order details', 'error');
     } finally {
       setLoading(false);
     }

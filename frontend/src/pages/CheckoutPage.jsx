@@ -21,6 +21,7 @@ import {
 } from '../services/locationService';
 import 'leaflet/dist/leaflet.css';
 import showToast from '../utils/toastHelper.js';
+import { clearCart } from '../redux/cartSlice.js';
 
 function RecenterMap({ lat, lon }) {
   const map = useMap();
@@ -113,7 +114,7 @@ function CheckoutPage() {
         dispatch(setCurrentLon(longitude));
         updateAddressFromCoordinates(latitude, longitude);
       },
-      (error) => console.warn('Geolocation error:', error)
+      () => {}
     );
   };
 
@@ -122,9 +123,7 @@ function CheckoutPage() {
       const locationData = await getLocationFromCoordinates(lat, lng);
       if (!locationData) return;
       setAddressInput(locationData.address);
-    } catch (error) {
-      console.log('GeoLocation error:', error);
-    }
+    } catch {}
   };
 
   const handleSearchCoordinates = async () => {
@@ -135,9 +134,7 @@ function CheckoutPage() {
       const { lat, lon } = coords;
       dispatch(setCurrentLat(lat));
       dispatch(setCurrentLon(lon));
-    } catch (error) {
-      console.log('Forward geocoding error:', error);
-    }
+    } catch {}
   };
 
   const handleCreateOrder = async () => {
@@ -155,6 +152,7 @@ function CheckoutPage() {
       const result = await createOrderAPI(orderData);
       if (paymentMethod === 'cod') {
         dispatch(addMyOrder(result));
+        dispatch(clearCart());
         showToast('Order placed successfully', 'success');
         navigate('/order/confirmation');
         return;
@@ -181,6 +179,7 @@ function CheckoutPage() {
             });
 
             dispatch(addMyOrder(verifyData));
+            dispatch(clearCart());
             showToast('Payment successful!', 'success');
             navigate('/order/confirmation');
           } catch (error) {
@@ -208,6 +207,10 @@ function CheckoutPage() {
       setShowModal(false);
     }
   };
+
+  useEffect(() => {
+    if (cartItems.length === 0) navigate('/');
+  }, []);
 
   return (
     <div className="bg-[#fff9f6] w-full min-h-screen flex justify-center items-center p-4 sm:p-6">
