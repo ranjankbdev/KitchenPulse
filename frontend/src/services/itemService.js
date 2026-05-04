@@ -1,4 +1,4 @@
-import axiosInstance from '../config/axiosInstance';
+import axiosInstance from '../config/axiosInstance.js';
 
 const deleteItemByIdAPI = async (itemId) => {
   const { data } = await axiosInstance.delete(`/item/${itemId}`);

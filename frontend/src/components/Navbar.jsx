@@ -5,12 +5,12 @@ import { FaLocationDot } from 'react-icons/fa6';
 import { TbReceipt2 } from 'react-icons/tb';
 import { useSelector } from 'react-redux';
 import { IoClose } from 'react-icons/io5';
-import { logoutUserAPI } from '../services/authService';
+import { logoutUserAPI } from '../services/authService.js';
 import { setSearchItems, setSearchQuery, setUserData } from '../redux/userSlice';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { searchItemsAPI } from '../services/itemService.js';
-import showToast from '../utils/toastHelper';
+import showToast from '../utils/toastHelper.js';
 
 function Tooltip({ text }) {
   return (

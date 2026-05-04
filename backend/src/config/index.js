@@ -11,6 +11,7 @@ const requiredEnv = [
   'EMAIL_PASSWORD',
   'RAZORPAY_API_KEY_ID',
   'RAZORPAY_KEY_SECRET',
+  'FRONTEND_URL',
 ];
 requiredEnv.forEach((key) => {
   if (!process.env[key]) {
@@ -26,6 +27,8 @@ const Config = {
   emailPassword: process.env.EMAIL_PASSWORD,
   razorpayKeyId: process.env.RAZORPAY_API_KEY_ID,
   razorpayKeySecret: process.env.RAZORPAY_KEY_SECRET,
+  frontendUrl: process.env.FRONTEND_URL,
+  nodeEnv: process.env.NODE_ENV,
 };
 
 export default Config;

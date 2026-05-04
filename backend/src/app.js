@@ -5,8 +5,12 @@ import cookieParser from 'cookie-parser';
 import { StatusCodes } from 'http-status-codes';
 import { ExpressError } from './utils/ExpressError.js';
 import { mainRouter } from './routes/mainRoutes.js';
+import Config from './config/index.js';
 
 const app = express();
+
+// trust first proxy
+app.set('trust proxy', 1);
 
 // security headers
 app.use(
@@ -18,7 +22,7 @@ app.use(
 // enable CORS so frontend can communicate with backend
 app.use(
   cors({
-    origin: 'http://localhost:5173',
+    origin: Config.frontendUrl,
     credentials: true,
   })
 );
@@ -41,7 +45,7 @@ app.use((err, req, res, next) => {
   let message = err.message || 'Something went wrong!';
 
   // In production, hide sensitive internal error details
-  if (process.env.NODE_ENV === 'production' && statusCode === StatusCodes.INTERNAL_SERVER_ERROR) {
+  if (Config.nodeEnv === 'production' && statusCode === StatusCodes.INTERNAL_SERVER_ERROR) {
     message = 'Internal server error. Please try again later.';
   }
   res.status(statusCode).json({ success: false, message });

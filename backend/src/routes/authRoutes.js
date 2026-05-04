@@ -39,11 +39,13 @@ authRouter.post(
 );
 authRouter.post(
   '/password-reset/verify',
+  authLimiter,
   validateSchema(verifyPasswordResetOtpSchema),
   wrapAsync(verifyPasswordResetOtp)
 );
 authRouter.post(
   '/password-reset',
+  authLimiter,
   validateSchema(resetUserPasswordSchema),
   wrapAsync(resetUserPassword)
 );

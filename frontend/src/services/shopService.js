@@ -1,4 +1,4 @@
-import axiosInstance from '../config/axiosInstance';
+import axiosInstance from '../config/axiosInstance.js';
 
 // Get logged-in vendor shop
 const getMyShopAPI = async () => {

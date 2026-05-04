@@ -7,7 +7,7 @@ let io;
 const initSocket = (httpServer) => {
   io = new Server(httpServer, {
     cors: {
-      origin: 'http://localhost:5173',
+      origin: Config.frontendUrl,
       credentials: true,
     },
   });
@@ -15,7 +15,12 @@ const initSocket = (httpServer) => {
   // verify JWT from cookie
   io.use(async (socket, next) => {
     try {
-      const token = socket.handshake.headers?.cookie?.split('token=')[1];
+      const cookies = socket.handshake.headers?.cookie || '';
+      const token = cookies
+        .split(';')
+        .find((c) => c.trim().startsWith('token='))
+        ?.split('=')[1]
+        ?.trim();
       if (!token) return next(new Error('Unauthorized'));
 
       const decoded = jwt.verify(token.split(';')[0], Config.secretKey);

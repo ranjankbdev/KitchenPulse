@@ -191,6 +191,10 @@ const ratingField = Joi.number().integer().min(1).max(5).required().messages({
   'any.required': 'Rating is required',
 });
 
+const descriptionField = Joi.string().trim().max(120).allow('').messages({
+  'string.max': 'Description cannot exceed 120 characters',
+});
+
 export {
   fullNameField,
   emailField,
@@ -219,4 +223,5 @@ export {
   razorpayPaymentIdField,
   razorpaySignatureField,
   ratingField,
+  descriptionField,
 };

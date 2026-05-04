@@ -8,7 +8,7 @@ import { useDispatch } from 'react-redux';
 import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { loginUserAPI, googleAuthAPI } from '../../services/authService.js';
 import { auth } from '../../config/firebase.js';
-import showToast from '../../utils/toastHelper';
+import showToast from '../../utils/toastHelper.js';
 import { setUserData } from '../../redux/userSlice.js';
 
 const GUEST_EMAIL = import.meta.env.VITE_EMAIL_ID;

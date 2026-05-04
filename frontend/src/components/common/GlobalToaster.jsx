@@ -4,7 +4,7 @@ import { memo } from 'react';
 
 const GlobalToaster = memo(() => (
   <ToastContainer
-    position="bottom-left"
+    position="top-right"
     autoClose={3000}
     hideProgressBar={false}
     newestOnTop={false}

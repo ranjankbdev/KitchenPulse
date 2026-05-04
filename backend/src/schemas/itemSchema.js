@@ -8,11 +8,13 @@ import {
   mongoIdField,
   cityField,
   searchQueryField,
+  descriptionField,
 } from './baseSchema.js';
 
 const createItemSchema = Joi.object({
   body: Joi.object({
     name: itemNameField.required(),
+    description: descriptionField.optional(),
     imageUrl: imageUrlField.required(),
     category: categoryField.required(),
     price: priceField.required(),
@@ -26,6 +28,7 @@ const updateItemSchema = Joi.object({
   }).required(),
   body: Joi.object({
     name: itemNameField.optional(),
+    description: descriptionField.optional(),
     imageUrl: imageUrlField.optional(),
     category: categoryField.optional(),
     price: priceField.optional(),

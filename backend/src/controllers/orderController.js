@@ -11,6 +11,7 @@ import RazorPay from 'razorpay';
 import Config from '../config/index.js';
 import Rating from '../models/ratingModel.js';
 import { getIO } from '../socket/socketManager.js';
+import { compareHash, hashValue } from '../utils/authHelper.js';
 
 let instance = new RazorPay({
   key_id: Config.razorpayKeyId,
@@ -567,7 +568,7 @@ const sendDeliveryOtp = async (req, res) => {
   }
   // generate 6-digit OTP
   const otp = crypto.randomInt(100000, 1000000).toString();
-  shopOrder.deliveryOtp = otp;
+  shopOrder.deliveryOtp = await hashValue(otp);
   shopOrder.deliveryOtpExpiresAt = new Date(Date.now() + 5 * 60 * 1000);
   await order.save();
   await sendOtpEmail(
@@ -666,13 +667,15 @@ const verifyDeliveryOtp = async (req, res) => {
   if (shopOrder.status === 'delivered') {
     throw new ExpressError(StatusCodes.BAD_REQUEST, 'Order already delivered');
   }
+
   // check OTP
-  if (
-    shopOrder.deliveryOtp !== otp ||
-    !shopOrder.deliveryOtpExpiresAt ||
-    shopOrder.deliveryOtpExpiresAt < Date.now()
-  ) {
+  if (!shopOrder.deliveryOtpExpiresAt || shopOrder.deliveryOtpExpiresAt < Date.now()) {
     throw new ExpressError(StatusCodes.BAD_REQUEST, 'Invalid or expired OTP');
+  }
+
+  const isMatchedOtp = await compareHash(otp, shopOrder.deliveryOtp);
+  if (!isMatchedOtp) {
+    throw new ExpressError(StatusCodes.BAD_REQUEST, 'Invalid OTP');
   }
 
   // mark delivered and clear OTP

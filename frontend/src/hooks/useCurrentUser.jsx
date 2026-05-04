@@ -12,7 +12,12 @@ function useCurrentUser() {
         const data = await getUserAPI();
         dispatch(setUserData(data));
       } catch (error) {
-        if (error === 'No token provided' || error === 'Unauthorized') return;
+        if (
+          error === 'No token provided' ||
+          error === 'Unauthorized' ||
+          error === 'Invalid or expired token'
+        )
+          return;
         showToast(error, 'error');
       }
     };

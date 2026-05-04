@@ -3,6 +3,14 @@ import { genToken, hashValue, compareHash } from '../utils/authHelper.js';
 import { ExpressError } from '../utils/ExpressError.js';
 import User from '../models/userModel.js';
 import { sendOtpEmail } from '../utils/emailService.js';
+import Config from '../config/index.js';
+
+const cookieOptions = {
+  httpOnly: true,
+  maxAge: 3 * 24 * 60 * 60 * 1000,
+  secure: Config.nodeEnv === 'production',
+  sameSite: Config.nodeEnv === 'production' ? 'none' : 'lax',
+};
 
 // register
 const registerUser = async (req, res) => {
@@ -38,12 +46,8 @@ const registerUser = async (req, res) => {
   const savedUser = await newUser.save();
   const token = genToken(savedUser._id, savedUser.role);
 
-  res.cookie('token', token, {
-    secure: true,
-    sameSite: 'none',
-    maxAge: 7 * 24 * 60 * 60 * 1000,
-    httpOnly: true,
-  });
+  // set cookie
+  res.cookie('token', token, cookieOptions);
 
   return res.status(StatusCodes.CREATED).json({
     _id: savedUser._id,
@@ -70,12 +74,8 @@ const loginUser = async (req, res) => {
   }
 
   const token = genToken(existingUser._id, existingUser.role);
-  res.cookie('token', token, {
-    secure: true,
-    sameSite: 'none',
-    maxAge: 7 * 24 * 60 * 60 * 1000,
-    httpOnly: true,
-  });
+  // set cookie
+  res.cookie('token', token, cookieOptions);
 
   return res.status(StatusCodes.OK).json({
     _id: existingUser._id,
@@ -88,7 +88,11 @@ const loginUser = async (req, res) => {
 
 // logout
 const logoutUser = async (req, res) => {
-  res.clearCookie('token');
+  res.clearCookie('token', {
+    httpOnly: true,
+    secure: Config.nodeEnv === 'production',
+    sameSite: Config.nodeEnv === 'production' ? 'none' : 'lax',
+  });
   return res.status(StatusCodes.OK).json();
 };
 
@@ -167,12 +171,9 @@ const googleAuth = async (req, res) => {
   if (googleUser) {
     // User exists → just login (SignIn flow)
     const token = genToken(googleUser._id, googleUser.role);
-    res.cookie('token', token, {
-      secure: true,
-      sameSite: 'none',
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-      httpOnly: true,
-    });
+    // set cookie
+    res.cookie('token', token, cookieOptions);
+
     return res.status(StatusCodes.OK).json({
       _id: googleUser._id,
       fullName: googleUser.fullName,
@@ -202,12 +203,8 @@ const googleAuth = async (req, res) => {
   await googleUser.save();
 
   const token = genToken(googleUser._id, googleUser.role);
-  res.cookie('token', token, {
-    secure: true,
-    sameSite: 'none',
-    maxAge: 7 * 24 * 60 * 60 * 1000,
-    httpOnly: true,
-  });
+  // set cookie
+  res.cookie('token', token, cookieOptions);
 
   return res.status(StatusCodes.CREATED).json({
     _id: googleUser._id,
