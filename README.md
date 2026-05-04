@@ -102,6 +102,8 @@ CLOUD_API_KEY=your_api_key
 CLOUD_API_SECRET=your_api_secret
 RAZORPAY_API_KEY_ID=your_razorpay_key_id
 RAZORPAY_KEY_SECRET=your_razorpay_key_secret
+NODE_ENV=production
+FRONTEND_URL=http://localhost:5173
 ```
 
 ```bash
@@ -144,6 +146,7 @@ npm run dev
 | `VITE_GEOAPIKEY` | Geocoding (Geoapify) |
 | `VITE_RAZORPAY_KEY_ID` | Razorpay payments (frontend) |
 | `VITE_EMAIL_ID` | Guest demo login |
+| `FRONTEND_URL` | CORS + Socket.io origin (backend) |
 
 ---
 
