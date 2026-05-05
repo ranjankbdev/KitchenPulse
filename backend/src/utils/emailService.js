@@ -1,14 +1,25 @@
-import nodemailer from 'nodemailer';
+import axios from 'axios';
 import Config from '../config/index.js';
 
-const transporter = nodemailer.createTransport({
-  service: 'Gmail',
-  auth: {
-    user: Config.email,
-    pass: Config.emailPassword,
-  },
-});
-
 export const sendOtpEmail = async (to, subject, html) => {
-  await transporter.sendMail({ from: Config.email, to, subject, html });
+  try {
+    await axios.post(
+      'https://api.brevo.com/v3/smtp/email',
+      {
+        sender: { email: Config.email, name: 'KitchenPulse' },
+        to: [{ email: to }],
+        subject,
+        htmlContent: html,
+      },
+      {
+        headers: {
+          'api-key': Config.brevoApiKey,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+  } catch (error) {
+    console.error('Email error:', error.response?.data || error.message);
+    throw new Error('Email sending failed');
+  }
 };

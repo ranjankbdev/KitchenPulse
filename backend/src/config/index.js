@@ -8,10 +8,10 @@ const requiredEnv = [
   'MONGODB_URI',
   'JWT_SECRET_KEY',
   'EMAIL',
-  'EMAIL_PASSWORD',
   'RAZORPAY_API_KEY_ID',
   'RAZORPAY_KEY_SECRET',
   'FRONTEND_URL',
+  'BREVO_API_KEY',
 ];
 requiredEnv.forEach((key) => {
   if (!process.env[key]) {
@@ -24,11 +24,11 @@ const Config = {
   secretKey: process.env.JWT_SECRET_KEY,
   port: process.env.PORT || 8080,
   email: process.env.EMAIL,
-  emailPassword: process.env.EMAIL_PASSWORD,
   razorpayKeyId: process.env.RAZORPAY_API_KEY_ID,
   razorpayKeySecret: process.env.RAZORPAY_KEY_SECRET,
   frontendUrl: process.env.FRONTEND_URL,
   nodeEnv: process.env.NODE_ENV,
+  brevoApiKey: process.env.BREVO_API_KEY,
 };
 
 export default Config;
