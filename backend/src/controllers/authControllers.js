@@ -50,6 +50,7 @@ const registerUser = async (req, res) => {
   res.cookie('token', token, cookieOptions);
 
   return res.status(StatusCodes.CREATED).json({
+    token,
     _id: savedUser._id,
     fullName: savedUser.fullName,
     email: savedUser.email,
@@ -78,6 +79,7 @@ const loginUser = async (req, res) => {
   res.cookie('token', token, cookieOptions);
 
   return res.status(StatusCodes.OK).json({
+    token,
     _id: existingUser._id,
     fullName: existingUser.fullName,
     email: existingUser.email,
@@ -174,13 +176,16 @@ const googleAuth = async (req, res) => {
     // set cookie
     res.cookie('token', token, cookieOptions);
 
-    return res.status(StatusCodes.OK).json({
-      _id: googleUser._id,
-      fullName: googleUser.fullName,
-      email: googleUser.email,
-      mobileNumber: googleUser.mobileNumber,
-      role: googleUser.role,
-    });
+    return res
+      .status(StatusCodes.OK)
+      .json({
+        token,
+        _id: googleUser._id,
+        fullName: googleUser.fullName,
+        email: googleUser.email,
+        mobileNumber: googleUser.mobileNumber,
+        role: googleUser.role,
+      });
   }
 
   // User doesn't exist → register (SignUp flow)
@@ -206,13 +211,16 @@ const googleAuth = async (req, res) => {
   // set cookie
   res.cookie('token', token, cookieOptions);
 
-  return res.status(StatusCodes.CREATED).json({
-    _id: googleUser._id,
-    fullName: googleUser.fullName,
-    email: googleUser.email,
-    mobileNumber: googleUser.mobileNumber,
-    role: googleUser.role,
-  });
+  return res
+    .status(StatusCodes.CREATED)
+    .json({
+      token,
+      _id: googleUser._id,
+      fullName: googleUser.fullName,
+      email: googleUser.email,
+      mobileNumber: googleUser.mobileNumber,
+      role: googleUser.role,
+    });
 };
 
 export {
