@@ -68,16 +68,14 @@ function ItemCard({
 
         {/* description */}
         {showDescription && data.description && (
-          <p className="text-xs text-gray-500 mt-1 leading-relaxed">
-            {data.description}
-          </p>
+          <p className="text-xs text-gray-500 mt-1 leading-relaxed">{data.description}</p>
         )}
 
         {/* rating */}
         <div className="flex items-center gap-1 mt-1">
           {renderStars(data.ratings?.average || 0)}
           <span className="text-xs text-gray-500">
-            {data.ratings?.average || 0} ({data.ratings?.count || 0})
+            {(data.ratings?.average || 0).toFixed(1)} ({data.ratings?.count || 0})
           </span>
         </div>
       </div>
