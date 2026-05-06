@@ -51,7 +51,7 @@ function useSocket() {
       socket.on('order_status_updated', async ({ orderId, shopId, status }) => {
         dispatch(updateOrderStatus({ orderId, shopId, status }));
         // refetch orders on delivered to get updated
-        if (status === 'delivered') {
+        if (status === 'delivered' || status === 'out_for_delivery') {
           try {
             const updatedOrders = await getOrdersAPI();
             dispatch(setMyOrders(updatedOrders));
