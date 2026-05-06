@@ -1,6 +1,6 @@
 import { io } from 'socket.io-client';
 
-const socket = io('https://kitchenpulse.onrender.com', {
+const socket = io(import.meta.env.VITE_SOCKET_URL, {
   autoConnect: false,
   transports: ['websocket', 'polling'],
   auth: (cb) => {

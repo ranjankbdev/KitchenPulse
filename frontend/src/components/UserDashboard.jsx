@@ -68,6 +68,17 @@ function UserDashboard() {
 
   const isSearching = searchQuery?.trim()?.length > 0;
 
+  if (!currentCity) {
+    return (
+      <div>
+        <Navbar />
+        <div className="flex justify-center items-center h-screen">
+          <ClipLoader size={40} color="#ff4d2d" />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div>
       <Navbar />
@@ -86,6 +97,7 @@ function UserDashboard() {
               image={cate.image}
               className="w-37 h-37 md:w-40 md:h-40 cursor-pointer"
               onClick={() => handleCategoryClick(cate.value)}
+              isActive={cate.value === selectedCategory}
             />
           ))}
         </HorizontalScroll>
@@ -129,7 +141,7 @@ function UserDashboard() {
         </h1>
         <div className="w-full h-auto grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5 my-4">
           {loading ? (
-            <div className="w-full flex justify-center items-center py-10">
+            <div className="col-span-full flex justify-center items-center py-10">
               <ClipLoader size={30} color="#ff4d2d" />
             </div>
           ) : itemsToShow?.length > 0 ? (
