@@ -1,16 +1,16 @@
 import { StatusCodes } from 'http-status-codes';
 import { ExpressError } from '../utils/ExpressError.js';
 import crypto from 'crypto';
-import CloudinaryConfig from '../config/cloudinary.js';
+import Config from '../config/index.js';
 
-const { cloudName, apiKey, apiSecret } = CloudinaryConfig;
+const { cloudName, cloudApiKey, cloudApiSecret } = Config;
 
 const generateUploadSignature = async (req, res) => {
   if (req.user.role !== 'vendor') {
     throw new ExpressError(StatusCodes.FORBIDDEN, 'Access denied!');
   }
-  
-  if (!cloudName || !apiKey || !apiSecret) {
+
+  if (!cloudName || !cloudApiKey || !cloudApiSecret) {
     throw new ExpressError(
       StatusCodes.INTERNAL_SERVER_ERROR,
       'Cloudinary configuration is not properly set up'
@@ -20,10 +20,10 @@ const generateUploadSignature = async (req, res) => {
   const timestamp = Math.round(Date.now() / 1000);
   const signature = crypto
     .createHash('sha1')
-    .update(`timestamp=${timestamp}${apiSecret}`)
+    .update(`timestamp=${timestamp}${cloudApiSecret}`)
     .digest('hex');
 
-  res.status(StatusCodes.OK).json({ cloudName, apiKey, timestamp, signature });
+  res.status(StatusCodes.OK).json({ cloudName, cloudApiKey, timestamp, signature });
 };
 
 export { generateUploadSignature };

@@ -16,7 +16,7 @@ const getCloudinarySignature = async () => {
   }
 
   // Validate config structure
-  if (!data?.cloudName || !data?.apiKey || !data?.signature || !data?.timestamp) {
+  if (!data?.cloudName || !data?.cloudApiKey || !data?.signature || !data?.timestamp) {
     throw new Error('Invalid Cloudinary configuration received');
   }
 

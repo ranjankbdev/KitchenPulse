@@ -12,6 +12,9 @@ const requiredEnv = [
   'RAZORPAY_KEY_SECRET',
   'FRONTEND_URL',
   'BREVO_API_KEY',
+  'CLOUD_NAME',
+  'CLOUD_API_KEY',
+  'CLOUD_API_SECRET',
 ];
 requiredEnv.forEach((key) => {
   if (!process.env[key]) {
@@ -29,6 +32,9 @@ const Config = {
   frontendUrl: process.env.FRONTEND_URL,
   nodeEnv: process.env.NODE_ENV,
   brevoApiKey: process.env.BREVO_API_KEY,
+  cloudName: process.env.CLOUD_NAME,
+  cloudApiKey: process.env.CLOUD_API_KEY,
+  cloudApiSecret: process.env.CLOUD_API_SECRET,
 };
 
 export default Config;
