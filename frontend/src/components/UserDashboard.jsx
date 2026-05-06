@@ -103,32 +103,36 @@ function UserDashboard() {
         </HorizontalScroll>
 
         {/* shop */}
-        <h1 className="flex items-start gap-2 text-gray-800 text-2xl sm:text-3xl mt-11">
-          <BsShop className="text-[#ff4d2d] " />
-          Popular Restaurants in {currentCity}
-        </h1>
-        <HorizontalScroll>
-          {loading ? (
-            <div className="w-full flex justify-center items-center py-6">
-              <ClipLoader size={30} color="#ff4d2d" />
-            </div>
-          ) : shopsInMyCity?.length > 0 ? (
-            shopsInMyCity.map((shop) => (
-              <CategoryCard
-                key={shop._id}
-                name={shop.name}
-                image={shop.imageUrl}
-                className="max-w-53 cursor-pointer h-45"
-                onClick={() => navigate(`/shop/${shop._id}`)}
-              />
-            ))
-          ) : (
-            <div className="ms-1 flex items-start gap-2 text-gray-500 text-lg mt-6">
-              <BsShop className="text-[#ff4d2d] text-xl" />
-              <span>No restaurants available in {currentCity}. Try another location.</span>
-            </div>
-          )}
-        </HorizontalScroll>
+        {!isSearching && (
+          <>
+            <h1 className="flex items-start gap-2 text-gray-800 text-2xl sm:text-3xl mt-11">
+              <BsShop className="text-[#ff4d2d] " />
+              Popular Restaurants in {currentCity}
+            </h1>
+            <HorizontalScroll>
+              {loading ? (
+                <div className="w-full flex justify-center items-center py-6">
+                  <ClipLoader size={30} color="#ff4d2d" />
+                </div>
+              ) : shopsInMyCity?.length > 0 ? (
+                shopsInMyCity.map((shop) => (
+                  <CategoryCard
+                    key={shop._id}
+                    name={shop.name}
+                    image={shop.imageUrl}
+                    className="max-w-53 cursor-pointer h-45"
+                    onClick={() => navigate(`/shop/${shop._id}`)}
+                  />
+                ))
+              ) : (
+                <div className="ms-1 flex items-start gap-2 text-gray-500 text-lg mt-6">
+                  <BsShop className="text-[#ff4d2d] text-xl" />
+                  <span>No restaurants available in {currentCity}. Try another location.</span>
+                </div>
+              )}
+            </HorizontalScroll>
+          </>
+        )}
 
         {/* items */}
         <h1 className="flex items-start gap-2 text-gray-800 text-2xl sm:text-3xl  mt-11">
