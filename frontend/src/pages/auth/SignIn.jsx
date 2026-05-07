@@ -65,8 +65,9 @@ function SignIn() {
       dispatch(setUserData(data));
       showToast('Welcome! You are signed in', 'success');
     } catch (error) {
-      if (error.code === 'auth/popup-closed-by-user') return;
-      showToast(error?.message || 'Google sign in failed', 'error');
+      if (error.code !== 'auth/popup-closed-by-user') {
+        showToast(error?.message || 'Google sign in failed', 'error');
+      }
     } finally {
       setLoading(false);
     }

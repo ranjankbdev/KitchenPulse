@@ -98,8 +98,9 @@ function SignUp() {
       setMobileNumber('');
       setRole('user');
     } catch (error) {
-      if (error.code === 'auth/popup-closed-by-user') return;
-      showToast(error?.message || 'Google sign in failed', 'error');
+      if (error.code !== 'auth/popup-closed-by-user') {
+        showToast(error?.message || 'Google sign in failed', 'error');
+      }
     } finally {
       setLoading(false);
     }
