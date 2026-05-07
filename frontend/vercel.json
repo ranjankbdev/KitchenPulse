@@ -5,7 +5,7 @@
       "destination": "https://kitchenpulse.onrender.com/api/:path*"
     },
     {
-      "source": "/((?!api).*)",
+      "source": "/((?!api|__/auth).*)",
       "destination": "/index.html"
     }
   ]
