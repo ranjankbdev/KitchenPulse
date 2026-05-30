@@ -106,7 +106,7 @@ CLOUD_API_KEY=your_api_key
 CLOUD_API_SECRET=your_api_secret
 RAZORPAY_API_KEY_ID=your_razorpay_key_id
 RAZORPAY_KEY_SECRET=your_razorpay_key_secret
-NODE_ENV=production
+NODE_ENV=development
 FRONTEND_URL=http://localhost:5173
 BREVO_API_KEY=your_brevo_api_key
 ```
@@ -177,5 +177,5 @@ npm run dev
 
 ## Author
 
-**Ranjan Kumar**  
-[GitHub](https://github.com/ripuranjan-143) · [LinkedIn](https://www.linkedin.com/in/ranjan-kumar-642a061ba/)
+**Ranjan Kumar Behera**  
+[GitHub](https://github.com/ranjankbdev) · [LinkedIn](https://www.linkedin.com/in/ranjankb-dev/)

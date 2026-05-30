@@ -1,4 +1,4 @@
-import { FaGithub, FaLinkedin } from 'react-icons/fa';
+import { FaGithub, FaLinkedin, FaEnvelope } from 'react-icons/fa';
 
 function Footer() {
   return (
@@ -37,21 +37,31 @@ function Footer() {
 
           <div className="flex gap-3 text-base">
             <a
-              href="https://github.com/ripuranjan-143"
+              href="https://github.com/ranjankbdev/KitchenPulse"
               target="_blank"
               rel="noopener noreferrer"
+              aria-label="KitchenPulse GitHub Repository"
               className="hover:text-black transition"
             >
               <FaGithub />
             </a>
 
             <a
-              href="https://www.linkedin.com/in/ranjan-kumar-642a061ba/"
+              href="https://www.linkedin.com/in/ranjankb-dev/"
               target="_blank"
               rel="noopener noreferrer"
+              aria-label="LinkedIn Profile"
               className="hover:text-black transition"
             >
               <FaLinkedin />
+            </a>
+
+            <a
+              href="mailto:ranjankb.dev@gmail.com"
+              aria-label="Send Email"
+              className="hover:text-black transition"
+            >
+              <FaEnvelope />
             </a>
           </div>
         </div>
