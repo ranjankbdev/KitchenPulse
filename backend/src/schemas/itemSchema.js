@@ -14,7 +14,7 @@ import {
 const createItemSchema = Joi.object({
   body: Joi.object({
     name: itemNameField.required(),
-    description: descriptionField.optional(),
+    description: descriptionField.required(),
     imageUrl: imageUrlField.required(),
     category: categoryField.required(),
     price: priceField.required(),

@@ -42,7 +42,7 @@ function VendorDashboard() {
   }, [userData, dispatch]);
 
   return (
-    <div className='mb-12'>
+    <div className="mb-12">
       <Navbar />
 
       {loading && (
@@ -80,9 +80,9 @@ function VendorDashboard() {
       {!loading && myShopData && (
         <>
           <div className="w-full flex flex-col items-center gap-6 px-4 sm:px-6">
-            <h1 className="text-2xl sm:text-3xl text-gray-900 flex items-center gap-3 mt-8 text-center">
-              <BsShop className="text-[#ff4d2d] w-14 h-14 " />
-              <span className="capitalize">{myShopData?.name}</span> Dashboard
+            <h1 className="text-2xl sm:text-3xl text-gray-900 flex items-center justify-center gap-3 mt-8 text-center">
+              <BsShop className="text-[#ff4d2d] w-10 h-10 sm:w-14 sm:h-14 flex-shrink-0" />
+              <span className="capitalize break-words">{myShopData?.name} Dashboard</span>
             </h1>
 
             <div className="w-full max-w-xl 2xl:max-w-3xl bg-white shadow-lg rounded-xl overflow-hidden border border-orange-100 hover:shadow-2xl transition-all duration-300 relative">

@@ -5,7 +5,7 @@ import formatApiError from '../utils/formatApiError.js';
 const axiosInstance = axios.create({
   baseURL: API_URL,
   withCredentials: true,
-  timeout: 10000,
+  timeout: 60000,
   headers: {
     'Content-Type': 'application/json',
   },

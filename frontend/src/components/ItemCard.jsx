@@ -68,7 +68,7 @@ function ItemCard({
 
         {/* description */}
         {showDescription && data.description && (
-          <p className="text-xs text-gray-500 mt-1 leading-relaxed">{data.description}</p>
+          <p className="text-xs text-gray-500 mt-1 leading-relaxed truncate">{data.description}</p>
         )}
 
         {/* rating */}
@@ -82,7 +82,7 @@ function ItemCard({
 
       {/* actions */}
       {showActions && (
-        <div className="flex items-center justify-between mt-auto p-3 h-15">
+        <div className="flex items-center justify-between mt-auto p-3 h-15 gap-1">
           <span className="font-semibold text-gray-900 text-base">₹{data.price}</span>
 
           {quantity === 0 ? (

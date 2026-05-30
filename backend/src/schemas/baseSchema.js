@@ -191,8 +191,10 @@ const ratingField = Joi.number().integer().min(1).max(5).required().messages({
   'any.required': 'Rating is required',
 });
 
-const descriptionField = Joi.string().trim().max(120).allow('').messages({
+const descriptionField = Joi.string().trim().min(20).max(120).required().messages({
+  'string.min': 'Description must be at least 20 characters',
   'string.max': 'Description cannot exceed 120 characters',
+  'any.required': 'Description is required',
 });
 
 export {

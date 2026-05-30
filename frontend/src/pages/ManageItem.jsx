@@ -61,6 +61,10 @@ function ManageItem({ mode }) {
     const validations = [
       { check: !name.trim(), message: 'Food name is required!' },
       {
+        check: description.trim().length < 20,
+        message: 'Description must be at least 20 characters!',
+      },
+      {
         check: !picture && !(mode === 'edit' ? preview : false),
         message: 'Food image is required!',
       },
@@ -141,10 +145,11 @@ function ManageItem({ mode }) {
               value={name}
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
             <textarea
+              maxLength="120"
               placeholder="Short description (max 120 characters)"
               className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 resize-none"
               rows={3}
