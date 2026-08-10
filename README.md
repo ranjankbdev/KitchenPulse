@@ -1,7 +1,6 @@
 # KitchenPulse 🍽️
 
-KitchenPulse – A full-stack food delivery application with real-time order tracking, built using the MERN stack and Socket.IO.
-
+KitchenPulse – Full-stack food delivery platform with role-based access for customers, vendors, and delivery partners, real-time order tracking, online payments, and cloud-based image management, built with the MERN stack and Socket.IO.
 ---
 
 ## Tech Stack
